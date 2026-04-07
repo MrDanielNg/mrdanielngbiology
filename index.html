@@ -3,98 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Transpiration Lab</title>
+    <title>Transpiration Lab: Plateau Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #64748b;
-            --success: #16a34a;
-            --danger: #e11d48;
-            --bg: #f8fafc;
-        }
-
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: #1e293b; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        :root { --primary: #059669; --bg: #f0fdf4; --card: #ffffff; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1f2937; }
+        .container { max-width: 1100px; margin: auto; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        .control-panel { background: #f8fafc; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; }
+        h1 { margin-top: 0; color: #065f46; border-bottom: 2px solid #bcf0da; padding-bottom: 10px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+        input[type="range"] { width: 100%; margin-bottom: 20px; accent-color: var(--primary); }
+        .val-box { float: right; color: var(--primary); font-weight: bold; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 1rem; }
+        .btn-run { background: var(--primary); color: white; margin-bottom: 10px; }
+        .btn-clear { background: #ef4444; color: white; }
+        #chart-wrapper { position: relative; height: 500px; }
         .hidden { display: none; }
-        
-        h1 { border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 25px; color: #0f172a; }
-        
-        /* Layout Grids */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
-        .card { background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-        
-        /* Controls */
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; }
-        .val { color: var(--primary); font-weight: bold; float: right; }
-        input[type="range"] { width: 100%; height: 6px; background: #dfe7ef; border-radius: 5px; appearance: none; margin-bottom: 20px; }
-        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: var(--primary); border-radius: 50%; cursor: pointer; }
-
-        /* Animation/Loading */
-        #loading-overlay { text-align: center; padding: 50px; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: auto; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Buttons */
-        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; font-size: 1rem; }
-        .btn-primary { background: var(--primary); color: white; width: 100%; }
-        .btn-secondary { background: var(--secondary); color: white; margin-top: 15px; }
-        .btn-danger { background: var(--danger); color: white; margin-top: 15px; }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-
-        /* Chart */
-        #chart-container { height: 450px; margin: 20px 0; position: relative; }
-        .trial-tag { display: inline-block; padding: 4px 12px; background: #f1f5f9; border-radius: 20px; font-size: 0.85rem; margin: 5px; border: 1px solid #cbd5e1; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="page-setup">
-        <h1>Plant Transpiration Lab</h1>
-        <p>Adjust the environmental variables to see how they affect the rate of water loss in the plant.</p>
-        
-        <div class="grid">
-            <div class="card">
-                <label>Temperature <span class="val" id="v-temp">25</span>°C</label>
-                <input type="range" id="temp" min="5" max="50" value="25" oninput="updateUI('v-temp', this.value)">
-                
-                <label>Light Intensity <span class="val" id="v-light">50</span>%</label>
-                <input type="range" id="light" min="0" max="100" value="50" oninput="updateUI('v-light', this.value)">
+    <h1>Transpiration Rate Interactive Lab</h1>
+    
+    <div class="grid">
+        <div class="control-panel">
+            <h3>Environment Setup</h3>
+            
+            <label>Temperature <span class="val-box" id="v-temp">25</span>°C</label>
+            <input type="range" id="temp" min="5" max="55" value="25" oninput="updateUI('v-temp', this.value)">
+            
+            <label>Light Intensity <span class="val-box" id="v-light">50</span>%</label>
+            <input type="range" id="light" min="0" max="100" value="50" oninput="updateUI('v-light', this.value)">
+            
+            <label>Wind Speed <span class="val-box" id="v-wind">5</span> km/h</label>
+            <input type="range" id="wind" min="0" max="40" value="5" oninput="updateUI('v-wind', this.value)">
+            
+            <label>Humidity <span class="val-box" id="v-humid">40</span>%</label>
+            <input type="range" id="humid" min="0" max="100" value="40" oninput="updateUI('v-humid', this.value)">
+
+            <button class="btn btn-run" onclick="runTrial()" id="run-btn">Run 120min Trial</button>
+            <button class="btn btn-clear" onclick="location.reload()">Reset All Data</button>
+            
+            <div id="status" class="hidden" style="margin-top:15px; text-align:center;">
+                <div class="loader"></div> <span>Recording Data...</span>
             </div>
-            <div class="card">
-                <label>Wind Velocity <span class="val" id="v-wind">5</span> km/h</label>
-                <input type="range" id="wind" min="0" max="30" value="5" oninput="updateUI('v-wind', this.value)">
-                
-                <label>Relative Humidity <span class="val" id="v-humid">40</span>%</label>
-                <input type="range" id="humid" min="5" max="100" value="40" oninput="updateUI('v-humid', this.value)">
-            </div>
-        </div>
-        
-        <button class="btn btn-primary" onclick="startTrial()">Run Experiment</button>
-    </div>
-
-    <div id="page-loading" class="hidden">
-        <div id="loading-overlay">
-            <div class="spinner"></div>
-            <p style="margin-top: 20px; font-weight: bold;">Collecting data from potometer...</p>
-        </div>
-    </div>
-
-    <div id="page-results" class="hidden">
-        <h1>Comparative Results</h1>
-        <div id="chart-container">
-            <canvas id="mainChart"></canvas>
         </div>
 
-        <div class="card">
-            <label>Active Trials:</label>
-            <div id="trial-log"></div>
-        </div>
-
-        <div style="display: flex; gap: 10px;">
-            <button class="btn btn-secondary" onclick="backToSetup()">+ Add Comparison Trial</button>
-            <button class="btn btn-danger" onclick="resetLab()">Clear All Data</button>
+        <div id="chart-wrapper">
+            <canvas id="plateauChart"></canvas>
         </div>
     </div>
 </div>
@@ -102,71 +62,65 @@
 <script>
     let chart;
     let trialCount = 0;
-    const colors = ['#2563eb', '#16a34a', '#dc2626', '#ca8a04', '#9333ea', '#0891b2'];
+    const colors = ['#059669', '#2563eb', '#7c3aed', '#db2777', '#ea580c'];
 
     function updateUI(id, val) { document.getElementById(id).innerText = val; }
 
-    function backToSetup() {
-        document.getElementById('page-results').classList.add('hidden');
-        document.getElementById('page-setup').classList.remove('hidden');
-    }
+    function runTrial() {
+        const btn = document.getElementById('run-btn');
+        const status = document.getElementById('status');
+        
+        btn.disabled = true;
+        status.classList.remove('hidden');
 
-    function resetLab() { if(confirm("Clear all trial data?")) location.reload(); }
-
-    function startTrial() {
-        // Show loading
-        document.getElementById('page-setup').classList.add('hidden');
-        document.getElementById('page-loading').classList.remove('hidden');
-
-        // Simulate a 1.5 second "Experiment" time
         setTimeout(() => {
-            calculateAndGraph();
-            document.getElementById('page-loading').classList.add('hidden');
-            document.getElementById('page-results').classList.remove('hidden');
-        }, 1500);
+            generateData();
+            btn.disabled = false;
+            status.classList.add('hidden');
+        }, 800);
     }
 
-    function calculateAndGraph() {
+    function generateData() {
         trialCount++;
         const T = parseFloat(document.getElementById('temp').value);
         const L = parseFloat(document.getElementById('light').value);
         const W = parseFloat(document.getElementById('wind').value);
         const H = parseFloat(document.getElementById('humid').value);
 
-        // --- NON-LINEAR BIOLOGY LOGIC ---
-        // 1. Humidity is a strong inhibitor (high humidity = low gradient)
-        let humidityEffect = (102 - H) / 100; 
+        // --- THE PLATEAU MATH ---
+        // 1. Environmental Driving Force (S)
+        const S = (T * 0.5) + (L * 0.3) + (W * 0.7);
         
-        // 2. Saturation Curve (Michaelis-Menten Style)
-        // Rate = (Vmax * S) / (Km + S)
-        let environmentalStress = (T * 0.6) + (L * 0.4) + (W * 0.8);
-        let vMax = 2.5;        // Maximum physical transpiration capacity
-        let kHalf = 40;       // Stress level at which rate is half max
-        
-        let curveRate = (vMax * environmentalStress) / (kHalf + environmentalStress);
-        let finalRate = Math.max(0.05, curveRate * humidityEffect);
+        // 2. Humidity Inhibition (The "Brake")
+        const humidityMultiplier = Math.max(0.01, (100 - H) / 100);
 
-        // Generate points with a slight curve and noise
-        let dataPoints = [];
-        let totalWaterLost = 0;
-        for (let t = 0; t <= 30; t += 2) {
-            dataPoints.push({x: t, y: totalWaterLost.toFixed(2)});
-            // Add slight randomness to simulate real-world measurement error
-            let noise = 1 + (Math.random() * 0.04 - 0.02);
-            totalWaterLost += (finalRate * 2 * noise); 
+        // 3. Michaelis-Menten Saturation: Rate = (Vmax * S) / (K + S)
+        // This ensures the rate of change slows down as S increases.
+        const Vmax = 3.5; 
+        const K = 30; 
+        const hourlyRate = ((Vmax * S) / (K + S)) * humidityMultiplier;
+
+        let points = [];
+        let totalWaterLoss = 0;
+        
+        // We simulate 120 minutes in 5-minute intervals
+        for (let m = 0; m <= 120; m += 5) {
+            points.push({x: m, y: totalWaterLoss.toFixed(2)});
+            
+            // Adding a "Diminishing Returns" factor as time goes on
+            // Simulates the plant losing turgor pressure or stomata closing 
+            // slightly after prolonged exposure to stress.
+            const timeFatigue = 1 - (m / 600); 
+            const jitter = 1 + (Math.random() * 0.02 - 0.01);
+            
+            totalWaterLoss += (hourlyRate * (5/60) * timeFatigue * jitter);
         }
 
-        renderChart(`Trial ${trialCount}: T:${T}°, H:${H}%`, dataPoints);
-        
-        // Add to log
-        const log = document.getElementById('trial-log');
-        log.innerHTML += `<span class="trial-tag" style="border-left: 4px solid ${colors[(trialCount-1)%6]}">
-            Trial ${trialCount} (Rate: ${finalRate.toFixed(2)})
-        </span>`;
+        updateChart(`Trial ${trialCount} (Temp: ${T}°, Humid: ${H}%)`, points);
     }
 
-    function renderChart(label, points) {
-        const ctx = document.getElementById('mainChart').getContext('2d');
+    function updateChart(label, data) {
+        const ctx = document.getElementById('plateauChart').getContext('2d');
         
         if (!chart) {
             chart = new Chart(ctx, {
@@ -176,11 +130,12 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: { type: 'linear', title: { display: true, text: 'Time (Minutes)' }, min: 0, max: 30 },
-                        y: { title: { display: true, text: 'Cumulative Water Loss (ml)' }, min: 0 }
+                        x: { type: 'linear', title: { display: true, text: 'Time (Minutes)' }, max: 120 },
+                        y: { title: { display: true, text: 'Total Water Uptake (ml)' }, min: 0 }
                     },
                     plugins: {
-                        legend: { position: 'bottom' }
+                        legend: { position: 'top' },
+                        tooltip: { mode: 'index', intersect: false }
                     }
                 }
             });
@@ -188,12 +143,12 @@
 
         chart.data.datasets.push({
             label: label,
-            data: points,
+            data: data,
             borderColor: colors[(trialCount - 1) % colors.length],
             backgroundColor: 'transparent',
             borderWidth: 3,
-            tension: 0.4, // This makes the line curved/smooth
-            pointRadius: 3
+            tension: 0.4, // Creates the smooth biological curve
+            pointRadius: 2
         });
         
         chart.update();
