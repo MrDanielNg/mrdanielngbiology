@@ -3,191 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transpiration Interactive Lab</title>
+    <title>Transpiration Lab: Comparison Mode</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-        .panel { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1, h2 { color: #2c3e50; }
-        .control-group { margin-bottom: 15px; }
-        .control-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .control-group input[type="range"] { width: 100%; }
-        .value-display { font-weight: normal; color: #16a085; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
         
-        /* Potometer visual */
-        .potometer-container { margin-top: 20px; padding: 10px; background: #e0f7fa; border-radius: 5px; text-align: center;}
-        .tube { width: 100%; height: 20px; background: white; border: 2px solid #b2ebf2; border-radius: 10px; position: relative; overflow: hidden; margin-top: 10px; }
-        .bubble { width: 10px; height: 16px; background: #ff5252; position: absolute; top: 2px; left: 0; border-radius: 5px; }
+        /* UI Elements */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .slider-card { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #475569; }
+        input[type="range"] { width: 100%; margin-bottom: 10px; }
         
-        button { background-color: #27ae60; color: white; border: none; padding: 10px 15px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; margin-bottom: 10px; }
-        button:hover { background-color: #2ecc71; }
-        button.reset { background-color: #e74c3c; }
-        button.reset:hover { background-color: #c0392b; }
+        /* Buttons */
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .primary { background: #2563eb; color: white; width: 100%; font-size: 1.1rem; }
+        .secondary { background: #64748b; color: white; margin-top: 10px; }
+        .btn:hover { opacity: 0.9; }
+
+        /* Results Page */
+        .stats-summary { margin-top: 20px; padding: 15px; background: #f1f5f9; border-radius: 8px; }
+        #chart-wrapper { height: 400px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <h1>Transpiration Rate Simulator</h1>
-
-    <div class="container">
-        <div class="panel">
-            <h2>Control Factors</h2>
-            
-            <div class="control-group">
-                <label>Temperature (<span id="temp-val" class="value-display">25</span> °C)</label>
-                <input type="range" id="temp" min="5" max="45" value="25">
+<div class="container">
+    <div id="setup-page">
+        <h1>Lab Setup: Environment Factors</h1>
+        <p>Adjust the factors below, then click "Run Experiment" to record the data.</p>
+        
+        <div class="grid">
+            <div class="slider-card">
+                <label>Temp: <span id="t-v">25</span>°C</label>
+                <input type="range" id="temp" min="5" max="45" value="25" oninput="updateVal('t-v', this.value)">
+                
+                <label>Light: <span id="l-v">50</span>%</label>
+                <input type="range" id="light" min="0" max="100" value="50" oninput="updateVal('l-v', this.value)">
             </div>
-
-            <div class="control-group">
-                <label>Light Intensity (<span id="light-val" class="value-display">50</span> %)</label>
-                <input type="range" id="light" min="0" max="100" value="50">
-            </div>
-
-            <div class="control-group">
-                <label>Wind / Air Movement (<span id="wind-val" class="value-display">5</span> km/h)</label>
-                <input type="range" id="wind" min="0" max="20" value="5">
-            </div>
-
-            <div class="control-group">
-                <label>Relative Humidity (<span id="humidity-val" class="value-display">50</span> %)</label>
-                <input type="range" id="humidity" min="10" max="100" value="50">
-            </div>
-
-            <button id="start-btn">Start Simulation</button>
-            <button id="reset-btn" class="reset">Reset Lab</button>
-
-            <div class="potometer-container">
-                <strong>Virtual Potometer Tube</strong>
-                <div class="tube">
-                    <div class="bubble" id="bubble"></div>
-                </div>
+            <div class="slider-card">
+                <label>Wind: <span id="w-v">5</span> km/h</label>
+                <input type="range" id="wind" min="0" max="25" value="5" oninput="updateVal('w-v', this.value)">
+                
+                <label>Humidity: <span id="h-v">50</span>%</label>
+                <input type="range" id="humid" min="10" max="100" value="50" oninput="updateVal('h-v', this.value)">
             </div>
         </div>
-
-        <div class="panel">
-            <h2>Data & Results</h2>
-            <canvas id="transpirationChart"></canvas>
+        
+        <div style="margin-top: 20px;">
+            <button class="btn primary" onclick="runExperiment()">Run Experiment & View Data</button>
         </div>
     </div>
 
-    <script>
-        // DOM Elements
-        const tempSlider = document.getElementById('temp');
-        const lightSlider = document.getElementById('light');
-        const windSlider = document.getElementById('wind');
-        const humiditySlider = document.getElementById('humidity');
-        const bubble = document.getElementById('bubble');
+    <div id="data-page" class="hidden">
+        <h1>Comparison Data</h1>
+        <div id="chart-wrapper">
+            <canvas id="compChart"></canvas>
+        </div>
+
+        <div class="stats-summary">
+            <h3>Trial History</h3>
+            <div id="trial-list">No trials yet.</div>
+        </div>
+
+        <button class="btn secondary" onclick="showSetup()">+ Add Another Trial (Compare)</button>
+        <button class="btn secondary" style="background:#e11d48" onclick="resetAll()">Clear All Data</button>
+    </div>
+</div>
+
+<script>
+    let trialCount = 0;
+    const colors = ['#2563eb', '#16a34a', '#dc2626', '#ca8a04', '#9333ea'];
+    let chart;
+
+    function updateVal(id, val) { document.getElementById(id).innerText = val; }
+
+    function showSetup() {
+        document.getElementById('setup-page').classList.remove('hidden');
+        document.getElementById('data-page').classList.add('hidden');
+    }
+
+    function resetAll() {
+        location.reload();
+    }
+
+    function runExperiment() {
+        trialCount++;
+        const T = parseFloat(document.getElementById('temp').value);
+        const L = parseFloat(document.getElementById('light').value);
+        const W = parseFloat(document.getElementById('wind').value);
+        const H = parseFloat(document.getElementById('humid').value);
+
+        // Logic: Calculate data points for a 10-second window
+        const baseRate = (T/20) * (1 + L/100) * (1 + W/15) * (1 - H/110);
+        let currentTotal = 0;
+        let dataPoints = [];
+        for (let i = 0; i <= 10; i++) {
+            dataPoints.push({x: i, y: parseFloat(currentTotal.toFixed(2))});
+            currentTotal += baseRate;
+        }
+
+        updateChart(`Trial ${trialCount} (T:${T}, H:${H}%)`, dataPoints);
         
-        // Update display values when sliders move
-        const updateDisplay = (id) => {
-            document.getElementById(`${id}-val`).innerText = document.getElementById(id).value;
-        };
-        ['temp', 'light', 'wind', 'humidity'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => updateDisplay(id));
-        });
+        // Show the results page
+        document.getElementById('setup-page').classList.add('hidden');
+        document.getElementById('data-page').classList.remove('hidden');
+    }
 
-        // Simulation Variables
-        let isRunning = false;
-        let time = 0;
-        let waterLost = 0;
-        let simulationInterval;
-
-        // Chart Setup
-        const ctx = document.getElementById('transpirationChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Water Uptake / Transpiration (ml)',
-                    data: [],
-                    borderColor: '#2980b9',
-                    backgroundColor: 'rgba(41, 128, 185, 0.2)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.1
-                }]
-            },
-            options: {
-                scales: {
-                    x: { title: { display: true, text: 'Time (s)' } },
-                    y: { title: { display: true, text: 'Water Lost (ml)' }, min: 0 }
+    function updateChart(label, points) {
+        const ctx = document.getElementById('compChart').getContext('2d');
+        
+        if (!chart) {
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { type: 'linear', title: { display: true, text: 'Time (min)' } },
+                        y: { title: { display: true, text: 'Water Loss (ml)' } }
+                    }
                 }
-            }
-        });
-
-        // The Science/Math Logic
-        function calculateRate() {
-            const T = parseFloat(tempSlider.value);
-            const L = parseFloat(lightSlider.value);
-            const W = parseFloat(windSlider.value);
-            const H = parseFloat(humiditySlider.value);
-
-            // Base rate of transpiration
-            let rate = 0.5; 
-
-            // Temperature factor: warmer air holds more water, increasing evaporation
-            rate *= (T / 25); 
-
-            // Light factor: stomata open wider in bright light
-            rate *= (1 + (L / 100)); 
-
-            // Wind factor: removes the boundary layer of moist air
-            rate *= (1 + (W / 20)); 
-
-            // Humidity factor: high humidity reduces the concentration gradient
-            rate *= (1 - (H / 110)); // Using 110 to prevent rate from hitting absolute zero at 100% unless perfectly sealed
-
-            return Math.max(0, rate); // Ensure rate doesn't go negative
+            });
         }
 
-        // Simulation Loop
-        function runSimulation() {
-            if (!isRunning) return;
+        const newDataset = {
+            label: label,
+            data: points,
+            borderColor: colors[(trialCount - 1) % colors.length],
+            backgroundColor: 'transparent',
+            borderWidth: 3,
+            tension: 0.3
+        };
 
-            const rate = calculateRate();
-            waterLost += rate;
-            time += 1;
+        chart.data.datasets.push(newDataset);
+        chart.update();
 
-            // Move the bubble visually
-            let bubblePosition = (waterLost / 100) * 100; // max out at 100% width
-            if (bubblePosition > 95) bubblePosition = 95; // cap it visually
-            bubble.style.left = bubblePosition + '%';
-
-            // Update Chart
-            chart.data.labels.push(time);
-            chart.data.datasets[0].data.push(waterLost);
-            chart.update();
-        }
-
-        // Button Controls
-        document.getElementById('start-btn').addEventListener('click', function() {
-            isRunning = !isRunning;
-            this.innerText = isRunning ? "Pause Simulation" : "Start Simulation";
-            this.style.backgroundColor = isRunning ? "#f39c12" : "#27ae60";
-            
-            if (isRunning) {
-                simulationInterval = setInterval(runSimulation, 1000); // update every 1 second
-            } else {
-                clearInterval(simulationInterval);
-            }
-        });
-
-        document.getElementById('reset-btn').addEventListener('click', function() {
-            isRunning = false;
-            clearInterval(simulationInterval);
-            document.getElementById('start-btn').innerText = "Start Simulation";
-            document.getElementById('start-btn').style.backgroundColor = "#27ae60";
-            
-            time = 0;
-            waterLost = 0;
-            bubble.style.left = '0%';
-            
-            chart.data.labels = [];
-            chart.data.datasets[0].data = [];
-            chart.update();
-        });
-    </script>
+        // Update list
+        const list = document.getElementById('trial-list');
+        if(trialCount === 1) list.innerHTML = "";
+        list.innerHTML += `<div><strong>${label}</strong> completed.</div>`;
+    }
+</script>
 </body>
 </html>
