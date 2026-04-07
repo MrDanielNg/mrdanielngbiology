@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masterclass with Mr. Daniel Ng</title>
+    <style>
+        :root { --primary: #10b981; --dark: #0f172a; --accent: #34d399; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--dark); color: white; line-height: 1.6; }
+        
+        /* Navigation */
+        nav { padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.9); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; color: var(--primary); }
+        
+        /* Hero Section */
+        .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); padding: 0 20px; }
+        h1 { font-size: 4rem; margin: 0; background: linear-gradient(to right, #ffffff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p.subtitle { font-size: 1.25rem; color: #94a3b8; max-width: 600px; margin: 20px 0 40px 0; }
+        
+        /* Button */
+        .cta-button { background: var(--primary); color: var(--dark); padding: 18px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); }
+        .cta-button:hover { background: var(--accent); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4); }
+
+        /* Featured Labs Section */
+        .labs-preview { padding: 80px 50px; background: white; color: var(--dark); text-align: center; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 50px; }
+        .lab-card { border: 1px solid #e2e8f0; border-radius: 15px; padding: 30px; transition: 0.3s; text-align: left; }
+        .lab-card:hover { border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .tag { background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">MR. DANIEL NG</div>
+</nav>
+
+<section class="hero">
+    <h1>Biology Masterclass</h1>
+    <p class="subtitle">Interactive simulations designed to bridge the gap between theory and experimental reality. Explore the mechanics of life.</p>
+    <a href="transpiration.html" class="cta-button">Launch Transpiration Lab →</a>
+</section>
+
+<section class="labs-preview">
+    <h2>Available Modules</h2>
+    <div class="card-grid">
+        <div class="lab-card">
+            <span class="tag">PLANT PHYSIOLOGY</span>
+            <h3>Transpiration Rates</h3>
+            <p>Analyze how temperature, light, and humidity affect water loss using a virtual potometer and non-linear data modeling.</p>
+            <a href="transpiration.html" style="color: var(--primary); font-weight: bold; text-decoration: none;">Open Lab →</a>
+        </div>
+        <div class="lab-card" style="opacity: 0.5;">
+            <span class="tag">GENETICS</span>
+            <h3>Allele Frequency</h3>
+            <p>Coming Soon: Simulate natural selection and genetic drift within isolated populations.</p>
+        </div>
+    </div>
+</section>
+
+<footer style="text-align: center; padding: 40px; color: #64748b; font-size: 0.9rem;">
+    &copy; 2026 Masterclass with Mr. Daniel Ng. All rights reserved.
+</footer>
+
+</body>
+</html>
