@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>香港中學文憑試生物科：氧化還原反應測驗</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #f0f7f0;
+            margin: 0;
+            padding: 24px 20px;
+        }
+        .quiz-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px rgba(0, 32, 0, 0.1);
+            overflow: hidden;
+            padding: 28px 30px 40px;
+            transition: all 0.2s;
+        }
+        h1 {
+            color: #1b4d1b;
+            font-size: 1.9rem;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            border-left: 6px solid #2e7d32;
+            padding-left: 20px;
+        }
+        .sub {
+            color: #2c5e2c;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #cfe9cf;
+            padding-bottom: 12px;
+            padding-left: 26px;
+            font-weight: 500;
+        }
+        .info-card {
+            background: #eaf5ea;
+            border-radius: 28px;
+            padding: 18px 24px;
+            margin-bottom: 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: inset 0 0 0 1px #c8e0c8, 0 4px 8px rgba(0,0,0,0.02);
+        }
+        .input-group {
+            flex: 1 1 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-group label {
+            font-weight: 700;
+            color: #1d4d1d;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        .input-group input {
+            padding: 12px 14px;
+            border: 1px solid #bddbbd;
+            border-radius: 32px;
+            font-size: 1rem;
+            background: white;
+            transition: 0.2s;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46,125,50,0.2);
+        }
+        .question-block {
+            background: #fefdf7;
+            border-radius: 28px;
+            margin-bottom: 28px;
+            padding: 20px 24px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid #e2f0e2;
+        }
+        .q-title {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #1b4d1b;
+            background: #dff0df;
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 40px;
+            margin-bottom: 16px;
+        }
+        .q-text {
+            font-size: 1.08rem;
+            font-weight: 600;
+            margin: 12px 0 18px 0;
+            color: #1e2f1e;
+            line-height: 1.4;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0 10px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #ffffff;
+            padding: 8px 16px;
+            border-radius: 48px;
+            border: 1px solid #d4e6d4;
+            transition: background 0.1s;
+            cursor: pointer;
+        }
+        .option:hover {
+            background: #f4faf4;
+        }
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2e7d32;
+            margin: 0;
+            cursor: pointer;
+        }
+        .option label {
+            flex: 1;
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: #1f3b1f;
+            cursor: pointer;
+            letter-spacing: 0.2px;
+        }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin: 30px 0 20px;
+        }
+        button {
+            background: #2e7d32;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 44px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background: #1b5e20;
+            transform: scale(0.97);
+        }
+        .reset-btn {
+            background: #6c757d;
+        }
+        .reset-btn:hover {
+            background: #495057;
+        }
+        .score-area {
+            background: #e8f0e8;
+            border-radius: 32px;
+            padding: 14px 24px;
+            margin: 20px 0 16px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #114411;
+            text-align: center;
+            border-left: 6px solid #2e7d32;
+        }
+        .explanation-area {
+            background: #fcf8e8;
+            border-radius: 24px;
+            padding: 18px 24px;
+            margin-top: 10px;
+            border: 1px solid #f3e5c9;
+        }
+        .explanation-title {
+            font-weight: 800;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            color: #966c1f;
+        }
+        .ai-explain {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .exp-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd2b0;
+        }
+        .exp-q {
+            font-weight: 700;
+            color: #3c5e2b;
+        }
+        .exp-text {
+            margin-top: 5px;
+            color: #2c2b26;
+            line-height: 1.4;
+            font-size: 0.92rem;
+        }
+        .footer-note {
+            font-size: 0.7rem;
+            text-align: center;
+            color: #6f8f6f;
+            margin-top: 28px;
+            border-top: 1px solid #cde0cd;
+            padding-top: 16px;
+        }
+        @media (max-width: 680px) {
+            .quiz-container {
+                padding: 20px 16px;
+            }
+            .option {
+                padding: 6px 12px;
+            }
+        }
+        .error-msg {
+            color: #c62828;
+            background: #ffe9e9;
+            padding: 8px 16px;
+            border-radius: 28px;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container" id="quizApp">
+    <h1>⚛️ 氧化還原反應測驗</h1>
+    <div class="sub">HKDSE 生物科｜細胞呼吸與代謝中的氧化還原概念</div>
+
+    <!-- 學生資料區 -->
+    <div class="info-card">
+        <div class="input-group">
+            <label>📝 學生姓名</label>
+            <input type="text" id="studentName" placeholder="陳大文" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <label>🏫 班別</label>
+            <input type="text" id="classGroup" placeholder="6A" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <label>🔢 學號</label>
+            <input type="text" id="studentId" placeholder="S001 / 23" autocomplete="off">
+        </div>
+    </div>
+
+    <!-- 5條選擇題區 (題目將由js動態生成以利維護，但直接內嵌結構亦可，為清晰使用js生成) -->
+    <div id="questionsContainer"></div>
+
+    <!-- 按鈕區 -->
+    <div class="action-buttons">
+        <button id="submitBtn">✅ 完成 & 提交報告</button>
+        <button id="resetBtn" class="reset-btn">🔄 重設作答</button>
+    </div>
+
+    <!-- 分數顯示區 -->
+    <div id="scoreDisplay" class="score-area" style="display: none;">📊 得分：-- / 100</div>
+
+    <!-- AI 題解區 -->
+    <div id="aiExplanations" class="explanation-area" style="display: none;">
+        <div class="explanation-title">🤖 AI 題解 (詳細概念解釋)</div>
+        <div id="explanationsList" class="ai-explain"></div>
+    </div>
+    <div class="footer-note">✔️ 每題20分，總分100分。提交後系統會自動評分並透過Web3Forms發送成績報告至老師郵箱。</div>
+</div>
+
+<script>
+    // ----------------------------- 題庫 (氧化還原反應為主，融合有絲分裂/減數分裂之氧化還原觀點) -----------------------------
+    // 根據香港中學文憑試生物科，題目需符合「有絲分裂以及減數分裂」相關並連結氧化還原概念
+    // 實際考點：細胞分裂過程中能量代謝、粒線體活性、自由基、氧化還原調控等。
+    const QUESTIONS = [
+        {
+            text: "在細胞進行有絲分裂的間期，細胞需要大量合成DNA及相關蛋白質。下列哪種氧化還原反應對於提供能量及還原力以支持DNA複製最為關鍵？",
+            options: [
+                "A. 粒線體內丙酮酸 → 乳酸 (乳酸發酵)",
+                "B. 葉綠體中 NADP⁺ → NADPH",
+                "C. 粒線體基質中 NAD⁺ → NADH + H⁺",
+                "D. 過氧化氫酶將 H₂O₂ → H₂O + O₂"
+            ],
+            correct: 2, // index 2 -> NAD⁺ → NADH+H⁺ (細胞呼吸氧化還原提供能量及還原力)
+            explanation: "✅ 正確答案：C。在間期細胞進行旺盛的代謝，粒線體通過糖酵解及三羧酸循環將 NAD⁺ 還原為 NADH，提供能量 (ATP) 和還原力用於合成反應。選項A是無氧呼吸，較低效率；B為光合作用；D涉及解毒而非主要供能還原力。氧化還原概念：NAD⁺ 得電子被還原，為典型脫氫酶輔酶。"
+        },
+        {
+            text: "減數分裂 I 前期，同源染色體聯會時染色質重組，細胞內活性氧物質 (ROS) 濃度上升會影響染色體結構。以下關於 ROS 與氧化還原狀態的敘述，何者正確？",
+            options: [
+                "A. ROS 都是強還原劑，會捐出電子破壞 DNA",
+                "B. 穀胱甘肽 (GSH) 被氧化成 GSSG 是還原反應，有助於清除 ROS",
+                "C. 超氧化物歧化酶 (SOD) 催化 O₂⁻ 歧化反應，涉及電子轉移，屬於氧化還原反應",
+                "D. ROS 只會造成細胞凋亡，對減數分裂過程無調控功能"
+            ],
+            correct: 2, // C
+            explanation: "✅ 正確答案：C。超氧化物歧化酶催化 O₂⁻ 轉變為 H₂O₂ 與 O₂，涉及電子得失，是典型氧化還原酶。A錯誤，ROS多為氧化劑；B中 GSH 被氧化成 GSSG 是氧化反應；D錯誤，低量ROS可參與信號調控。氧化還原核心：歧化反應 (dismutation) 為同一物種同時氧化還原。"
+        },
+        {
+            text: "有絲分裂後期，著絲粒分裂，染色體被拉向兩極。此過程需要極高的 ATP 水解驅動馬達蛋白。關於 ATP 水解的氧化還原本質，下列敘述哪項正確？",
+            options: [
+                "A. ATP 水解為 ADP + Pi 是一個明顯的氧化還原反應，因為磷酸鍵斷裂涉及電子轉移",
+                "B. ATP 水解釋放的能量來自於核苷酸內部碳原子的氧化數變化",
+                "C. ATP 水解本身不是氧化還原反應，但細胞透過耦合 NADH 的氧化磷酸化再生 ATP",
+                "D. ATP 分子中的高能磷酸鍵來自於還原反應累積"
+            ],
+            correct: 2, // C
+            explanation: "✅ 正確答案：C。ATP 水解屬於水解反應，並非直接氧化還原 (電子轉移)；然而細胞呼吸中 NADH/FADH₂ 經由電子傳遞鏈將電子傳遞給氧，合成 ATP (氧化磷酸化)。題目強調本質：ATP 水解不是氧化還原，但其再生依賴氧化還原。相關概念：能量的貨幣與電子傳遞鏈偶聯。"
+        },
+        {
+            text: "觀察某細胞的減數分裂 II 中期，染色體排列在赤道板上。若細胞內的硫氧還蛋白 (Thioredoxin) 系統失調，導致許多蛋白質二硫鍵異常形成。此氧化還原失衡可能直接影響以下哪個過程？",
+            options: [
+                "A. 染色體複製的啟動",
+                "B. 紡錘體微管的聚合與解聚 (涉及微管蛋白氧化狀態)",
+                "C. 同源染色體配對",
+                "D. 染色質重組的甲基化修飾"
+            ],
+            correct: 1, // B
+            explanation: "✅ 正確答案：B。硫氧還蛋白調節蛋白質的半胱胺酸氧化還原狀態，影響微管蛋白聚合/解聚，進而影響紡錘體功能及染色體移動。氧化還原失衡會改變蛋白構象。選項A、C主要發生在減數I或間期，D與表觀遺傳相關但非直接受二硫鍵影響。概念：細胞骨架受氧化還原調控。"
+        },
+        {
+            text: "下列哪項關於細胞週期與氧化還原調控的配對，最能體現「還原電位」對細胞分裂的影響？",
+            options: [
+                "A. 高 NADPH 水平促進活性氧清除，使細胞停留在 G1 期檢查點",
+                "B. 低 GSH/GSSG 比值 (氧化壓力) 可能誘導細胞週期停滯或凋亡，從而阻止受損細胞進行有絲分裂",
+                "C. 還原態泛醌 (CoQH₂) 直接活化CDK激酶促進有絲分裂",
+                "D. 細胞內鐵離子 Fe³⁺ 還原成 Fe²⁺ 是促進染色體分離的必要步驟"
+            ],
+            correct: 1, // B
+            explanation: "✅ 正確答案：B。GSH/GSSG 比值是細胞內重要的氧化還原緩衝指標，當比值過低（氧化壓力上升）時，細胞週期檢查點會被激活，阻止受損細胞繼續分裂，避免錯誤遺傳。這體現了還原電位對有絲分裂/減數分裂的調控。其他選項證據不足：A錯在高NADPH通常保護細胞但不停滯；C泛醌參與電子傳遞而非直接激酶；D鐵還原與染色體分離無直接強證據。"
+        }
+    ];
+
+    // 全域儲存學生選擇答案 (每題預設null)
+    let userAnswers = new Array(QUESTIONS.length).fill(null);
+    let submitted = false;   // 避免重複提交郵件
+
+    // DOM 元素
+    const questionsContainer = document.getElementById('questionsContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const scoreDisplayDiv = document.getElementById('scoreDisplay');
+    const aiExplanationsDiv = document.getElementById('aiExplanations');
+    const explanationsList = document.getElementById('explanationsList');
+
+    // 輔助: 渲染所有題目
+    function renderQuestions() {
+        questionsContainer.innerHTML = '';
+        QUESTIONS.forEach((q, idx) => {
+            const qDiv = document.createElement('div');
+            qDiv.classList.add('question-block');
+            qDiv.setAttribute('data-qidx', idx);
+            
+            // 題目標題
+            const qTitle = document.createElement('div');
+            qTitle.classList.add('q-title');
+            qTitle.innerText = `第 ${idx+1} 題 (20分)`;
+            qDiv.appendChild(qTitle);
+            
+            const qText = document.createElement('div');
+            qText.classList.add('q-text');
+            qText.innerText = q.text;
+            qDiv.appendChild(qText);
+            
+            const optsDiv = document.createElement('div');
+            optsDiv.classList.add('options');
+            
+            // 建立選項 radio
+            q.options.forEach((opt, optIdx) => {
+                const optionWrap = document.createElement('div');
+                optionWrap.classList.add('option');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `q${idx}`;
+                radio.value = optIdx;
+                radio.id = `q${idx}_opt${optIdx}`;
+                // 若已有儲存答案則勾選
+                if (userAnswers[idx] === optIdx) {
+                    radio.checked = true;
+                }
+                radio.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        userAnswers[idx] = optIdx;
+                    }
+                });
+                const label = document.createElement('label');
+                label.htmlFor = `q${idx}_opt${optIdx}`;
+                label.innerText = opt;
+                optionWrap.appendChild(radio);
+                optionWrap.appendChild(label);
+                optsDiv.appendChild(optionWrap);
+            });
+            qDiv.appendChild(optsDiv);
+            questionsContainer.appendChild(qDiv);
+        });
+    }
+
+    // 計算分數 & 取得每個答案對照及AI題解摘要 (含正確答案與學生答案)
+    function computeScoreAndDetails() {
+        let totalScore = 0;
+        const details = []; // 每題 { studentAnswer, correctAnswer, isCorrect, explanationText, questionText }
+        for (let i = 0; i < QUESTIONS.length; i++) {
+            const userSel = userAnswers[i];
+            const correctIdx = QUESTIONS[i].correct;
+            const isCorrect = (userSel !== null && userSel === correctIdx);
+            if (isCorrect) totalScore += 20;
+            const studentAnswerText = (userSel !== null) ? QUESTIONS[i].options[userSel] : "未作答";
+            const correctAnswerText = QUESTIONS[i].options[correctIdx];
+            details.push({
+                qNum: i+1,
+                questionText: QUESTIONS[i].text,
+                studentAnswer: studentAnswerText,
+                correctAnswer: correctAnswerText,
+                isCorrect: isCorrect,
+                explanation: QUESTIONS[i].explanation
+            });
+        }
+        return { totalScore, details };
+    }
+
+    // 生成 AI 題解區域 HTML (動態展示)
+    function renderExplanations(details) {
+        explanationsList.innerHTML = '';
+        for (let det of details) {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('exp-item');
+            const statusIcon = det.isCorrect ? '✅' : '❌';
+            const qHeader = document.createElement('div');
+            qHeader.classList.add('exp-q');
+            qHeader.innerHTML = `${statusIcon} 第 ${det.qNum} 題：你的答案「${det.studentAnswer}」 | 正確答案「${det.correctAnswer}」`;
+            const expTextDiv = document.createElement('div');
+            expTextDiv.classList.add('exp-text');
+            expTextDiv.innerHTML = `📖 ${det.explanation}`;
+            itemDiv.appendChild(qHeader);
+            itemDiv.appendChild(expTextDiv);
+            explanationsList.appendChild(itemDiv);
+        }
+    }
+
+    // 發送 email 報告 (透過 Web3Forms)
+    async function sendEmailReport(studentName, studentClass, studentIdNum, totalScore, details) {
+        // 準備郵件內容: 學生姓名、班別、學號、總分、每題學生答案與正確答案對照以及 AI 題解摘要
+        let answersSummary = '';
+        details.forEach(d => {
+            answersSummary += `\n【第${d.qNum}題】${d.questionText}\n學生答案: ${d.studentAnswer} | 正確答案: ${d.correctAnswer} | ${d.isCorrect ? '正確' : '錯誤'}\nAI題解: ${d.explanation}\n`;
+        });
+        
+        const fullMessage = `
+📋 氧化還原反應測驗成績報告
+----------------------------------------
+👤 學生姓名: ${studentName}
+🏫 班別: ${studentClass}
+🔢 學號: ${studentIdNum}
+🏆 總分: ${totalScore} / 100
+
+📌 作答明細與 AI 題解摘要：
+${answersSummary}
+----------------------------------------
+報告由生物科網上測驗系統自動發出 (HKDSE程度)
+        `;
+        
+        const formData = new FormData();
+        formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c');
+        formData.append('email', 'ngtinghei0803@gmail.com');
+        formData.append('subject', `【氧化還原測驗報告】${studentName} - ${studentClass} (${studentIdNum})`);
+        formData.append('message', fullMessage);
+        // 可選，加 from_name 等
+        formData.append('from_name', '生物科網上測驗系統');
+        
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert(`報告已成功寄送至老師郵箱！\n得分：${totalScore}/100`);
+            } else {
+                console.error('Web3Forms error:', result);
+                alert(`郵件發送失敗：${result.message || '請稍後重試或檢查網絡'}，但分數已顯示。`);
+            }
+        } catch (err) {
+            console.error(err);
+            alert(`無法連接郵件服務，但您的成績已計算：${totalScore}/100。請截圖或聯絡老師。`);
+        }
+    }
+
+    // 表單驗證: 檢查學生資料是否填寫完整
+    function validateStudentInfo() {
+        const name = document.getElementById('studentName').value.trim();
+        const className = document.getElementById('classGroup').value.trim();
+        const stuId = document.getElementById('studentId').value.trim();
+        if (name === '' || className === '' || stuId === '') {
+            alert('請填妥學生姓名、班別及學號後再提交測驗。');
+            return false;
+        }
+        return { name, className, stuId };
+    }
+
+    // 檢查是否所有題目都已完成作答
+    function isAllQuestionsAnswered() {
+        for (let i = 0; i < userAnswers.length; i++) {
+            if (userAnswers[i] === null) {
+                alert(`您尚未作答第 ${i+1} 題，請完成所有題目再提交。`);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 主要提交功能：計算分數，顯示分數+AI題解，發送郵件
+    async function onSubmit() {
+        if (submitted) {
+            alert('您已提交過測驗，如需重新測驗請按「重設作答」再提交。');
+            return;
+        }
+        // 驗證個人資料
+        const info = validateStudentInfo();
+        if (!info) return;
+        // 驗證所有題目已回答
+        if (!isAllQuestionsAnswered()) return;
+        
+        const { totalScore, details } = computeScoreAndDetails();
+        
+        // 顯示分數區域
+        scoreDisplayDiv.style.display = 'block';
+        scoreDisplayDiv.innerHTML = `📊 得分：${totalScore} / 100 (每題20分)`;
+        
+        // 顯示 AI 題解區塊
+        renderExplanations(details);
+        aiExplanationsDiv.style.display = 'block';
+        
+        // 滾動到分數區讓學生看見
+        scoreDisplayDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // 發送郵件 (非同步，不影響體驗)
+        await sendEmailReport(info.name, info.className, info.stuId, totalScore, details);
+        submitted = true;
+    }
+
+    // 重設所有答案、清除分數/題解、重設提交狀態
+    function resetQuiz() {
+        // 重置 answers
+        userAnswers.fill(null);
+        // 重置所有 radio 的 checked 狀態
+        const allRadios = document.querySelectorAll('input[type="radio"]');
+        allRadios.forEach(radio => {
+            radio.checked = false;
+        });
+        // 重新渲染確保同步 (直接重新生成表單)
+        renderQuestions();
+        // 重置提交標記
+        submitted = false;
+        // 隱藏分數和AI區
+        scoreDisplayDiv.style.display = 'none';
+        aiExplanationsDiv.style.display = 'none';
+        // 清空解釋列表
+        explanationsList.innerHTML = '';
+        // 保留學生資料不清空（方便學生），但也可以保留，符合體驗；
+        // 如果需要可不清空學生資料，但老師並沒有要求清除個人資料，保留為佳。
+        // 額外: 如果有隱藏錯誤提示則移除.
+    }
+
+    // 監聽表單變化同步全局userAnswers (因重新渲染後需重新綁定，但render會重建radio，需重新綁定change事件)
+    // 由於每次reset調用renderQuestions重新建立dom，需重新附加動態監聽。但原有的userAnswers已同步。
+    // 為確保提交時userAnswers即最新，每次radio點擊時已經同步更新，但重置後重新建立時需要把userAnswers的值同步至dom。
+    // 加強: 在renderQuestions後加入再次確保所有radio綁定事件以更新userAnswers，且依據userAnswers數組勾選已在render內處理。
+    // 額外監聽整個容器的事件代理？簡單方式已完成render中加change監聽。
+    // 要解決reset後再提交的正常運作，renderQuestions重新生成，每個radio事件會再次更新userAnswers。
+    
+    // 另外處理學生變更答案時，如果已經處於提交之後再更改，提交標誌可考慮警告？但用戶如果reset會重新啟用, OK
+    // 若提交後按重置，可完全重新測驗。重置時除清空答案外，也要重置 student 欄位可選(但老師沒要求清空，就不清空。但為方便老師，不清空姓名等)
+    // 完善reset時可能也想清除分數及錯誤展示，已做。
+    
+    // 初始化
+    function init() {
+        renderQuestions();
+        submitBtn.addEventListener('click', onSubmit);
+        resetBtn.addEventListener('click', () => {
+            resetQuiz();
+        });
+        // 額外防呆：如果已經有student資料保留
+    }
+    
+    init();
+</script>
+</body>
+</html>
