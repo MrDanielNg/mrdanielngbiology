@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>有絲分裂與減數分裂測驗 | Mr. Daniel Ng Biology</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #0f172a;
+            margin: 0;
+            padding: 24px 20px;
+        }
+        .quiz-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 28px 30px 40px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #10b981;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        h1 {
+            color: #0f172a;
+            font-size: 1.8rem;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            border-left: 6px solid #10b981;
+            padding-left: 20px;
+        }
+        .sub {
+            color: #475569;
+            margin-bottom: 30px;
+            padding-bottom: 12px;
+            padding-left: 26px;
+            font-weight: 500;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .info-card {
+            background: #f1f5f9;
+            border-radius: 28px;
+            padding: 18px 24px;
+            margin-bottom: 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .input-group {
+            flex: 1 1 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-group label {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 0.85rem;
+        }
+        .input-group input {
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 32px;
+            font-size: 1rem;
+            background: white;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        .question-block {
+            background: #fefdf7;
+            border-radius: 28px;
+            margin-bottom: 28px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .q-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #0f172a;
+            background: #e2e8f0;
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 40px;
+            margin-bottom: 16px;
+        }
+        .q-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 12px 0 18px 0;
+            color: #1e293b;
+            line-height: 1.45;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0 10px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #ffffff;
+            padding: 8px 16px;
+            border-radius: 48px;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+        }
+        .option:hover {
+            background: #f8fafc;
+        }
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #10b981;
+            margin: 0;
+            cursor: pointer;
+        }
+        .option label {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+        }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin: 30px 0 20px;
+        }
+        button {
+            background: #10b981;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 44px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #059669;
+            transform: scale(0.98);
+        }
+        .reset-btn {
+            background: #64748b;
+        }
+        .reset-btn:hover {
+            background: #475569;
+        }
+        .score-area {
+            background: #d1fae5;
+            border-radius: 32px;
+            padding: 14px 24px;
+            margin: 20px 0 16px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #065f46;
+            text-align: center;
+            border-left: 6px solid #10b981;
+        }
+        .explanation-area {
+            background: #fef3c7;
+            border-radius: 24px;
+            padding: 18px 24px;
+            margin-top: 10px;
+            border: 1px solid #fde68a;
+        }
+        .explanation-title {
+            font-weight: 800;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            color: #b45309;
+        }
+        .ai-explain {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .exp-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #fcd34d;
+        }
+        .exp-q {
+            font-weight: 700;
+            color: #78350f;
+        }
+        .exp-text {
+            margin-top: 5px;
+            color: #451a03;
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+        .footer-note {
+            font-size: 0.7rem;
+            text-align: center;
+            color: #94a3b8;
+            margin-top: 28px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+        @media (max-width: 680px) {
+            .quiz-container {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <a href="index.html" class="back-link">← 返回主頁</a>
+    <h1>🔬 細胞分裂測驗</h1>
+    <div class="sub">HKDSE 生物科｜有絲分裂 與 減數分裂</div>
+
+    <!-- 學生資料區 -->
+    <div class="info-card">
+        <div class="input-group">
+            <label>📝 學生姓名</label>
+            <input type="text" id="studentName" placeholder="陳大文">
+        </div>
+        <div class="input-group">
+            <label>🏫 班別</label>
+            <input type="text" id="classGroup" placeholder="6A">
+        </div>
+        <div class="input-group">
+            <label>🔢 學號</label>
+            <input type="text" id="studentId" placeholder="S001 / 23">
+        </div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="action-buttons">
+        <button id="submitBtn">✅ 完成 & 提交報告</button>
+        <button id="resetBtn" class="reset-btn">🔄 重設作答</button>
+    </div>
+
+    <div id="scoreDisplay" class="score-area" style="display: none;"></div>
+    <div id="aiExplanations" class="explanation-area" style="display: none;">
+        <div class="explanation-title">🤖 AI 題解</div>
+        <div id="explanationsList" class="ai-explain"></div>
+    </div>
+    <div class="footer-note">✔️ 每題20分，總分100分。提交後報告將發送至老師電郵。</div>
+</div>
+
+<script>
+    // ======================== 有絲分裂 + 減數分裂 題庫 (HKDSE 程度) ========================
+    const QUESTIONS = [
+        {
+            text: "在動物細胞的有絲分裂過程中，下列哪個事件發生在後期 (Anaphase)？",
+            options: [
+                "A. 染色體排列在赤道板上",
+                "B. 姐妹染色單體分離並移向兩極",
+                "C. 核膜重新形成",
+                "D. 同源染色體聯會"
+            ],
+            correct: 1,
+            explanation: "✅ 正確答案：B。有絲分裂後期，著絲粒分裂，姐妹染色單體分離成為獨立的染色體，並被紡錘絲拉向細胞兩極。A是中期；C是末期；D發生在減數分裂 I 前期。"
+        },
+        {
+            text: "下列哪項是減數分裂 I 與有絲分裂的主要區別？",
+            options: [
+                "A. DNA 複製一次，細胞分裂一次",
+                "B. 同源染色體分離，染色體數目減半",
+                "C. 姐妹染色單體分離",
+                "D. 紡錘絲附著在著絲粒上"
+            ],
+            correct: 1,
+            explanation: "✅ 正確答案：B。減數分裂 I 的特色是同源染色體分離，導致子細胞染色體數目減半（由2n變n）。有絲分裂則保持染色體數目不變。A描述的是有絲分裂；C發生在有絲分裂後期和減數分裂II；D兩者皆有。"
+        },
+        {
+            text: "關於染色體數目的描述，人類肝細胞（體細胞）進行有絲分裂後，子細胞的染色體數目是多少？",
+            options: [
+                "A. 23 條",
+                "B. 46 條",
+                "C. 92 條",
+                "D. 隨機變化"
+            ],
+            correct: 1,
+            explanation: "✅ 正確答案：B。人類體細胞有46條染色體（23對）。有絲分裂產生兩個遺傳上相同的子細胞，各自保留46條染色體。減數分裂才會產生23條染色體的精子或卵細胞。"
+        },
+        {
+            text: "十字花科植物根尖細胞正在進行有絲分裂。在顯微鏡下觀察到某細胞的染色體整齊排列在細胞中央的赤道板上。該細胞處於哪個時期？",
+            options: [
+                "A. 前期",
+                "B. 中期",
+                "C. 後期",
+                "D. 末期"
+            ],
+            correct: 1,
+            explanation: "✅ 正確答案：B。有絲分裂中期，染色體排列在赤道板（細胞中央），是觀察染色體形態的最佳時期。前期染色體凝縮但未排列；後期染色體分離；末期染色體到達兩極。"
+        },
+        {
+            text: "在人類卵子發生過程中，初級卵母細胞完成減數分裂 I 後產生的子細胞是：",
+            options: [
+                "A. 兩個次級卵母細胞",
+                "B. 一個次級卵母細胞和一個極體",
+                "C. 兩個卵細胞",
+                "D. 一個卵細胞和三個極體"
+            ],
+            correct: 1,
+            explanation: "✅ 正確答案：B。人類卵子發生過程中，初級卵母細胞（2n）進行減數分裂 I，產生一個次級卵母細胞（n）和一個第一極體（n）。次級卵母細胞再進行減數分裂II產生卵細胞和第二極體。"
+        }
+    ];
+
+    let userAnswers = new Array(QUESTIONS.length).fill(null);
+    let submitted = false;
+
+    const questionsContainer = document.getElementById('questionsContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const scoreDisplayDiv = document.getElementById('scoreDisplay');
+    const aiExplanationsDiv = document.getElementById('aiExplanations');
+    const explanationsList = document.getElementById('explanationsList');
+
+    function renderQuestions() {
+        questionsContainer.innerHTML = '';
+        QUESTIONS.forEach((q, idx) => {
+            const qDiv = document.createElement('div');
+            qDiv.classList.add('question-block');
+            
+            const qTitle = document.createElement('div');
+            qTitle.classList.add('q-title');
+            qTitle.innerText = `第 ${idx+1} 題 (20分)`;
+            qDiv.appendChild(qTitle);
+            
+            const qText = document.createElement('div');
+            qText.classList.add('q-text');
+            qText.innerText = q.text;
+            qDiv.appendChild(qText);
+            
+            const optsDiv = document.createElement('div');
+            optsDiv.classList.add('options');
+            
+            q.options.forEach((opt, optIdx) => {
+                const optionWrap = document.createElement('div');
+                optionWrap.classList.add('option');
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `q${idx}`;
+                radio.value = optIdx;
+                radio.id = `q${idx}_opt${optIdx}`;
+                if (userAnswers[idx] === optIdx) radio.checked = true;
+                radio.addEventListener('change', () => { userAnswers[idx] = optIdx; });
+                const label = document.createElement('label');
+                label.htmlFor = `q${idx}_opt${optIdx}`;
+                label.innerText = opt;
+                optionWrap.appendChild(radio);
+                optionWrap.appendChild(label);
+                optsDiv.appendChild(optionWrap);
+            });
+            qDiv.appendChild(optsDiv);
+            questionsContainer.appendChild(qDiv);
+        });
+    }
+
+    function computeScoreAndDetails() {
+        let totalScore = 0;
+        const details = [];
+        for (let i = 0; i < QUESTIONS.length; i++) {
+            const userSel = userAnswers[i];
+            const correctIdx = QUESTIONS[i].correct;
+            const isCorrect = (userSel !== null && userSel === correctIdx);
+            if (isCorrect) totalScore += 20;
+            details.push({
+                qNum: i+1,
+                questionText: QUESTIONS[i].text,
+                studentAnswer: (userSel !== null) ? QUESTIONS[i].options[userSel] : "未作答",
+                correctAnswer: QUESTIONS[i].options[correctIdx],
+                isCorrect: isCorrect,
+                explanation: QUESTIONS[i].explanation
+            });
+        }
+        return { totalScore, details };
+    }
+
+    function renderExplanations(details) {
+        explanationsList.innerHTML = '';
+        for (let det of details) {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('exp-item');
+            const statusIcon = det.isCorrect ? '✅' : '❌';
+            const qHeader = document.createElement('div');
+            qHeader.classList.add('exp-q');
+            qHeader.innerHTML = `${statusIcon} 第 ${det.qNum} 題：你的答案「${det.studentAnswer}」 | 正確答案「${det.correctAnswer}」`;
+            const expTextDiv = document.createElement('div');
+            expTextDiv.classList.add('exp-text');
+            expTextDiv.innerHTML = `📖 ${det.explanation}`;
+            itemDiv.appendChild(qHeader);
+            itemDiv.appendChild(expTextDiv);
+            explanationsList.appendChild(itemDiv);
+        }
+    }
+
+    async function sendEmailReport(studentName, studentClass, studentIdNum, totalScore, details) {
+        let answersSummary = '';
+        details.forEach(d => {
+            answersSummary += `\n【第${d.qNum}題】${d.questionText}\n學生答案: ${d.studentAnswer} | 正確答案: ${d.correctAnswer} | ${d.isCorrect ? '正確' : '錯誤'}\nAI題解: ${d.explanation}\n`;
+        });
+        
+        const fullMessage = `
+📋 細胞分裂測驗成績報告 (有絲分裂與減數分裂)
+----------------------------------------
+👤 學生姓名: ${studentName}
+🏫 班別: ${studentClass}
+🔢 學號: ${studentIdNum}
+🏆 總分: ${totalScore} / 100
+
+📌 作答明細與 AI 題解：
+${answersSummary}
+----------------------------------------
+報告由 Mr. Daniel Ng 生物科測驗系統自動發出
+        `;
+        
+        const formData = new FormData();
+        formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c');
+        formData.append('email', 'ngtinghei0803@gmail.com');
+        formData.append('subject', `【細胞分裂測驗報告】${studentName} - ${studentClass} (${studentIdNum})`);
+        formData.append('message', fullMessage);
+        
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
+            const result = await response.json();
+            if (result.success) alert(`✅ 報告已成功寄送至老師信箱！\n得分：${totalScore}/100`);
+            else alert(`⚠️ 郵件發送失敗：${result.message || '請稍後重試'}，但分數已顯示。`);
+        } catch (err) {
+            alert(`⚠️ 無法連接郵件服務，您的成績：${totalScore}/100。請截圖保存。`);
+        }
+    }
+
+    function validateStudentInfo() {
+        const name = document.getElementById('studentName').value.trim();
+        const className = document.getElementById('classGroup').value.trim();
+        const stuId = document.getElementById('studentId').value.trim();
+        if (!name || !className || !stuId) {
+            alert('請填妥學生姓名、班別及學號後再提交。');
+            return false;
+        }
+        return { name, className, stuId };
+    }
+
+    function allQuestionsAnswered() {
+        for (let i = 0; i < userAnswers.length; i++) {
+            if (userAnswers[i] === null) {
+                alert(`⚠️ 您尚未作答第 ${i+1} 題，請完成所有題目。`);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    async function onSubmit() {
+        if (submitted) {
+            alert('您已提交過測驗，如需重新測驗請按「重設作答」。');
+            return;
+        }
+        const info = validateStudentInfo();
+        if (!info) return;
+        if (!allQuestionsAnswered()) return;
+        
+        const { totalScore, details } = computeScoreAndDetails();
+        scoreDisplayDiv.style.display = 'block';
+        scoreDisplayDiv.innerHTML = `📊 得分：${totalScore} / 100 (每題20分)`;
+        renderExplanations(details);
+        aiExplanationsDiv.style.display = 'block';
+        scoreDisplayDiv.scrollIntoView({ behavior: 'smooth' });
+        
+        await sendEmailReport(info.name, info.className, info.stuId, totalScore, details);
+        submitted = true;
+    }
+
+    function resetQuiz() {
+        userAnswers.fill(null);
+        renderQuestions();
+        submitted = false;
+        scoreDisplayDiv.style.display = 'none';
+        aiExplanationsDiv.style.display = 'none';
+        explanationsList.innerHTML = '';
+    }
+
+    renderQuestions();
+    submitBtn.addEventListener('click', onSubmit);
+    resetBtn.addEventListener('click', resetQuiz);
+</script>
+</body>
+</html>
