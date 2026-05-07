@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>有絲分裂與減數分裂測驗 | Mr. Daniel Ng Biology</title>
+    <title>Cell Division Quiz | Mitosis & Meiosis | Mr. Daniel Ng Biology</title>
     <style>
         * {
             box-sizing: border-box;
@@ -228,98 +228,98 @@
 </head>
 <body>
 <div class="quiz-container">
-    <a href="index.html" class="back-link">← 返回主頁</a>
-    <h1>🔬 細胞分裂測驗</h1>
-    <div class="sub">HKDSE 生物科｜有絲分裂 與 減數分裂</div>
+    <a href="index.html" class="back-link">← Back to Home</a>
+    <h1>🔬 Cell Division Quiz</h1>
+    <div class="sub">HKDSE Biology | Mitosis & Meiosis</div>
 
-    <!-- 學生資料區 -->
+    <!-- Student Information Section -->
     <div class="info-card">
         <div class="input-group">
-            <label>📝 學生姓名</label>
-            <input type="text" id="studentName" placeholder="陳大文">
+            <label>📝 Student Name</label>
+            <input type="text" id="studentName" placeholder="e.g., Chan Tai Man">
         </div>
         <div class="input-group">
-            <label>🏫 班別</label>
-            <input type="text" id="classGroup" placeholder="6A">
+            <label>🏫 Class</label>
+            <input type="text" id="classGroup" placeholder="e.g., 6A">
         </div>
         <div class="input-group">
-            <label>🔢 學號</label>
-            <input type="text" id="studentId" placeholder="S001 / 23">
+            <label>🔢 Student Number</label>
+            <input type="text" id="studentId" placeholder="e.g., 23 or S001">
         </div>
     </div>
 
     <div id="questionsContainer"></div>
 
     <div class="action-buttons">
-        <button id="submitBtn">✅ 完成 & 提交報告</button>
-        <button id="resetBtn" class="reset-btn">🔄 重設作答</button>
+        <button id="submitBtn">✅ Submit & Send Report</button>
+        <button id="resetBtn" class="reset-btn">🔄 Reset Answers</button>
     </div>
 
     <div id="scoreDisplay" class="score-area" style="display: none;"></div>
     <div id="aiExplanations" class="explanation-area" style="display: none;">
-        <div class="explanation-title">🤖 AI 題解</div>
+        <div class="explanation-title">🤖 AI Model Answers & Explanations</div>
         <div id="explanationsList" class="ai-explain"></div>
     </div>
-    <div class="footer-note">✔️ 每題20分，總分100分。提交後報告將發送至老師電郵。</div>
+    <div class="footer-note">✔️ 20 marks per question. Total: 100 marks. Your report will be sent to your teacher via email after submission.</div>
 </div>
 
 <script>
-    // ======================== 有絲分裂 + 減數分裂 題庫 (HKDSE 程度) ========================
+    // ======================== MITOSIS & MEIOSIS QUESTION BANK (HKDSE Level) ========================
     const QUESTIONS = [
         {
-            text: "在動物細胞的有絲分裂過程中，下列哪個事件發生在後期 (Anaphase)？",
+            text: "During mitosis in an animal cell, which of the following events occurs in anaphase?",
             options: [
-                "A. 染色體排列在赤道板上",
-                "B. 姐妹染色單體分離並移向兩極",
-                "C. 核膜重新形成",
-                "D. 同源染色體聯會"
+                "A. Chromosomes align at the metaphase plate",
+                "B. Sister chromatids separate and move toward opposite poles",
+                "C. The nuclear envelope reforms",
+                "D. Homologous chromosomes pair up"
             ],
             correct: 1,
-            explanation: "✅ 正確答案：B。有絲分裂後期，著絲粒分裂，姐妹染色單體分離成為獨立的染色體，並被紡錘絲拉向細胞兩極。A是中期；C是末期；D發生在減數分裂 I 前期。"
+            explanation: "✅ Correct answer: B. During anaphase of mitosis, the centromeres split and sister chromatids are pulled apart by spindle fibers toward opposite poles. Option A occurs in metaphase; C occurs in telophase; D occurs in meiosis I prophase."
         },
         {
-            text: "下列哪項是減數分裂 I 與有絲分裂的主要區別？",
+            text: "Which of the following is a key difference between meiosis I and mitosis?",
             options: [
-                "A. DNA 複製一次，細胞分裂一次",
-                "B. 同源染色體分離，染色體數目減半",
-                "C. 姐妹染色單體分離",
-                "D. 紡錘絲附著在著絲粒上"
+                "A. DNA replicates once and the cell divides once",
+                "B. Homologous chromosomes separate, reducing chromosome number by half",
+                "C. Sister chromatids separate",
+                "D. Spindle fibers attach to centromeres"
             ],
             correct: 1,
-            explanation: "✅ 正確答案：B。減數分裂 I 的特色是同源染色體分離，導致子細胞染色體數目減半（由2n變n）。有絲分裂則保持染色體數目不變。A描述的是有絲分裂；C發生在有絲分裂後期和減數分裂II；D兩者皆有。"
+            explanation: "✅ Correct answer: B. The hallmark of meiosis I is the separation of homologous chromosomes, resulting in daughter cells with half the chromosome number (from 2n to n). Mitosis maintains the chromosome number. A describes mitosis; C occurs in anaphase of mitosis and meiosis II; D occurs in both processes."
         },
         {
-            text: "關於染色體數目的描述，人類肝細胞（體細胞）進行有絲分裂後，子細胞的染色體數目是多少？",
+            text: "Regarding chromosome number, after mitosis of a human liver cell (a somatic cell), how many chromosomes will each daughter cell have?",
             options: [
-                "A. 23 條",
-                "B. 46 條",
-                "C. 92 條",
-                "D. 隨機變化"
+                "A. 23",
+                "B. 46",
+                "C. 92",
+                "D. Randomly variable"
             ],
             correct: 1,
-            explanation: "✅ 正確答案：B。人類體細胞有46條染色體（23對）。有絲分裂產生兩個遺傳上相同的子細胞，各自保留46條染色體。減數分裂才會產生23條染色體的精子或卵細胞。"
+            explanation: "✅ Correct answer: B. Human somatic cells have 46 chromosomes (23 pairs). Mitosis produces two genetically identical daughter cells, each retaining 46 chromosomes. Meiosis produces gametes with 23 chromosomes."
         },
         {
-            text: "十字花科植物根尖細胞正在進行有絲分裂。在顯微鏡下觀察到某細胞的染色體整齊排列在細胞中央的赤道板上。該細胞處於哪個時期？",
+            text: "A student observes a root tip cell of a plant under a microscope. The chromosomes are aligned at the equator (metaphase plate). Which stage of mitosis is this cell in?",
             options: [
-                "A. 前期",
-                "B. 中期",
-                "C. 後期",
-                "D. 末期"
+                "A. Prophase",
+                "B. Metaphase",
+                "C. Anaphase",
+                "D. Telophase"
             ],
             correct: 1,
-            explanation: "✅ 正確答案：B。有絲分裂中期，染色體排列在赤道板（細胞中央），是觀察染色體形態的最佳時期。前期染色體凝縮但未排列；後期染色體分離；末期染色體到達兩極。"
+            explanation: "✅ Correct answer: B. During metaphase, chromosomes line up at the metaphase plate (equator) of the cell. Prophase shows condensed chromosomes but no alignment; anaphase shows separated chromatids; telophase shows chromosomes at poles and nuclear envelope reformation."
         },
         {
-            text: "在人類卵子發生過程中，初級卵母細胞完成減數分裂 I 後產生的子細胞是：",
+            text: "During oogenesis in humans, the primary oocyte completes meiosis I and produces:",
             options: [
-                "A. 兩個次級卵母細胞",
-                "B. 一個次級卵母細胞和一個極體",
-                "C. 兩個卵細胞",
-                "D. 一個卵細胞和三個極體"
+                "A. Two secondary oocytes",
+                "B. One secondary oocyte and one polar body",
+                "C. Two egg cells",
+                "D. One egg cell and three polar bodies"
             ],
             correct: 1,
-            explanation: "✅ 正確答案：B。人類卵子發生過程中，初級卵母細胞（2n）進行減數分裂 I，產生一個次級卵母細胞（n）和一個第一極體（n）。次級卵母細胞再進行減數分裂II產生卵細胞和第二極體。"
+            explanation: "✅ Correct answer: B. The primary oocyte (2n) undergoes meiosis I, producing one secondary oocyte (n) and one first polar body (n). The secondary oocyte then undergoes meiosis II to produce an ovum and a second polar body."
         }
     ];
 
@@ -341,7 +341,7 @@
             
             const qTitle = document.createElement('div');
             qTitle.classList.add('q-title');
-            qTitle.innerText = `第 ${idx+1} 題 (20分)`;
+            qTitle.innerText = `Question ${idx+1} (20 marks)`;
             qDiv.appendChild(qTitle);
             
             const qText = document.createElement('div');
@@ -385,7 +385,7 @@
             details.push({
                 qNum: i+1,
                 questionText: QUESTIONS[i].text,
-                studentAnswer: (userSel !== null) ? QUESTIONS[i].options[userSel] : "未作答",
+                studentAnswer: (userSel !== null) ? QUESTIONS[i].options[userSel] : "Not answered",
                 correctAnswer: QUESTIONS[i].options[correctIdx],
                 isCorrect: isCorrect,
                 explanation: QUESTIONS[i].explanation
@@ -402,7 +402,7 @@
             const statusIcon = det.isCorrect ? '✅' : '❌';
             const qHeader = document.createElement('div');
             qHeader.classList.add('exp-q');
-            qHeader.innerHTML = `${statusIcon} 第 ${det.qNum} 題：你的答案「${det.studentAnswer}」 | 正確答案「${det.correctAnswer}」`;
+            qHeader.innerHTML = `${statusIcon} Question ${det.qNum}: Your answer: "${det.studentAnswer}" | Correct answer: "${det.correctAnswer}"`;
             const expTextDiv = document.createElement('div');
             expTextDiv.classList.add('exp-text');
             expTextDiv.innerHTML = `📖 ${det.explanation}`;
@@ -415,36 +415,36 @@
     async function sendEmailReport(studentName, studentClass, studentIdNum, totalScore, details) {
         let answersSummary = '';
         details.forEach(d => {
-            answersSummary += `\n【第${d.qNum}題】${d.questionText}\n學生答案: ${d.studentAnswer} | 正確答案: ${d.correctAnswer} | ${d.isCorrect ? '正確' : '錯誤'}\nAI題解: ${d.explanation}\n`;
+            answersSummary += `\n[Question ${d.qNum}] ${d.questionText}\nStudent answer: ${d.studentAnswer} | Correct answer: ${d.correctAnswer} | ${d.isCorrect ? 'Correct' : 'Incorrect'}\nAI Explanation: ${d.explanation}\n`;
         });
         
         const fullMessage = `
-📋 細胞分裂測驗成績報告 (有絲分裂與減數分裂)
+📋 Cell Division Quiz Report (Mitosis & Meiosis)
 ----------------------------------------
-👤 學生姓名: ${studentName}
-🏫 班別: ${studentClass}
-🔢 學號: ${studentIdNum}
-🏆 總分: ${totalScore} / 100
+👤 Student Name: ${studentName}
+🏫 Class: ${studentClass}
+🔢 Student Number: ${studentIdNum}
+🏆 Total Score: ${totalScore} / 100
 
-📌 作答明細與 AI 題解：
+📌 Answer Details & AI Explanations:
 ${answersSummary}
 ----------------------------------------
-報告由 Mr. Daniel Ng 生物科測驗系統自動發出
+Report automatically generated by Mr. Daniel Ng Biology Quiz System
         `;
         
         const formData = new FormData();
         formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c');
         formData.append('email', 'ngtinghei0803@gmail.com');
-        formData.append('subject', `【細胞分裂測驗報告】${studentName} - ${studentClass} (${studentIdNum})`);
+        formData.append('subject', `[Cell Division Quiz] ${studentName} - ${studentClass} (${studentIdNum})`);
         formData.append('message', fullMessage);
         
         try {
             const response = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
             const result = await response.json();
-            if (result.success) alert(`✅ 報告已成功寄送至老師信箱！\n得分：${totalScore}/100`);
-            else alert(`⚠️ 郵件發送失敗：${result.message || '請稍後重試'}，但分數已顯示。`);
+            if (result.success) alert(`✅ Report sent successfully to your teacher!\nYour score: ${totalScore}/100`);
+            else alert(`⚠️ Email sending failed: ${result.message || 'Please try again later'}. Your score is displayed below.`);
         } catch (err) {
-            alert(`⚠️ 無法連接郵件服務，您的成績：${totalScore}/100。請截圖保存。`);
+            alert(`⚠️ Could not connect to email service. Your score: ${totalScore}/100. Please take a screenshot.`);
         }
     }
 
@@ -453,7 +453,7 @@ ${answersSummary}
         const className = document.getElementById('classGroup').value.trim();
         const stuId = document.getElementById('studentId').value.trim();
         if (!name || !className || !stuId) {
-            alert('請填妥學生姓名、班別及學號後再提交。');
+            alert('Please fill in your name, class, and student number before submitting.');
             return false;
         }
         return { name, className, stuId };
@@ -462,7 +462,7 @@ ${answersSummary}
     function allQuestionsAnswered() {
         for (let i = 0; i < userAnswers.length; i++) {
             if (userAnswers[i] === null) {
-                alert(`⚠️ 您尚未作答第 ${i+1} 題，請完成所有題目。`);
+                alert(`⚠️ You haven't answered Question ${i+1}. Please complete all questions.`);
                 return false;
             }
         }
@@ -471,7 +471,7 @@ ${answersSummary}
 
     async function onSubmit() {
         if (submitted) {
-            alert('您已提交過測驗，如需重新測驗請按「重設作答」。');
+            alert('You have already submitted this quiz. Press "Reset Answers" if you want to try again.');
             return;
         }
         const info = validateStudentInfo();
@@ -480,7 +480,7 @@ ${answersSummary}
         
         const { totalScore, details } = computeScoreAndDetails();
         scoreDisplayDiv.style.display = 'block';
-        scoreDisplayDiv.innerHTML = `📊 得分：${totalScore} / 100 (每題20分)`;
+        scoreDisplayDiv.innerHTML = `📊 Your Score: ${totalScore} / 100 (20 marks per question)`;
         renderExplanations(details);
         aiExplanationsDiv.style.display = 'block';
         scoreDisplayDiv.scrollIntoView({ behavior: 'smooth' });
