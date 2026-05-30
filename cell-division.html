@@ -1,37 +1,40 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>細胞分裂實驗室 (Mitosis & Meiosis) | HKDSE Biology</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Cell Division Simulator & Quiz | Mr. Daniel Ng Biology</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&family=Roboto:wght@400;700&display=swap');
         
-        body { font-family: 'Roboto', 'Noto Sans TC', sans-serif; background-color: #0f172a; color: #1e293b; }
-        .app-container { max-width: 1100px; margin: 40px auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        * { box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Noto Sans TC', sans-serif; background-color: #0f172a; color: #1e293b; margin: 0; padding: 20px; }
+        .app-container { max-width: 1100px; margin: 0 auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
         
         /* Navigation & Tabs */
-        .nav-header { background: #1e293b; padding: 20px 30px; color: white; display: flex; justify-content: space-between; align-items: center; }
-        .mode-tabs { display: flex; gap: 10px; }
-        .tab-btn { padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; background: #334155; color: #cbd5e1; border: none; }
+        .nav-header { background: #1e293b; padding: 20px 30px; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .title-area { font-size: 1.25rem; font-weight: bold; color: #34d399; }
+        .controls-top { display: flex; gap: 10px; align-items: center; }
+        .tab-btn { padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; background: #334155; color: #cbd5e1; border: none; font-family: inherit; }
         .tab-btn.active { background: #10b981; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+        .lang-btn { background: #f59e0b; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .lang-btn:hover { background: #d97706; }
         
-        /* Simulation Layout */
-        .sim-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 0; border-bottom: 2px solid #e2e8f0; }
-        .canvas-container { background: #f8fafc; position: relative; border-right: 2px solid #e2e8f0; display: flex; align-items: center; justify-content: center; min-height: 450px; }
-        canvas { width: 100%; height: 100%; max-height: 500px; touch-action: none; }
+        /* Simulator Layout */
+        .sim-grid { display: grid; grid-template-columns: 3fr 2fr; border-bottom: 2px solid #e2e8f0; min-height: 400px; }
+        .canvas-container { background: #0f172a; position: relative; border-right: 2px solid #e2e8f0; display: flex; align-items: center; justify-content: center; }
+        canvas { width: 100%; height: 100%; max-height: 500px; }
         
         .controls-panel { padding: 30px; display: flex; flex-direction: column; background: white; }
-        .stage-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; border-left: 5px solid #10b981; padding-left: 15px; }
+        .stage-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; border-left: 5px solid #10b981; padding-left: 15px; margin-top: 0; }
         .stage-desc { font-size: 1rem; color: #475569; line-height: 1.6; flex-grow: 1; }
         
         .progress-dots { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
-        .dot { height: 10px; width: 10px; background: #cbd5e1; border-radius: 50%; transition: 0.3s; }
+        .dot { height: 12px; width: 12px; background: #cbd5e1; border-radius: 50%; transition: 0.3s; cursor: pointer; }
         .dot.active { background: #10b981; transform: scale(1.3); }
         
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
-        .ctrl-btn { padding: 12px; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; }
+        .ctrl-btn { padding: 12px; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; font-size: 1rem; }
         .btn-prev { background: #e2e8f0; color: #475569; }
         .btn-prev:hover:not(:disabled) { background: #cbd5e1; }
         .btn-next { background: #3b82f6; color: white; }
@@ -40,7 +43,7 @@
 
         /* Quiz Section */
         .quiz-section { padding: 40px; background: #fdfcf7; }
-        .quiz-header { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 30px; text-align: center; }
+        .quiz-header { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin: 0 0 30px 0; text-align: center; }
         
         .info-card { background: #f1f5f9; border-radius: 20px; padding: 20px; display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
         .input-group { flex: 1 1 200px; display: flex; flex-direction: column; gap: 5px; }
@@ -51,73 +54,96 @@
         .q-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: #1e293b; }
         .option-label { display: flex; align-items: flex-start; gap: 10px; padding: 12px 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 10px; cursor: pointer; transition: 0.2s; background: #f8fafc; }
         .option-label:hover { border-color: #10b981; background: white; }
-        .option-label input { margin-top: 5px; accent-color: #10b981; }
+        .option-label input { margin-top: 5px; accent-color: #10b981; width: 16px; height: 16px; }
         
-        .submit-btn { background: #10b981; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: block; margin: 30px auto; transition: 0.3s; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        .submit-btn { background: #10b981; color: white; border: none; padding: 16px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: block; margin: 30px auto; transition: 0.3s; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
         .submit-btn:hover { background: #059669; transform: translateY(-2px); }
+
+        /* Multilingual Utility */
+        .lang-zh { display: none; }
+        body[data-lang="zh"] .lang-en { display: none; }
+        body[data-lang="zh"] .lang-zh { display: inline-block; }
+        body[data-lang="zh"] div.lang-zh, body[data-lang="zh"] p.lang-zh { display: block; }
 
         @media (max-width: 768px) {
             .sim-grid { grid-template-columns: 1fr; }
-            .canvas-container { min-height: 300px; }
+            .canvas-container { min-height: 350px; }
+            .nav-header { flex-direction: column; align-items: flex-start; }
+            .controls-top { flex-wrap: wrap; }
         }
     </style>
 </head>
-<body>
+<body data-lang="en">
 
 <div class="app-container">
+    <!-- Header -->
     <header class="nav-header">
-        <div class="text-xl font-bold flex items-center gap-2">
-            <span class="text-emerald-400">🔬 Mr. Daniel Ng Biology</span>
-        </div>
-        <div class="mode-tabs">
-            <button id="tab-mitosis" class="tab-btn active" onclick="switchMode('mitosis')">Mitosis 有絲分裂</button>
-            <button id="tab-meiosis" class="tab-btn" onclick="switchMode('meiosis')">Meiosis 減數分裂</button>
+        <div class="title-area">🔬 Mr. Daniel Ng Biology</div>
+        <div class="controls-top">
+            <button id="tab-mitosis" class="tab-btn active" onclick="switchMode('mitosis')">
+                <span class="lang-en">Mitosis</span><span class="lang-zh">有絲分裂</span>
+            </button>
+            <button id="tab-meiosis" class="tab-btn" onclick="switchMode('meiosis')">
+                <span class="lang-en">Meiosis</span><span class="lang-zh">減數分裂</span>
+            </button>
+            <button class="lang-btn" onclick="toggleLanguage()">English / 中文</button>
         </div>
     </header>
 
+    <!-- Interactive Simulator Workspace -->
     <section class="sim-grid">
         <div class="canvas-container">
-            <div id="stage-badge" class="absolute top-4 left-4 bg-slate-800 text-white px-3 py-1 rounded-full text-xs font-bold opacity-80 z-10">
-                Phase indicator
-            </div>
             <canvas id="simCanvas"></canvas>
         </div>
         
         <div class="controls-panel">
-            <h2 id="ui-title" class="stage-title">載入中...</h2>
-            <div id="ui-desc" class="stage-desc">請稍候。</div>
+            <h2 id="ui-title" class="stage-title">Loading...</h2>
+            <div id="ui-desc" class="stage-desc">Please wait.</div>
             
             <div id="ui-dots" class="progress-dots"></div>
             
             <div class="btn-group">
-                <button id="btn-prev" class="ctrl-btn btn-prev" onclick="changeStep(-1)">← 上一步</button>
-                <button id="btn-next" class="ctrl-btn btn-next" onclick="changeStep(1)">下一步 →</button>
+                <button id="btn-prev" class="ctrl-btn btn-prev" onclick="changeStep(-1)">
+                    <span class="lang-en">← Previous</span><span class="lang-zh">← 上一步</span>
+                </button>
+                <button id="btn-next" class="ctrl-btn btn-next" onclick="changeStep(1)">
+                    <span class="lang-en">Next →</span><span class="lang-zh">下一步 →</span>
+                </button>
             </div>
         </div>
     </section>
 
+    <!-- Quiz Section -->
     <section class="quiz-section">
-        <h2 class="quiz-header">📝 HKDSE 知識檢測 (4選項格式)</h2>
+        <h2 class="quiz-header">
+            <span class="lang-en">📝 HKDSE Cell Division Quiz</span>
+            <span class="lang-zh">📝 HKDSE 細胞分裂測驗</span>
+        </h2>
         
         <div class="info-card">
             <div class="input-group">
-                <label>English Name (姓名)</label>
+                <label><span class="lang-en">Student Name</span><span class="lang-zh">學生姓名</span></label>
                 <input type="text" id="stuName" placeholder="e.g., Chan Tai Man">
             </div>
             <div class="input-group">
-                <label>Class (班別)</label>
+                <label><span class="lang-en">Class</span><span class="lang-zh">班別</span></label>
                 <input type="text" id="stuClass" placeholder="e.g., 6A">
             </div>
             <div class="input-group">
-                <label>Class No. (學號)</label>
+                <label><span class="lang-en">Class No.</span><span class="lang-zh">學號</span></label>
                 <input type="text" id="stuNo" placeholder="e.g., 23">
             </div>
         </div>
 
         <div id="quiz-container"></div>
 
-        <button id="submitBtn" class="submit-btn" onclick="submitQuiz()">✅ 提交答案並發送報告至 Web3Forms</button>
+        <!-- The Updated Submit Button -->
+        <button id="submitBtn" class="submit-btn" onclick="submitQuiz()">
+            <span class="lang-en">✅ Submit & Send to Mr. Daniel Ng</span>
+            <span class="lang-zh">✅ 提交並發送給 Mr. Daniel Ng</span>
+        </button>
         
+        <!-- Results Output -->
         <div id="resultsArea" style="display: none; margin-top: 30px;">
             <div id="scoreDisplay" style="background: #d1fae5; color: #065f46; padding: 20px; border-radius: 16px; text-align: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 20px;"></div>
             <div id="explanationDisplay" style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px;"></div>
@@ -126,42 +152,86 @@
 </div>
 
 <script>
-    /* =========================================
-       1. DATA STRUCTURES (Separated Stages)
-       ========================================= */
+    // ==========================================
+    // 1. DATA STRUCTURES (BILINGUAL)
+    // ==========================================
+    let currentLang = 'en';
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'zh' : 'en';
+        document.body.setAttribute('data-lang', currentLang);
+        updateSimulationUI();
+        renderQuiz();
+    }
+
     const SIM_DATA = {
         mitosis: {
-            title: "Mitosis 有絲分裂",
             stages: [
-                { id: "M1", t: "間期 (Interphase)", d: "細胞生長並進行生理活動。最重要的是，DNA 在此階段進行複製，形成兩條完全相同的姐妹染色單體 (Sister chromatids)。" },
-                { id: "M2", t: "前期 (Prophase)", d: "染色質濃縮成清晰可見的染色體。核膜逐漸消失，中心體移向兩極並開始形成紡錘絲。" },
-                { id: "M3", t: "中期 (Metaphase)", d: "所有染色體整齊地排列在細胞中央的赤道板 (Equatorial plate) 上，紡錘絲附著於著絲點。" },
-                { id: "M4", t: "後期 (Anaphase)", d: "著絲點分裂，紡錘絲將「姐妹染色單體」拉向細胞兩極。" },
-                { id: "M5", t: "末期 (Telophase)", d: "核膜重新形成，細胞質開始分裂 (Cytokinesis)，最終產生兩個與母細胞遺傳物質完全相同的二倍體 (2n) 子細胞。" }
+                {
+                    en: { t: "Interphase", d: "The cell grows and replicates its DNA. Chromosomes are not yet distinctly visible; they exist as loose chromatin." },
+                    zh: { t: "間期", d: "細胞生長並複製其 DNA。此時染色體尚未清晰可見，以鬆散的染色質形態存在。" }
+                },
+                {
+                    en: { t: "Prophase", d: "Chromatin condenses into visible chromosomes (sister chromatids joined at the centromere). The nuclear envelope breaks down." },
+                    zh: { t: "前期", d: "染色質濃縮成可見的染色體（由著絲點連接的姐妹染色單體）。核膜開始消失。" }
+                },
+                {
+                    en: { t: "Metaphase", d: "Chromosomes line up along the cell's equator (metaphase plate). Spindle fibers attach to the centromeres." },
+                    zh: { t: "中期", d: "染色體整齊地排列在細胞赤道板上。紡錘絲附著在著絲點上。" }
+                },
+                {
+                    en: { t: "Anaphase", d: "Sister chromatids are pulled apart toward opposite poles of the cell by the spindle fibers." },
+                    zh: { t: "後期", d: "著絲點分裂，紡錘絲將姐妹染色單體拉向細胞的兩極。" }
+                },
+                {
+                    en: { t: "Telophase & Cytokinesis", d: "Nuclear envelopes reform around the two identical sets of chromosomes. The cell pinches in the middle to form two diploid (2n) daughter cells." },
+                    zh: { t: "末期與細胞質分裂", d: "核膜圍繞兩組相同的染色體重新形成。細胞從中間凹陷，形成兩個相同的二倍體 (2n) 子細胞。" }
+                }
             ]
         },
         meiosis: {
-            title: "Meiosis 減數分裂 (9 獨立階段)",
             stages: [
-                { id: "Me1", t: "間期 (Interphase)", d: "與有絲分裂相同，DNA 在進入減數分裂前進行複製。" },
-                { id: "Me2", t: "前期 I (Prophase I)", d: "關鍵步驟：同源染色體 (Homologous chromosomes) 互相配對形成聯會 (Synapsis)，並可能發生同源染色體間的遺傳物質互換 (Crossing over)。" },
-                { id: "Me3", t: "中期 I (Metaphase I)", d: "同源染色體「成對」排列在赤道板上。" },
-                { id: "Me4", t: "後期 I (Anaphase I)", d: "關鍵步驟：紡錘絲將「同源染色體」分離並拉向兩極。注意：此時著絲點並未分裂，姐妹染色單體仍相連。" },
-                { id: "Me5", t: "末期 I (Telophase I)", d: "細胞質分裂，形成兩個單倍體 (n) 細胞。但每條染色體仍含有兩條染色單體。" },
-                { id: "Me6", t: "前期 II (Prophase II)", d: "兩個子細胞準備進行第二次分裂，核膜再次消失。此階段不再進行 DNA 複製。" },
-                { id: "Me7", t: "中期 II (Metaphase II)", d: "染色體在每個子細胞的赤道板上排成單列。" },
-                { id: "Me8", t: "後期 II (Anaphase II)", d: "著絲點終於分裂，紡錘絲將「姐妹染色單體」拉向細胞兩極。" },
-                { id: "Me9", t: "末期 II (Telophase II)", d: "細胞質再次分裂，最終產生四個遺傳組成各不相同的單倍體 (n) 配子細胞 (Gametes)。" }
+                {
+                    en: { t: "Interphase", d: "DNA replicates before meiosis begins, forming sister chromatids." },
+                    zh: { t: "間期", d: "減數分裂開始前 DNA 進行複製，形成姐妹染色單體。" }
+                },
+                {
+                    en: { t: "Prophase I", d: "Homologous chromosomes pair up (synapsis) and crossing over occurs, exchanging genetic material." },
+                    zh: { t: "前期 I", d: "同源染色體配對（聯會），並發生互換（Crossing over），交換遺傳物質。" }
+                },
+                {
+                    en: { t: "Metaphase I", d: "Pairs of homologous chromosomes line up at the equator." },
+                    zh: { t: "中期 I", d: "同源染色體「成對」排列在赤道板上。" }
+                },
+                {
+                    en: { t: "Anaphase I", d: "Homologous chromosomes separate to opposite poles. Sister chromatids remain attached." },
+                    zh: { t: "後期 I", d: "同源染色體分離並移向兩極。注意：姐妹染色單體仍然相連。" }
+                },
+                {
+                    en: { t: "Telophase I", d: "The cell divides into two haploid (n) cells. Each chromosome still consists of two chromatids." },
+                    zh: { t: "末期 I", d: "細胞分裂成兩個單倍體 (n) 細胞。每條染色體仍包含兩條染色單體。" }
+                },
+                {
+                    en: { t: "Metaphase II", d: "In both cells, chromosomes line up individually at the equator." },
+                    zh: { t: "中期 II", d: "在兩個子細胞中，染色體分別排列在赤道板上。" }
+                },
+                {
+                    en: { t: "Anaphase II", d: "Sister chromatids are finally pulled apart to opposite poles." },
+                    zh: { t: "後期 II", d: "著絲點分裂，姐妹染色單體終於分離並移向兩極。" }
+                },
+                {
+                    en: { t: "Telophase II", d: "Four genetically distinct haploid (n) gametes are formed." },
+                    zh: { t: "末期 II", d: "最終形成四個遺傳物質各不相同的單倍體 (n) 配子。" }
+                }
             ]
         }
     };
 
+    // ==========================================
+    // 2. CANVAS SIMULATOR ENGINE (Actual Drawings)
+    // ==========================================
     let currentMode = 'mitosis';
     let currentStep = 0;
-
-    /* =========================================
-       2. UI & CANVAS LOGIC
-       ========================================= */
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
 
@@ -176,10 +246,8 @@
     function switchMode(mode) {
         currentMode = mode;
         currentStep = 0;
-        
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${mode}`).classList.add('active');
-        
         updateSimulationUI();
     }
 
@@ -191,185 +259,303 @@
         updateSimulationUI();
     }
 
-    function updateSimulationUI() {
-        const data = SIM_DATA[currentMode];
-        const stage = data.stages[currentStep];
-        const maxSteps = data.stages.length - 1;
+    function goToStep(step) {
+        currentStep = step;
+        updateSimulationUI();
+    }
 
-        document.getElementById('ui-title').innerText = stage.t;
-        document.getElementById('ui-desc').innerText = stage.d;
-        document.getElementById('stage-badge').innerText = `${data.title} - Step ${currentStep + 1}/${maxSteps + 1}`;
+    function updateSimulationUI() {
+        const data = SIM_DATA[currentMode].stages[currentStep][currentLang];
+        const maxSteps = SIM_DATA[currentMode].stages.length - 1;
+
+        document.getElementById('ui-title').innerText = data.t;
+        document.getElementById('ui-desc').innerText = data.d;
 
         document.getElementById('btn-prev').disabled = currentStep === 0;
         document.getElementById('btn-next').disabled = currentStep === maxSteps;
 
-        // Render Dots
+        // Render interactive dots
         const dotsContainer = document.getElementById('ui-dots');
         dotsContainer.innerHTML = '';
         for (let i = 0; i <= maxSteps; i++) {
             const dot = document.createElement('div');
             dot.className = `dot ${i === currentStep ? 'active' : ''}`;
+            dot.onclick = () => goToStep(i);
             dotsContainer.appendChild(dot);
         }
 
         drawSimulation();
     }
 
+    // --- Drawing Helpers ---
+    function drawCellMembrane(x, y, r, isPinching) {
+        ctx.strokeStyle = "#94a3b8"; // Cell membrane color
+        ctx.lineWidth = 4;
+        ctx.fillStyle = "#1e293b"; // Cytoplasm background
+        
+        ctx.beginPath();
+        if (isPinching) {
+            // Draw a pinching cell (figure 8 shape)
+            ctx.arc(x - r/2, y, r*0.8, Math.PI/2, Math.PI*1.5);
+            ctx.arc(x + r/2, y, r*0.8, -Math.PI/2, Math.PI/2);
+            ctx.closePath();
+        } else {
+            ctx.arc(x, y, r, 0, Math.PI*2);
+        }
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    function drawChromosomeX(x, y, color) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 6;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(x - 12, y - 20); ctx.lineTo(x + 12, y + 20);
+        ctx.moveTo(x + 12, y - 20); ctx.lineTo(x - 12, y + 20);
+        ctx.stroke();
+        // Centromere
+        ctx.fillStyle = "white";
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fill();
+    }
+
+    function drawChromatid(x, y, color, facingLeft) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 6;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        if (facingLeft) {
+            ctx.moveTo(x + 8, y - 20); ctx.lineTo(x - 8, y); ctx.lineTo(x + 8, y + 20);
+        } else {
+            ctx.moveTo(x - 8, y - 20); ctx.lineTo(x + 8, y); ctx.lineTo(x - 8, y + 20);
+        }
+        ctx.stroke();
+    }
+
+    function drawSpindles(cx, cy, r, numSpindles, separation) {
+        ctx.strokeStyle = "rgba(16, 185, 129, 0.4)"; // Spindle fiber color
+        ctx.lineWidth = 2;
+        const pole1X = cx - r + 15;
+        const pole2X = cx + r - 15;
+        
+        for(let i=0; i<numSpindles; i++) {
+            let yOff = cy - 30 + (i * 20);
+            ctx.beginPath(); ctx.moveTo(pole1X, cy); ctx.lineTo(cx - separation, yOff); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(pole2X, cy); ctx.lineTo(cx + separation, yOff); ctx.stroke();
+        }
+        // Centrosomes (Poles)
+        ctx.fillStyle = "#f59e0b";
+        ctx.fillRect(pole1X-4, cy-4, 8, 8);
+        ctx.fillRect(pole2X-4, cy-4, 8, 8);
+    }
+
+    function drawChromatin(x, y) {
+        ctx.strokeStyle = "#ec4899";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for(let i=0; i<50; i++) {
+            ctx.lineTo(x + (Math.random()*60 - 30), y + (Math.random()*60 - 30));
+        }
+        ctx.stroke();
+    }
+
+    // --- Main Rendering Logic ---
     function drawSimulation() {
-        // Abstract dynamic drawing based on steps to avoid extremely dense custom canvas code, 
-        // focusing on visual representation of the cell count and chromosome states.
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
-        const stageData = SIM_DATA[currentMode].stages[currentStep];
-        
-        ctx.fillStyle = "#e2e8f0";
-        ctx.font = "16px sans-serif";
-        ctx.textAlign = "center";
-        
-        // Visual Placeholder logic mapped to stages
-        ctx.strokeStyle = "#3b82f6";
-        ctx.lineWidth = 4;
-        ctx.fillStyle = "#f0f9ff";
+
+        const blue = "#3b82f6"; // Paternal
+        const pink = "#ec4899"; // Maternal
 
         if (currentMode === 'mitosis') {
-            if (currentStep < 4) {
-                // Single Cell
-                ctx.beginPath(); ctx.arc(cx, cy, 100, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                ctx.fillStyle = "#1e293b";
-                ctx.fillText(`[ ${stageData.t} 視覺化 ]`, cx, cy + 140);
-                if(currentStep === 0) { ctx.fillText("DNA 複製中...", cx, cy); }
-                if(currentStep === 2) { ctx.fillText("單列排列在赤道板", cx, cy); }
-                if(currentStep === 3) { ctx.fillText("姐妹染色單體分離 ← →", cx, cy); }
-            } else {
-                // Two Cells
-                ctx.beginPath(); ctx.arc(cx - 120, cy, 90, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                ctx.beginPath(); ctx.arc(cx + 120, cy, 90, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                ctx.fillStyle = "#1e293b"; ctx.fillText("2 個 2n 子細胞", cx, cy + 130);
+            if (currentStep === 0) { // Interphase
+                drawCellMembrane(cx, cy, 100, false);
+                ctx.beginPath(); ctx.arc(cx, cy, 50, 0, Math.PI*2); ctx.strokeStyle="rgba(255,255,255,0.3)"; ctx.stroke(); // Nucleus
+                drawChromatin(cx, cy);
+            } 
+            else if (currentStep === 1) { // Prophase
+                drawCellMembrane(cx, cy, 100, false);
+                // Randomly scattered chromosomes
+                drawChromosomeX(cx - 20, cy - 30, blue); drawChromosomeX(cx + 25, cy + 20, blue);
+                drawChromosomeX(cx + 30, cy - 25, pink); drawChromosomeX(cx - 15, cy + 30, pink);
             }
-        } else {
-            // Meiosis Logic (9 steps)
-            if (currentStep < 4) {
-                // Meiosis I - Single Cell
-                ctx.beginPath(); ctx.arc(cx, cy, 100, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                ctx.fillStyle = "#1e293b";
-                if(currentStep === 1) ctx.fillText("同源染色體聯會 (Synapsis)", cx, cy);
-                if(currentStep === 2) ctx.fillText("同源染色體雙列排列", cx, cy);
-                if(currentStep === 3) ctx.fillText("同源染色體分離 ← →", cx, cy);
-            } else if (currentStep >= 4 && currentStep < 8) {
-                // Meiosis II - Two Cells
-                ctx.beginPath(); ctx.arc(cx - 110, cy, 80, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                ctx.beginPath(); ctx.arc(cx + 110, cy, 80, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                ctx.fillStyle = "#1e293b";
-                if(currentStep === 4) ctx.fillText("2 個單倍體 (n) 細胞", cx, cy + 120);
-                if(currentStep === 6) ctx.fillText("染色體排成單列", cx, cy + 120);
-                if(currentStep === 7) ctx.fillText("姐妹染色單體分離 ← →", cx, cy + 120);
-            } else {
-                // End - Four Cells
-                [-150, -50, 50, 150].forEach(offset => {
-                    ctx.beginPath(); ctx.arc(cx + offset, cy, 45, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                });
-                ctx.fillStyle = "#1e293b"; ctx.fillText("4 個遺傳不同的單倍體配子", cx, cy + 80);
+            else if (currentStep === 2) { // Metaphase
+                drawCellMembrane(cx, cy, 100, false);
+                drawSpindles(cx, cy, 100, 4, 0);
+                // Aligned at equator
+                drawChromosomeX(cx, cy - 45, blue); drawChromosomeX(cx, cy - 15, pink);
+                drawChromosomeX(cx, cy + 15, blue); drawChromosomeX(cx, cy + 45, pink);
+            }
+            else if (currentStep === 3) { // Anaphase
+                drawCellMembrane(cx, cy, 100, false);
+                drawSpindles(cx, cy, 100, 4, 30);
+                // Chromatids pulling apart
+                drawChromatid(cx - 30, cy - 45, blue, true); drawChromatid(cx + 30, cy - 45, blue, false);
+                drawChromatid(cx - 30, cy - 15, pink, true); drawChromatid(cx + 30, cy - 15, pink, false);
+                drawChromatid(cx - 30, cy + 15, blue, true); drawChromatid(cx + 30, cy + 15, blue, false);
+                drawChromatid(cx - 30, cy + 45, pink, true); drawChromatid(cx + 30, cy + 45, pink, false);
+            }
+            else if (currentStep === 4) { // Telophase
+                drawCellMembrane(cx, cy, 110, true);
+                // Nuclei forming
+                ctx.beginPath(); ctx.arc(cx - 55, cy, 40, 0, Math.PI*2); ctx.strokeStyle="rgba(255,255,255,0.5)"; ctx.stroke();
+                ctx.beginPath(); ctx.arc(cx + 55, cy, 40, 0, Math.PI*2); ctx.stroke();
+                drawChromatin(cx - 55, cy); drawChromatin(cx + 55, cy);
+            }
+        } 
+        else if (currentMode === 'meiosis') {
+            if (currentStep === 0) { // Interphase
+                drawCellMembrane(cx, cy, 100, false); drawChromatin(cx, cy);
+            }
+            else if (currentStep === 1) { // Prophase I (Synapsis)
+                drawCellMembrane(cx, cy, 100, false);
+                drawChromosomeX(cx - 10, cy - 20, blue); drawChromosomeX(cx + 10, cy - 20, pink); // Pair 1
+                drawChromosomeX(cx - 10, cy + 25, pink); drawChromosomeX(cx + 10, cy + 25, blue); // Pair 2
+            }
+            else if (currentStep === 2) { // Metaphase I
+                drawCellMembrane(cx, cy, 100, false); drawSpindles(cx, cy, 100, 2, 10);
+                drawChromosomeX(cx - 15, cy - 20, blue); drawChromosomeX(cx + 15, cy - 20, pink);
+                drawChromosomeX(cx - 15, cy + 20, pink); drawChromosomeX(cx + 15, cy + 20, blue);
+            }
+            else if (currentStep === 3) { // Anaphase I
+                drawCellMembrane(cx, cy, 100, false); drawSpindles(cx, cy, 100, 2, 40);
+                drawChromosomeX(cx - 40, cy - 20, blue); drawChromosomeX(cx + 40, cy - 20, pink);
+                drawChromosomeX(cx - 40, cy + 20, pink); drawChromosomeX(cx + 40, cy + 20, blue);
+            }
+            else if (currentStep === 4) { // Telophase I
+                drawCellMembrane(cx, cy, 110, true);
+                drawChromosomeX(cx - 55, cy - 15, blue); drawChromosomeX(cx - 55, cy + 15, pink);
+                drawChromosomeX(cx + 55, cy - 15, pink); drawChromosomeX(cx + 55, cy + 15, blue);
+            }
+            else if (currentStep === 5) { // Metaphase II (2 cells)
+                drawCellMembrane(cx - 80, cy, 70, false); drawCellMembrane(cx + 80, cy, 70, false);
+                drawSpindles(cx - 80, cy, 70, 2, 0); drawSpindles(cx + 80, cy, 70, 2, 0);
+                drawChromosomeX(cx - 80, cy - 20, blue); drawChromosomeX(cx - 80, cy + 20, pink);
+                drawChromosomeX(cx + 80, cy - 20, pink); drawChromosomeX(cx + 80, cy + 20, blue);
+            }
+            else if (currentStep === 6) { // Anaphase II
+                drawCellMembrane(cx - 80, cy, 70, false); drawCellMembrane(cx + 80, cy, 70, false);
+                drawSpindles(cx - 80, cy, 70, 2, 25); drawSpindles(cx + 80, cy, 70, 2, 25);
+                drawChromatid(cx - 105, cy - 20, blue, true); drawChromatid(cx - 55, cy - 20, blue, false);
+                drawChromatid(cx - 105, cy + 20, pink, true); drawChromatid(cx - 55, cy + 20, pink, false);
+                
+                drawChromatid(cx + 55, cy - 20, pink, true); drawChromatid(cx + 105, cy - 20, pink, false);
+                drawChromatid(cx + 55, cy + 20, blue, true); drawChromatid(cx + 105, cy + 20, blue, false);
+            }
+            else if (currentStep === 7) { // Telophase II (4 cells)
+                [-120, -40, 40, 120].forEach(offset => drawCellMembrane(cx + offset, cy, 35, false));
+                drawChromatid(cx - 120, cy - 10, blue, false); drawChromatid(cx - 120, cy + 10, pink, false);
+                drawChromatid(cx - 40, cy - 10, blue, true); drawChromatid(cx - 40, cy + 10, pink, true);
+                drawChromatid(cx + 40, cy - 10, pink, false); drawChromatid(cx + 40, cy + 10, blue, false);
+                drawChromatid(cx + 120, cy - 10, pink, true); drawChromatid(cx + 120, cy + 10, blue, true);
             }
         }
     }
 
-    // Init App
     setTimeout(resizeCanvas, 100);
     switchMode('mitosis');
 
-    /* =========================================
-       3. HKDSE QUIZ & WEB3FORMS LOGIC
-       ========================================= */
-    const QUIZ_QUESTIONS = [
+    // ==========================================
+    // 3. QUIZ SYSTEM (5 Questions, Bilingual)
+    // ==========================================
+    const QUIZ = [
         {
-            q: "在減數分裂的過程中，哪一個階段會發生「同源染色體分離」(Separation of homologous chromosomes)？",
-            options: ["A. 前期 I (Prophase I)", "B. 後期 I (Anaphase I)", "C. 後期 II (Anaphase II)", "D. 末期 II (Telophase II)"],
-            correct: 1,
-            exp: "後期 I (Anaphase I) 是同源染色體被紡錘絲拉向兩極的階段。姐妹染色單體分離則發生在後期 II。"
+            en: { q: "In which stage of meiosis do homologous chromosomes separate?", options: ["Prophase I", "Anaphase I", "Anaphase II", "Telophase II"], exp: "Anaphase I separates homologous chromosomes, whereas Anaphase II separates sister chromatids." },
+            zh: { q: "在減數分裂的哪個階段，同源染色體會發生分離？", options: ["前期 I", "後期 I", "後期 II", "末期 II"], exp: "後期 I 會分離同源染色體，而後期 II 則是分離姐妹染色單體。" },
+            correct: 1
         },
         {
-            q: "下列關於有絲分裂 (Mitosis) 與減數分裂 (Meiosis) 的比較，何者正確？",
-            options: [
-                "A. 兩者均會發生同源染色體的聯會 (Synapsis)。",
-                "B. 有絲分裂產生單倍體細胞，減數分裂產生二倍體細胞。",
-                "C. 兩者在分裂前，DNA 均只複製一次。",
-                "D. 減數分裂 II 的過程中會再次進行 DNA 複製。"
-            ],
-            correct: 2,
-            exp: "無論是有絲分裂還是減數分裂，DNA 在間期 (Interphase) 都只會複製一次。減數分裂 II 前不會進行 DNA 複製。"
+            en: { q: "During which phase does DNA replication occur?", options: ["Interphase", "Prophase", "Metaphase", "Anaphase"], exp: "DNA replication always occurs during Interphase before the actual division begins." },
+            zh: { q: "DNA 複製發生在細胞週期的哪一個階段？", options: ["間期", "前期", "中期", "後期"], exp: "DNA 複製總是在細胞分裂真正開始前的間期發生。" },
+            correct: 0
         },
         {
-            q: "人類體細胞有 46 條染色體。一個精原細胞經過完整的減數分裂後，產生的單個精子細胞中含有多少條染色體？",
-            options: ["A. 92", "B. 46", "C. 23", "D. 4"],
-            correct: 2,
-            exp: "減數分裂會使染色體數目減半 (2n -> n)。因此 46 條染色體會減半為 23 條，以確保受精後代維持 46 條。"
+            en: { q: "What is the primary purpose of 'crossing over' in Prophase I?", options: ["To repair damaged DNA", "To reduce the chromosome number", "To increase genetic variation", "To dissolve the nuclear envelope"], exp: "Crossing over exchanges genetic material between homologous chromosomes, creating unique genetic combinations." },
+            zh: { q: "在前期 I 發生的「互換」(Crossing over) 的主要目的是什麼？", options: ["修復受損的 DNA", "減少染色體數目", "增加遺傳變異", "溶解核膜"], exp: "互換過程在同源染色體間交換遺傳物質，從而產生獨特的遺傳組合。" },
+            correct: 2
         },
         {
-            q: "在細胞分裂的哪個階段，染色體最容易被觀察，且整齊排列於赤道板上？",
-            options: ["A. 間期 (Interphase)", "B. 前期 (Prophase)", "C. 中期 (Metaphase)", "D. 後期 (Anaphase)"],
-            correct: 2,
-            exp: "中期 (Metaphase) 的特徵是染色體排列在細胞中央的赤道板，此時染色體濃縮最明顯，最適合觀察核型。"
+            en: { q: "If a human skin cell (46 chromosomes) undergoes mitosis, how many chromosomes will each daughter cell have?", options: ["23", "46", "92", "4"], exp: "Mitosis produces identical daughter cells, maintaining the diploid (46) number." },
+            zh: { q: "如果一個人類皮膚細胞 (46 條染色體) 進行有絲分裂，每個子細胞將有多少條染色體？", options: ["23", "46", "92", "4"], exp: "有絲分裂會產生完全相同的子細胞，維持二倍體 (46) 數量不變。" },
+            correct: 1
+        },
+        {
+            en: { q: "Which feature visually defines 'Metaphase' under a microscope?", options: ["Chromosomes align at the equator", "Chromosomes are pulled to the poles", "Nuclear envelope reforms", "Chromatin starts condensing"], exp: "The hallmark of Metaphase is chromosomes lined up perfectly along the cell's equator." },
+            zh: { q: "在顯微鏡下觀察，哪項特徵最能定義「中期」(Metaphase)？", options: ["染色體排列在細胞赤道板上", "染色體被拉向兩極", "核膜重新形成", "染色質開始濃縮"], exp: "中期的標誌性特徵就是所有染色體整齊排列在細胞中部的赤道板上。" },
+            correct: 0
         }
     ];
 
-    let userAnswers = new Array(QUIZ_QUESTIONS.length).fill(null);
+    let userAnswers = new Array(QUIZ.length).fill(null);
     let quizSubmitted = false;
 
-    const quizContainer = document.getElementById('quiz-container');
-
     function renderQuiz() {
-        quizContainer.innerHTML = '';
-        QUIZ_QUESTIONS.forEach((qItem, qIdx) => {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = '';
+        QUIZ.forEach((qItem, qIdx) => {
+            const data = qItem[currentLang];
             const block = document.createElement('div');
             block.className = 'q-block';
             
             let optionsHTML = '';
-            qItem.options.forEach((opt, oIdx) => {
+            data.options.forEach((opt, oIdx) => {
                 optionsHTML += `
                     <label class="option-label">
-                        <input type="radio" name="q${qIdx}" value="${oIdx}" onchange="userAnswers[${qIdx}] = ${oIdx}">
+                        <input type="radio" name="q${qIdx}" value="${oIdx}" 
+                        ${userAnswers[qIdx] === oIdx ? 'checked' : ''} 
+                        onchange="userAnswers[${qIdx}] = ${oIdx}">
                         <span>${opt}</span>
                     </label>
                 `;
             });
 
             block.innerHTML = `
-                <div class="q-text">Q${qIdx + 1}. ${qItem.q}</div>
+                <div class="q-text">Q${qIdx + 1}. ${data.q}</div>
                 <div>${optionsHTML}</div>
             `;
-            quizContainer.appendChild(block);
+            container.appendChild(block);
         });
     }
 
     async function submitQuiz() {
-        if (quizSubmitted) return alert("測驗已提交！請重新整理頁面以重試。");
+        if (quizSubmitted) {
+            alert(currentLang === 'en' ? "Quiz already submitted!" : "測驗已提交！");
+            return;
+        }
         
         const sName = document.getElementById('stuName').value.trim();
         const sClass = document.getElementById('stuClass').value.trim();
         const sNo = document.getElementById('stuNo').value.trim();
 
-        if (!sName || !sClass || !sNo) return alert("請填寫完整的學生資料 (姓名、班別、學號)。");
-        if (userAnswers.includes(null)) return alert("請回答所有問題後再提交。");
+        if (!sName || !sClass || !sNo) {
+            alert(currentLang === 'en' ? "Please fill in Name, Class, and Class No." : "請填寫完整的學生資料 (姓名、班別、學號)。");
+            return;
+        }
+        if (userAnswers.includes(null)) {
+            alert(currentLang === 'en' ? "Please answer all 5 questions." : "請回答所有 5 條問題後再提交。");
+            return;
+        }
 
         let score = 0;
-        let explanationHTML = `<h3 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">📝 詳細題解</h3>`;
+        let explanationHTML = `<h3 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">${currentLang === 'en' ? '📝 Detailed Explanations' : '📝 詳細題解'}</h3>`;
         let emailReport = `Student: ${sName} | Class: ${sClass} (${sNo})\n\n`;
 
-        QUIZ_QUESTIONS.forEach((q, i) => {
+        QUIZ.forEach((q, i) => {
             const isCorrect = userAnswers[i] === q.correct;
-            if (isCorrect) score += 25; // 4 questions = 25 marks each
+            if (isCorrect) score += 20; // 5 questions = 20 marks each
             
-            emailReport += `Q${i+1}: ${isCorrect ? 'Correct' : 'Wrong'} - Selected: ${q.options[userAnswers[i]]}\n`;
+            emailReport += `Q${i+1}: ${isCorrect ? 'Correct' : 'Wrong'} - Selected: ${q.en.options[userAnswers[i]]}\n`;
             
+            const mark = isCorrect ? '✅' : '❌';
             explanationHTML += `
                 <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
                     <div style="font-weight: bold; color: ${isCorrect ? '#10b981' : '#ef4444'};">
-                        Q${i+1} ${isCorrect ? '✅ 答對' : '❌ 答錯'}
+                        Q${i+1} ${mark}
                     </div>
                     <div style="margin-top: 5px; color: #475569; font-size: 0.95rem;">
-                        <strong>正確答案：</strong> ${q.options[q.correct]}<br>
-                        <strong>解析：</strong> ${q.exp}
+                        <strong>${currentLang === 'en' ? 'Correct Answer:' : '正確答案：'}</strong> ${q[currentLang].options[q.correct]}<br>
+                        <strong>${currentLang === 'en' ? 'Explanation:' : '解析：'}</strong> ${q[currentLang].exp}
                     </div>
                 </div>
             `;
@@ -377,13 +563,14 @@
 
         // Display locally
         document.getElementById('resultsArea').style.display = 'block';
-        document.getElementById('scoreDisplay').innerText = `🏆 測驗得分：${score} / 100`;
+        document.getElementById('scoreDisplay').innerText = currentLang === 'en' ? `🏆 Score: ${score} / 100` : `🏆 測驗得分：${score} / 100`;
         document.getElementById('explanationDisplay').innerHTML = explanationHTML;
-        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('submitBtn').style.opacity = '0.5';
+        document.getElementById('submitBtn').style.pointerEvents = 'none';
 
-        // Send Email via Web3Forms API
+        // Send Email via Web3Forms API to Mr. Daniel Ng
         const formData = new FormData();
-        formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c'); // Your Web3Forms Key
+        formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c'); 
         formData.append('subject', `[Biology Quiz] ${sClass} ${sName} - Score: ${score}`);
         formData.append('email', 'ngtinghei0803@gmail.com');
         formData.append('message', emailReport);
@@ -391,12 +578,12 @@
         try {
             const response = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
             if (response.ok) {
-                alert(`✅ 報告已成功發送至 Web3Forms 系統。\n你的得分是：${score}/100`);
+                alert(currentLang === 'en' ? `✅ Sent successfully to Mr. Daniel Ng! Score: ${score}/100` : `✅ 報告已成功發送給 Mr. Daniel Ng！你的得分是：${score}/100`);
             } else {
-                alert("⚠️ 郵件發送失敗，請檢查 Web3Forms 的額度限制。");
+                alert(currentLang === 'en' ? "⚠️ Email limit reached. Score saved locally." : "⚠️ 郵件發送限制，分數已在本地顯示。");
             }
         } catch (error) {
-            alert("⚠️ 網絡錯誤，無法發送郵件。請截圖保留你的分數。");
+            alert(currentLang === 'en' ? "⚠️ Network error. Could not send." : "⚠️ 網絡錯誤，無法發送郵件。");
         }
 
         quizSubmitted = true;
