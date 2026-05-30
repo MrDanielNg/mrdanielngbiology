@@ -28,7 +28,7 @@
         
         .controls-panel { padding: 30px; display: flex; flex-direction: column; background: white; }
         .stage-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; border-left: 5px solid #10b981; padding-left: 15px; margin-top: 0; }
-        .stage-desc { font-size: 1rem; color: #475569; line-height: 1.6; flex-grow: 1; }
+        .stage-desc { font-size: 0.95rem; color: #475569; line-height: 1.6; flex-grow: 1; overflow-y: auto; padding-right: 10px; }
         
         .progress-dots { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
         .dot { height: 12px; width: 12px; background: #cbd5e1; border-radius: 50%; transition: 0.3s; cursor: pointer; }
@@ -77,7 +77,6 @@
 <body data-lang="en">
 
 <div class="app-container">
-    <!-- Header -->
     <header class="nav-header">
         <a href="https://mrdanielng.github.io/mrdanielngbiology/" class="title-area">🔬 Mr. Daniel Ng Biology</a>
         <div class="controls-top">
@@ -91,7 +90,6 @@
         </div>
     </header>
 
-    <!-- Interactive Simulator Workspace -->
     <section class="sim-grid">
         <div class="canvas-container">
             <canvas id="simCanvas"></canvas>
@@ -114,7 +112,6 @@
         </div>
     </section>
 
-    <!-- Quiz Section -->
     <section class="quiz-section">
         <h2 class="quiz-header">
             <span class="lang-en">📝 HKDSE Cell Division Quiz</span>
@@ -138,13 +135,11 @@
 
         <div id="quiz-container"></div>
 
-        <!-- The Updated Submit Button -->
         <button id="submitBtn" class="submit-btn" onclick="submitQuiz()">
             <span class="lang-en">✅ Submit & Send to Mr. Daniel Ng</span>
             <span class="lang-zh">✅ 提交並發送給 Mr. Daniel Ng</span>
         </button>
         
-        <!-- Results Output -->
         <div id="resultsArea" style="display: none; margin-top: 30px;">
             <div id="scoreDisplay" style="background: #d1fae5; color: #065f46; padding: 20px; border-radius: 16px; text-align: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 20px;"></div>
             <div id="explanationDisplay" style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px;"></div>
@@ -164,6 +159,10 @@
         updateSimulationUI();
         renderQuiz();
     }
+
+    const telophaseDescEN = "<b>Nuclear Reformation:</b> A new nuclear membrane forms around each of the two sets of separated chromosomes. Inside these new envelopes, the nucleolus reappears.<br><br><b>Decondensation:</b> The chromosomes, which were tightly coiled and highly condensed, uncoil and return to their diffuse, stringy state (chromatin).<br><br><b>Cytokinesis Begins:</b> Overlapping with the end of telophase, cytokinesis physically splits the cell's cytoplasm into two separate, fully functioning daughter cells.";
+    
+    const telophaseDescZH = "<b>核膜重組：</b> 在兩組分離的染色體周圍形成新的核膜。在這些新核膜內，核仁重新出現。<br><br><b>解聚：</b> 原本緊密捲曲和高度濃縮的染色體，解開並恢復為擴散的絲狀狀態（染色質）。<br><br><b>細胞質分裂開始：</b> 與末期結束重疊，細胞質分裂在物理上將細胞質一分為二，形成兩個獨立的子細胞。";
 
     const SIM_DATA = {
         mitosis: {
@@ -185,8 +184,12 @@
                     zh: { t: "後期", d: "著絲點分裂，紡錘絲將姐妹染色單體拉向細胞的兩極。" }
                 },
                 {
-                    en: { t: "Telophase & Cytokinesis", d: "Nuclear envelopes reform around the two identical sets of chromosomes. The cell pinches in the middle to form two diploid (2n) daughter cells." },
-                    zh: { t: "末期與細胞質分裂", d: "核膜圍繞兩組相同的染色體重新形成。細胞從中間凹陷，形成兩個相同的二倍體 (2n) 子細胞。" }
+                    en: { t: "Telophase", d: telophaseDescEN },
+                    zh: { t: "末期", d: telophaseDescZH }
+                },
+                {
+                    en: { t: "Results", d: "Two completely separate, fully functioning diploid (2n) daughter cells are formed, identical to the parent cell." },
+                    zh: { t: "結果", d: "形成兩個完全獨立且功能完整的二倍體 (2n) 子細胞，遺傳物質與母細胞完全相同。" }
                 }
             ]
         },
@@ -209,8 +212,8 @@
                     zh: { t: "後期 I", d: "同源染色體分離並移向兩極。注意：姐妹染色單體仍然相連。" }
                 },
                 {
-                    en: { t: "Telophase I", d: "The cell divides into two haploid (n) cells. Each chromosome still consists of two chromatids." },
-                    zh: { t: "末期 I", d: "細胞分裂成兩個單倍體 (n) 細胞。每條染色體仍包含兩條染色單體。" }
+                    en: { t: "Telophase I", d: telophaseDescEN },
+                    zh: { t: "末期 I", d: telophaseDescZH }
                 },
                 {
                     en: { t: "Metaphase II", d: "In both cells, chromosomes line up individually at the equator." },
@@ -221,8 +224,12 @@
                     zh: { t: "後期 II", d: "著絲點分裂，姐妹染色單體終於分離並移向兩極。" }
                 },
                 {
-                    en: { t: "Telophase II", d: "Four genetically distinct haploid (n) gametes are formed." },
-                    zh: { t: "末期 II", d: "最終形成四個遺傳物質各不相同的單倍體 (n) 配子。" }
+                    en: { t: "Telophase II", d: telophaseDescEN.replace('two sets', 'four sets').replace('two separate', 'four separate') },
+                    zh: { t: "末期 II", d: telophaseDescZH.replace('兩組', '四組').replace('兩個獨立', '四個獨立') }
+                },
+                {
+                    en: { t: "Results", d: "Four completely separate, genetically distinct haploid (n) gametes are successfully formed." },
+                    zh: { t: "結果", d: "最終成功形成四個完全獨立、遺傳物質各不相同的單倍體 (n) 配子。" }
                 }
             ]
         }
@@ -233,8 +240,6 @@
     // ==========================================
     let currentMode = 'mitosis';
     let currentStep = 0;
-    
-    // Animation state variables
     let targetStepFloat = 0;
     let currentStepFloat = 0;
 
@@ -245,7 +250,6 @@
         const container = canvas.parentElement;
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
-        // Immediate redraw not fully necessary as animation loop runs continuously
     }
     window.addEventListener('resize', resizeCanvas);
 
@@ -253,7 +257,7 @@
         currentMode = mode;
         currentStep = 0;
         targetStepFloat = 0;
-        currentStepFloat = 0; // Instant snap for mode switch
+        currentStepFloat = 0;
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${mode}`).classList.add('active');
         updateSimulationUI();
@@ -278,8 +282,8 @@
         const data = SIM_DATA[currentMode].stages[currentStep][currentLang];
         const maxSteps = SIM_DATA[currentMode].stages.length - 1;
 
-        document.getElementById('ui-title').innerText = data.t;
-        document.getElementById('ui-desc').innerText = data.d;
+        document.getElementById('ui-title').innerHTML = data.t;
+        document.getElementById('ui-desc').innerHTML = data.d;
 
         document.getElementById('btn-prev').disabled = currentStep === 0;
         document.getElementById('btn-next').disabled = currentStep === maxSteps;
@@ -294,7 +298,6 @@
         }
     }
 
-    // --- Linear Interpolation Helper ---
     function interp(sf, arr) {
         let idx = Math.floor(sf);
         if (idx >= arr.length - 1) return arr[arr.length - 1];
@@ -314,9 +317,9 @@
         
         ctx.beginPath();
         if (pinchAmt > 0) {
-            let offset = pinchAmt * (r * 0.7);
-            ctx.arc(x - offset, y, r * (1 - pinchAmt*0.2), Math.PI/2, Math.PI*1.5);
-            ctx.arc(x + offset, y, r * (1 - pinchAmt*0.2), -Math.PI/2, Math.PI/2);
+            let offset = pinchAmt * (r * 0.75);
+            ctx.arc(x - offset, y, r * (1 - pinchAmt*0.25), Math.PI/2, Math.PI*1.5);
+            ctx.arc(x + offset, y, r * (1 - pinchAmt*0.25), -Math.PI/2, Math.PI/2);
             ctx.closePath();
         } else {
             ctx.arc(x, y, r, 0, Math.PI*2);
@@ -336,16 +339,14 @@
         
         ctx.beginPath();
         if (facingLeft) {
-            ctx.moveTo(x + 12, y - 20); ctx.lineTo(x, y); ctx.lineTo(x + 12, y + 20);
+            ctx.moveTo(x + 10, y - 20); ctx.lineTo(x, y); ctx.lineTo(x + 10, y + 20);
         } else {
-            ctx.moveTo(x - 12, y - 20); ctx.lineTo(x, y); ctx.lineTo(x - 12, y + 20);
+            ctx.moveTo(x - 10, y - 20); ctx.lineTo(x, y); ctx.lineTo(x - 10, y + 20);
         }
         ctx.stroke();
         
         ctx.fillStyle = "white";
-        ctx.beginPath(); 
-        ctx.arc(x, y, 3, 0, Math.PI*2); 
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI*2); ctx.fill();
         ctx.restore();
     }
 
@@ -359,7 +360,7 @@
         const pole2X = cx + r - 15;
         
         for(let i=0; i<numSpindles; i++) {
-            let yOff = cy - 30 + (i * (60/((numSpindles-1) || 1)));
+            let yOff = cy - 35 + (i * (70/((numSpindles-1) || 1)));
             ctx.beginPath(); ctx.moveTo(pole1X, cy); ctx.lineTo(cx - separation, yOff); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(pole2X, cy); ctx.lineTo(cx + separation, yOff); ctx.stroke();
         }
@@ -370,29 +371,41 @@
         ctx.restore();
     }
 
-    // New curvy DNA to replace jagged straight lines
+    // Improved neat Chromatin design (spiral waves)
     function drawChromatin(x, y, alpha = 1) {
         if (alpha <= 0) return;
         ctx.save();
         ctx.globalAlpha = alpha;
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        // Pink Strand
         ctx.strokeStyle = "#ec4899";
-        ctx.lineWidth = 2;
         ctx.beginPath();
-        
-        let curX = x, curY = y;
-        ctx.moveTo(curX, curY);
-        // Deterministic pseudo-randomness for stable animation
-        for(let i=1; i<=15; i++) {
-            let cp1x = curX + Math.sin(i*1.7)*30;
-            let cp1y = curY + Math.cos(i*2.3)*30;
-            let cp2x = x + Math.sin(i*3.7)*40;
-            let cp2y = y + Math.cos(i*5.1)*40;
-            let endX = x + Math.sin(i*7.3)*35;
-            let endY = y + Math.cos(i*8.9)*35;
-            ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
-            curX = endX; curY = endY;
+        for (let i = 0; i < Math.PI * 5; i += 0.2) {
+            let r = 25 - (i * 1.5);
+            if (r < 3) r = 3;
+            let px = x + Math.cos(i * 2.5) * r;
+            let py = y + Math.sin(i * 3.1) * r;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         }
         ctx.stroke();
+
+        // Blue Strand
+        ctx.strokeStyle = "#3b82f6";
+        ctx.beginPath();
+        for (let i = 0; i < Math.PI * 5; i += 0.2) {
+            let r = 25 - (i * 1.5);
+            if (r < 3) r = 3;
+            let px = x + Math.cos(i * 2.5 + Math.PI) * r;
+            let py = y + Math.sin(i * 3.1 + Math.PI) * r;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        
         ctx.restore();
     }
 
@@ -405,12 +418,22 @@
         const pink = "#ec4899";
 
         if (currentMode === 'mitosis') {
-            let chrAlpha = interp(sf, [0, 1, 1, 1, 1]);
-            let chromAlpha = interp(sf, [1, 0, 0, 0, 1]);
-            let pinch = interp(sf, [0, 0, 0, 0, 0.8]);
-            let nucAlpha = interp(sf, [0.3, 0, 0, 0, 0.5]);
+            // Arrays for Mitosis (Length 6: Int, Pro, Met, Ana, Tel, Res)
+            let chrAlpha = interp(sf, [0, 1, 1, 1, 1, 0]);
+            let chromAlpha = interp(sf, [1, 0, 0, 0, 1, 1]);
+            let pinch = interp(sf, [0, 0, 0, 0, 0.8, 0]);
+            let sepAlpha = interp(sf, [0, 0, 0, 0, 0, 1]);
+            let mainAlpha = interp(sf, [1, 1, 1, 1, 1, 0]);
+            let nucAlpha = interp(sf, [0.3, 0, 0, 0, 0.6, 0.6]);
 
-            drawCellMembrane(cx, cy, 100, pinch, 1);
+            // Draw primary cell (fades out in results)
+            drawCellMembrane(cx, cy, 105, pinch, mainAlpha);
+            
+            // Draw separated cells (fades in during results)
+            if (sepAlpha > 0) {
+                drawCellMembrane(cx - 65, cy, 55, 0, sepAlpha);
+                drawCellMembrane(cx + 65, cy, 55, 0, sepAlpha);
+            }
 
             if(nucAlpha > 0) {
                 if (sf < 1) {
@@ -418,122 +441,129 @@
                     ctx.strokeStyle=`rgba(255,255,255,${nucAlpha})`; ctx.stroke();
                     drawChromatin(cx, cy, chromAlpha);
                 } else {
-                    ctx.beginPath(); ctx.arc(cx - 55, cy, 40, 0, Math.PI*2); 
+                    let nucOffset = interp(sf, [0, 0, 0, 0, 60, 65]);
+                    ctx.beginPath(); ctx.arc(cx - nucOffset, cy, 40, 0, Math.PI*2); 
                     ctx.strokeStyle=`rgba(255,255,255,${nucAlpha})`; ctx.stroke();
-                    ctx.beginPath(); ctx.arc(cx + 55, cy, 40, 0, Math.PI*2); ctx.stroke();
-                    drawChromatin(cx - 55, cy, chromAlpha);
-                    drawChromatin(cx + 55, cy, chromAlpha);
+                    ctx.beginPath(); ctx.arc(cx + nucOffset, cy, 40, 0, Math.PI*2); ctx.stroke();
+                    
+                    drawChromatin(cx - nucOffset, cy, chromAlpha);
+                    drawChromatin(cx + nucOffset, cy, chromAlpha);
                 }
             }
 
-            let spAlpha = interp(sf, [0, 0, 1, 1, 0]);
-            let spSep = interp(sf, [0, 0, 0, 30, 60]);
-            drawSpindles(cx, cy, 100, 4, spSep, spAlpha);
+            let spAlpha = interp(sf, [0, 0, 1, 1, 0, 0]);
+            let spSep = interp(sf, [0, 0, 0, 35, 70, 70]);
+            drawSpindles(cx, cy, 105, 4, spSep, spAlpha);
 
             // C1 (Blue)
-            let c1y = interp(sf, [cy-30, cy-30, cy-45, cy-45, cy-15]);
-            let c1lx = interp(sf, [cx-20, cx-20, cx, cx-30, cx-55]);
-            let c1rx = interp(sf, [cx-20, cx-20, cx, cx+30, cx+55]);
+            let c1y = interp(sf, [cy-30, cy-30, cy-45, cy-45, cy-15, cy-15]);
+            let c1lx = interp(sf, [cx-20, cx-20, cx, cx-35, cx-60, cx-60]);
+            let c1rx = interp(sf, [cx-20, cx-20, cx, cx+35, cx+60, cx+60]);
             drawChromatid(c1lx, c1y, blue, true, chrAlpha);
             drawChromatid(c1rx, c1y, blue, false, chrAlpha);
 
             // C2 (Blue)
-            let c2y = interp(sf, [cy+20, cy+20, cy+15, cy+15, cy+15]);
-            let c2lx = interp(sf, [cx+25, cx+25, cx, cx-30, cx-55]);
-            let c2rx = interp(sf, [cx+25, cx+25, cx, cx+30, cx+55]);
+            let c2y = interp(sf, [cy+20, cy+20, cy+15, cy+15, cy+15, cy+15]);
+            let c2lx = interp(sf, [cx+25, cx+25, cx, cx-35, cx-60, cx-60]);
+            let c2rx = interp(sf, [cx+25, cx+25, cx, cx+35, cx+60, cx+60]);
             drawChromatid(c2lx, c2y, blue, true, chrAlpha);
             drawChromatid(c2rx, c2y, blue, false, chrAlpha);
 
             // C3 (Pink)
-            let c3y = interp(sf, [cy-25, cy-25, cy-15, cy-15, cy-15]);
-            let c3lx = interp(sf, [cx+30, cx+30, cx, cx-30, cx-55]);
-            let c3rx = interp(sf, [cx+30, cx+30, cx, cx+30, cx+55]);
+            let c3y = interp(sf, [cy-25, cy-25, cy-15, cy-15, cy-15, cy-15]);
+            let c3lx = interp(sf, [cx+30, cx+30, cx, cx-35, cx-60, cx-60]);
+            let c3rx = interp(sf, [cx+30, cx+30, cx, cx+35, cx+60, cx+60]);
             drawChromatid(c3lx, c3y, pink, true, chrAlpha);
             drawChromatid(c3rx, c3y, pink, false, chrAlpha);
 
             // C4 (Pink)
-            let c4y = interp(sf, [cy+30, cy+30, cy+45, cy+45, cy+15]);
-            let c4lx = interp(sf, [cx-15, cx-15, cx, cx-30, cx-55]);
-            let c4rx = interp(sf, [cx-15, cx-15, cx, cx+30, cx+55]);
+            let c4y = interp(sf, [cy+30, cy+30, cy+45, cy+45, cy+15, cy+15]);
+            let c4lx = interp(sf, [cx-15, cx-15, cx, cx-35, cx-60, cx-60]);
+            let c4rx = interp(sf, [cx-15, cx-15, cx, cx+35, cx+60, cx+60]);
             drawChromatid(c4lx, c4y, pink, true, chrAlpha);
             drawChromatid(c4rx, c4y, pink, false, chrAlpha);
         } 
         else if (currentMode === 'meiosis') {
-            let chrAlpha = interp(sf, [0, 1, 1, 1, 1, 1, 1, 1]);
-            let chromAlpha = interp(sf, [1, 0, 0, 0, 1, 0, 0, 1]);
+            // Arrays for Meiosis (Length 9: 0 to 8)
+            let chrAlpha = interp(sf, [0, 1, 1, 1, 1, 1, 1, 1, 0]);
+            let chromAlpha = interp(sf, [1, 0, 0, 0, 1, 0, 0, 1, 1]);
 
-            let alpha1 = interp(sf, [1, 1, 1, 1, 1, 0, 0, 0]);
-            let alpha2 = interp(sf, [0, 0, 0, 0, 0, 1, 1, 0]);
-            let alpha4 = interp(sf, [0, 0, 0, 0, 0, 0, 0, 1]);
-            let pinch1 = interp(sf, [0, 0, 0, 0, 0.8, 0, 0, 0]);
-            let pinch2 = interp(sf, [0, 0, 0, 0, 0, 0, 0.8, 0]);
+            let alpha1 = interp(sf, [1, 1, 1, 1, 1, 0, 0, 0, 0]);
+            let alpha2 = interp(sf, [0, 0, 0, 0, 0, 1, 1, 1, 0]);
+            let alpha4 = interp(sf, [0, 0, 0, 0, 0, 0, 0, 0, 1]);
+            
+            let pinch1 = interp(sf, [0, 0, 0, 0, 0.8, 0, 0, 0, 0]);
+            let pinch2 = interp(sf, [0, 0, 0, 0, 0, 0, 0, 0.8, 0]);
 
-            drawCellMembrane(cx, cy, 100, pinch1, alpha1);
+            // Cell Membranes
+            drawCellMembrane(cx, cy, 105, pinch1, alpha1);
             if (alpha2 > 0) {
-                drawCellMembrane(cx - 80, cy, 70, pinch2, alpha2);
-                drawCellMembrane(cx + 80, cy, 70, pinch2, alpha2);
+                drawCellMembrane(cx - 75, cy, 75, pinch2, alpha2);
+                drawCellMembrane(cx + 75, cy, 75, pinch2, alpha2);
             }
             if (alpha4 > 0) {
-                drawCellMembrane(cx - 120, cy, 40, 0, alpha4);
-                drawCellMembrane(cx - 40, cy, 40, 0, alpha4);
-                drawCellMembrane(cx + 40, cy, 40, 0, alpha4);
-                drawCellMembrane(cx + 120, cy, 40, 0, alpha4);
+                drawCellMembrane(cx - 120, cy, 42, 0, alpha4);
+                drawCellMembrane(cx - 40, cy, 42, 0, alpha4);
+                drawCellMembrane(cx + 40, cy, 42, 0, alpha4);
+                drawCellMembrane(cx + 120, cy, 42, 0, alpha4);
             }
 
+            // Chromatin
             if (chromAlpha > 0) {
                 if (sf < 1) drawChromatin(cx, cy, chromAlpha);
                 else if (sf < 5) {
-                    drawChromatin(cx - 55, cy, chromAlpha); drawChromatin(cx + 55, cy, chromAlpha);
+                    let off1 = interp(sf, [0,0,0,0, 60,60,60,60,60]);
+                    drawChromatin(cx - off1, cy, chromAlpha); drawChromatin(cx + off1, cy, chromAlpha);
                 } else {
                     drawChromatin(cx - 120, cy, chromAlpha); drawChromatin(cx - 40, cy, chromAlpha);
                     drawChromatin(cx + 40, cy, chromAlpha); drawChromatin(cx + 120, cy, chromAlpha);
                 }
             }
 
-            let sp1Alpha = interp(sf, [0, 0, 1, 1, 0, 0, 0, 0]);
-            let sp1Sep = interp(sf, [0, 0, 10, 40, 60, 0, 0, 0]);
-            drawSpindles(cx, cy, 100, 2, sp1Sep, sp1Alpha);
+            // Spindles
+            let sp1Alpha = interp(sf, [0, 0, 1, 1, 0, 0, 0, 0, 0]);
+            let sp1Sep = interp(sf, [0, 0, 15, 45, 65, 0, 0, 0, 0]);
+            drawSpindles(cx, cy, 105, 2, sp1Sep, sp1Alpha);
 
-            let sp2Alpha = interp(sf, [0, 0, 0, 0, 0, 1, 1, 0]);
-            let sp2Sep = interp(sf, [0, 0, 0, 0, 0, 0, 25, 40]);
+            let sp2Alpha = interp(sf, [0, 0, 0, 0, 0, 1, 1, 0, 0]);
+            let sp2Sep = interp(sf, [0, 0, 0, 0, 0, 0, 30, 45, 0]);
             if (sp2Alpha > 0) {
-                drawSpindles(cx - 80, cy, 70, 2, sp2Sep, sp2Alpha);
-                drawSpindles(cx + 80, cy, 70, 2, sp2Sep, sp2Alpha);
+                drawSpindles(cx - 75, cy, 75, 2, sp2Sep, sp2Alpha);
+                drawSpindles(cx + 75, cy, 75, 2, sp2Sep, sp2Alpha);
             }
 
             // C1 (Blue)
-            let c1y = interp(sf,  [cy-20, cy-20, cy-20, cy-20, cy-15, cy-20, cy-20, cy-10]);
-            let c1lx = interp(sf, [cx-10, cx-10, cx-15, cx-40, cx-55, cx-80, cx-105, cx-120]);
-            let c1rx = interp(sf, [cx-10, cx-10, cx-15, cx-40, cx-55, cx-80, cx-55,  cx-40]);
+            let c1y = interp(sf,  [cy-20, cy-20, cy-20, cy-20, cy-15, cy-20, cy-20, cy-10, cy-10]);
+            let c1lx = interp(sf, [cx-10, cx-10, cx-15, cx-45, cx-60, cx-75, cx-105, cx-120, cx-120]);
+            let c1rx = interp(sf, [cx-10, cx-10, cx-15, cx-45, cx-60, cx-75, cx-45,  cx-40, cx-40]);
             drawChromatid(c1lx, c1y, blue, true, chrAlpha);
             drawChromatid(c1rx, c1y, blue, false, chrAlpha);
 
             // C3 (Pink)
-            let c3y = interp(sf,  [cy-20, cy-20, cy-20, cy-20, cy-15, cy-20, cy-20, cy-10]);
-            let c3lx = interp(sf, [cx+10, cx+10, cx+15, cx+40, cx+55, cx+80, cx+55,  cx+40]);
-            let c3rx = interp(sf, [cx+10, cx+10, cx+15, cx+40, cx+55, cx+80, cx+105, cx+120]);
+            let c3y = interp(sf,  [cy-20, cy-20, cy-20, cy-20, cy-15, cy-20, cy-20, cy-10, cy-10]);
+            let c3lx = interp(sf, [cx+10, cx+10, cx+15, cx+45, cx+60, cx+75, cx+45,  cx+40, cx+40]);
+            let c3rx = interp(sf, [cx+10, cx+10, cx+15, cx+45, cx+60, cx+75, cx+105, cx+120, cx+120]);
             drawChromatid(c3lx, c3y, pink, true, chrAlpha);
             drawChromatid(c3rx, c3y, pink, false, chrAlpha);
 
             // C2 (Pink)
-            let c2y = interp(sf,  [cy+25, cy+25, cy+20, cy+20, cy+15, cy+20, cy+20, cy+10]);
-            let c2lx = interp(sf, [cx-10, cx-10, cx-15, cx-40, cx-55, cx-80, cx-105, cx-120]);
-            let c2rx = interp(sf, [cx-10, cx-10, cx-15, cx-40, cx-55, cx-80, cx-55,  cx-40]);
+            let c2y = interp(sf,  [cy+25, cy+25, cy+20, cy+20, cy+15, cy+20, cy+20, cy+10, cy+10]);
+            let c2lx = interp(sf, [cx-10, cx-10, cx-15, cx-45, cx-60, cx-75, cx-105, cx-120, cx-120]);
+            let c2rx = interp(sf, [cx-10, cx-10, cx-15, cx-45, cx-60, cx-75, cx-45,  cx-40, cx-40]);
             drawChromatid(c2lx, c2y, pink, true, chrAlpha);
             drawChromatid(c2rx, c2y, pink, false, chrAlpha);
 
             // C4 (Blue)
-            let c4y = interp(sf,  [cy+25, cy+25, cy+20, cy+20, cy+15, cy+20, cy+20, cy+10]);
-            let c4lx = interp(sf, [cx+10, cx+10, cx+15, cx+40, cx+55, cx+80, cx+55,  cx+40]);
-            let c4rx = interp(sf, [cx+10, cx+10, cx+15, cx+40, cx+55, cx+80, cx+105, cx+120]);
+            let c4y = interp(sf,  [cy+25, cy+25, cy+20, cy+20, cy+15, cy+20, cy+20, cy+10, cy+10]);
+            let c4lx = interp(sf, [cx+10, cx+10, cx+15, cx+45, cx+60, cx+75, cx+45,  cx+40, cx+40]);
+            let c4rx = interp(sf, [cx+10, cx+10, cx+15, cx+45, cx+60, cx+75, cx+105, cx+120, cx+120]);
             drawChromatid(c4lx, c4y, blue, true, chrAlpha);
             drawChromatid(c4rx, c4y, blue, false, chrAlpha);
         }
     }
 
-    // Easing Animation Loop
+    // Smooth Easing Animation Loop
     function animateLoop() {
-        // Linear ease towards the target float
         currentStepFloat += (targetStepFloat - currentStepFloat) * 0.08;
         if (Math.abs(targetStepFloat - currentStepFloat) < 0.005) {
             currentStepFloat = targetStepFloat;
