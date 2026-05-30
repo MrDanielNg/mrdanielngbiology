@@ -1,343 +1,759 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cell Division Lab | Mr. Daniel Ng Biology</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
+    <title>細胞分裂實驗室 (Mitosis & Meiosis Lab)</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary: #10b981;
-            --dark: #0f172a;
-            --accent: #34d399;
-            --bg-light: #f8fafc;
-            --text-slate: #475569;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=400;700&family=Roboto:wght=400;700&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--dark);
-            color: white;
-            line-height: 1.6;
+            font-family: 'Roboto', 'Noto Sans TC', sans-serif;
         }
-
-        /* Navigation - Matching Index Page */
-        nav { 
-            padding: 20px 50px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: rgba(15, 23, 42, 0.95); 
-            backdrop-filter: blur(10px);
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        canvas {
+            touch-action: none;
         }
-
-        .logo a { 
-            font-size: 1.5rem; 
-            font-weight: 800; 
-            color: var(--primary); 
-            text-decoration: none;
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
         }
-
-        .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            background: white;
-            color: var(--dark);
-            border-radius: 32px;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
         }
-
-        h1 { font-size: 2rem; border-left: 6px solid var(--primary); padding-left: 20px; margin-bottom: 10px; }
-        .sub { color: var(--text-slate); margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; font-weight: 500; }
-
-        /* Tabs */
-        .tab-container { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; }
-        .tab-btn {
-            padding: 12px 25px;
-            border-radius: 50px;
-            border: none;
-            background: #e2e8f0;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s;
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
         }
-        .tab-btn.active { background: var(--primary); color: white; }
-
-        /* Simulator Styles */
-        .sim-box { display: none; text-align: center; }
-        .sim-box.active { display: block; }
-        
-        .viewport {
-            width: 100%;
-            height: 350px;
-            background: var(--bg-light);
-            border-radius: 24px;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #e2e8f0;
-            margin-bottom: 20px;
-            display: flex; justify-content: center; align-items: center;
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
-
-        .cell {
-            width: 120px; height: 120px;
-            border: 3px solid var(--dark);
-            border-radius: 50%;
-            position: absolute;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .dna {
-            width: 10px; height: 30px;
-            border-radius: 5px;
-            position: absolute;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
-        }
-
-        .controls { margin-bottom: 40px; }
-        .btn-main {
-            background: var(--primary);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 50px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
-        }
-
-        /* Quiz Styles */
-        .quiz-section { margin-top: 60px; padding-top: 40px; border-top: 4px dashed #e2e8f0; }
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; background: #f1f5f9; padding: 25px; border-radius: 24px; margin-bottom: 30px; }
-        .input-group label { display: block; font-weight: 700; font-size: 0.8rem; margin-bottom: 5px; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; outline: none; }
-
-        .question-block { background: #fdfcf7; border: 1px solid #e2e8f0; padding: 25px; border-radius: 24px; margin-bottom: 25px; }
-        .q-tag { background: #e2e8f0; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; font-weight: 800; margin-bottom: 15px; display: inline-block; }
-        .option { display: flex; align-items: center; gap: 12px; padding: 12px 18px; background: white; border: 1px solid #cbd5e1; border-radius: 50px; margin-top: 10px; cursor: pointer; }
-        .option:hover { border-color: var(--primary); }
-
-        .score-box { background: #d1fae5; color: #065f46; padding: 20px; border-radius: 24px; text-align: center; font-weight: 800; font-size: 1.4rem; margin: 20px 0; display: none; }
-        .explanation-box { background: #fef3c7; border: 1px solid #fde68a; padding: 25px; border-radius: 24px; display: none; }
-
-        footer { text-align: center; padding: 40px; color: #94a3b8; font-size: 0.8rem; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 min-h-screen flex flex-col pt-16">
 
-<nav>
-    <div class="logo"><a href="index.html">🔬 MR. DANIEL NG</a></div>
-</nav>
-
-<div class="container">
-    <h1>Cell Division Lab</h1>
-    <p class="sub">HKDSE Biology | Virtual Modeling & Assessment</p>
-
-    <div class="tab-container">
-        <button id="tab-mitosis" class="tab-btn active" onclick="setTab('mitosis')">Mitosis</button>
-        <button id="tab-meiosis" class="tab-btn" onclick="setTab('meiosis')">Meiosis</button>
-    </div>
-
-    <div id="sim-mitosis" class="sim-box active">
-        <h3 id="m-label" style="margin-bottom:10px;">Interphase</h3>
-        <div class="viewport" id="m-view">
-            <div id="m-cell" class="cell"></div>
-            <div id="m-dna1" class="dna" style="background:#ec4899; top:40%; left:46%;"></div>
-            <div id="m-dna2" class="dna" style="background:#ec4899; top:52%; left:50%;"></div>
+    <!-- 頂部導航欄 (Header) -->
+    <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-40 px-6 py-3 flex justify-between items-center h-16">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">M</div>
+            <h1 class="text-xl md:text-2xl font-bold text-indigo-900" data-i18n="appTitle">細胞分裂實驗室</h1>
         </div>
-        <div class="controls">
-            <button class="btn-main" onclick="nextMitosis()">Next Stage →</button>
-        </div>
-    </div>
-
-    <div id="sim-meiosis" class="sim-box">
-        <h3 id="me-label" style="margin-bottom:10px;">Interphase</h3>
-        <div class="viewport" id="me-view">
-            <div id="me-cell" class="cell"></div>
-            <div id="me-dna1" class="dna" style="background:#f97316; top:40%; left:46%;"></div>
-            <div id="me-dna2" class="dna" style="background:#3b82f6; top:52%; left:50%;"></div>
-        </div>
-        <div class="controls">
-            <button class="btn-main" onclick="nextMeiosis()">Next Stage →</button>
-        </div>
-    </div>
-
-    <div class="quiz-section">
-        <h2>🔬 Knowledge Assessment</h2>
-        <p style="margin-bottom: 20px; color: var(--text-slate);">Complete the quiz below to verify your understanding. Results will be sent to Mr. Ng.</p>
         
-        <div class="info-grid">
-            <div class="input-group"><label>Student Name</label><input type="text" id="stuName" placeholder="Full Name"></div>
-            <div class="input-group"><label>Class</label><input type="text" id="stuClass" placeholder="e.g. 5A"></div>
-            <div class="input-group"><label>Number</label><input type="text" id="stuNo" placeholder="e.g. 12"></div>
+        <!-- 模式切換與語言切換 -->
+        <div class="flex items-center gap-2 md:gap-4">
+            <div class="bg-slate-100 p-1 rounded-xl flex gap-1 border border-slate-200">
+                <button id="mitosisModeBtn" class="px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm">
+                    有絲分裂 Mitosis
+                </button>
+                <button id="meiosisModeBtn" class="px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all text-slate-600 hover:text-slate-900">
+                    減數分裂 Meiosis
+                </button>
+            </div>
+            <button id="langToggleBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-600 font-medium text-sm transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                </svg>
+                <span id="langLabel">中 / Eng</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 主應用容器 -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 gap-6 max-w-5xl mx-auto w-full">
+        
+        <!-- 實驗室模擬區塊 -->
+        <div class="w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-slate-100">
+            
+            <!-- 左側/上方：動畫畫布 -->
+            <div class="relative w-full md:w-2/3 h-[450px] bg-slate-100 flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-200 group">
+                <canvas id="splitCanvas"></canvas>
+                
+                <!-- 階段標籤 (浮動) -->
+                <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full shadow-sm border border-slate-200 transition-all">
+                    <span class="text-sm font-bold text-indigo-600" id="stageLabel">間期 (Interphase)</span>
+                </div>
+            </div>
+
+            <!-- 右側/下方：控制與資訊面板 -->
+            <div class="w-full md:w-1/3 p-6 flex flex-col h-auto md:h-[450px]">
+                
+                <!-- 資訊卡片 -->
+                <div class="flex-grow overflow-hidden flex flex-col">
+                    <h2 class="text-xl font-bold text-slate-800 mb-3 border-l-4 border-indigo-500 pl-3 shrink-0" id="stageTitle">準備開始</h2>
+                    <div class="text-slate-600 text-sm leading-relaxed space-y-2 overflow-y-auto custom-scroll pr-2 flex-grow" id="stageDescription">
+                        <!-- 內容由 JS 填充 -->
+                    </div>
+                </div>
+
+                <!-- 控制按鈕區 -->
+                <div class="mt-4 pt-4 border-t border-slate-100 shrink-0 flex flex-col gap-3">
+                    <!-- 進度指示器 -->
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="text-xs text-slate-500 font-bold ml-1" data-i18n="progress">進度</div>
+                        <div class="flex gap-1" id="dotsContainer">
+                            <!-- 由 JS 動態生成點點 -->
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="prevBtn" class="px-3 py-2 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-sm">
+                            <span data-i18n="prevBtn">上一步</span>
+                        </button>
+                        <button id="nextBtn" class="px-3 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow-md shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-sm">
+                            <span data-i18n="nextBtn">下一步</span>
+                        </button>
+                    </div>
+                    
+                    <button id="autoPlayBtn" class="w-full py-2.5 border-2 border-indigo-100 text-indigo-600 font-bold rounded-lg hover:bg-indigo-50 transition flex items-center justify-center gap-2 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        </svg>
+                        <span data-i18n="autoPlay">自動播放</span>
+                    </button>
+
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                        <button id="theoryBtn" class="flex items-center justify-center gap-1.5 px-2 py-2 text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition border border-emerald-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                            <span data-i18n="theoryBtn">原理解說</span>
+                        </button>
+                        <button id="moreInfoBtn" class="flex items-center justify-center gap-1.5 px-2 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition border border-red-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span data-i18n="videoBtn">教學影片</span>
+                        </button>
+                    </div>
+                    
+                    <button id="resetBtn" class="w-full text-xs text-slate-400 hover:text-slate-600 mt-1" data-i18n="reset">
+                        重置模擬
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div id="quiz-container"></div>
+        <!-- 5題問答挑戰區塊 -->
+        <div class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+            <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-3">
+                <span class="bg-indigo-100 text-indigo-600 px-2.5 py-1 rounded-lg text-sm font-black">QUIZ</span>
+                <span data-i18n="quizTitle">細胞分裂知識挑戰 (5道核心題)</span>
+            </h3>
 
-        <div style="display:flex; gap:15px; margin-top:30px;">
-            <button class="btn-main" id="submitBtn">✅ Submit Report</button>
-            <button class="btn-main" style="background:#64748b;" onclick="location.reload()">🔄 Reset Lab</button>
+            <div id="quizContainer" class="space-y-6">
+                <!-- 由 JS 動態渲染 5 道題目 -->
+            </div>
+
+            <div class="mt-6 pt-4 border-t flex justify-between items-center">
+                <button id="submitQuizBtn" class="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition shadow-md shadow-indigo-100">
+                    提交答案 Submit
+                </button>
+                <div id="quizScore" class="text-lg font-bold text-slate-700 hidden"></div>
+            </div>
         </div>
+    </main>
+    
+    <footer class="my-6 text-slate-400 text-sm text-center">
+        <p data-i18n="footer">由生物科老師設計 | 使用 HTML5 Canvas 與 Tailwind CSS 構建</p>
+    </footer>
 
-        <div id="scoreDisplay" class="score-box"></div>
-        <div id="explanationDisplay" class="explanation-box">
-            <h3 style="color:#b45309; margin-bottom:15px;">🤖 AI Feedback & Explanations</h3>
-            <div id="exp-list"></div>
+    <!-- 原理解說 Modal -->
+    <div id="theoryModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-50 p-4 backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col transform transition-all scale-100">
+            <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white/95 backdrop-blur z-10">
+                <h3 class="text-xl font-bold text-emerald-800 flex items-center gap-2">
+                    <span class="bg-emerald-100 text-emerald-600 p-1 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </span>
+                    <span id="modalTheoryTitle">核心原理</span>
+                </h3>
+                <button id="closeTheoryBtn" class="text-slate-400 hover:text-emerald-500 transition p-1 hover:bg-slate-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-sm text-slate-600 leading-relaxed" id="theoryModalContent">
+                <!-- 動態替換 -->
+            </div>
         </div>
     </div>
-</div>
 
-<footer>
-    &copy; 2026 Mr. Daniel Ng Biology. All rights reserved.
-</footer>
+    <!-- 影片資源 Modal -->
+    <div id="infoModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-50 p-4 backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col transform transition-all scale-100">
+            <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white/95 backdrop-blur z-10">
+                <h3 class="text-xl font-bold text-indigo-800 flex items-center gap-2">
+                    <span class="bg-indigo-100 text-indigo-600 p-1 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                    </span>
+                    <span data-i18n="videoModalTitle">精選教學影片</span>
+                </h3>
+                <button id="closeModalBtn" class="text-slate-400 hover:text-red-500 transition p-1 hover:bg-slate-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 mb-6">
+                    <h4 class="font-bold text-slate-800 mb-2" data-i18n="videoIntroTitle">學習重點</h4>
+                    <p class="text-slate-600 leading-relaxed text-sm" data-i18n="videoIntroDesc">透過動畫與真實影像深入學習細胞分裂細節。</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <a href="https://youtu.be/f-ldPgEfAHI" target="_blank" rel="noopener noreferrer" class="space-y-2 group block cursor-pointer">
+                        <div class="aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-lg group-hover:shadow-xl transition-all relative border border-slate-200">
+                            <img src="https://img.youtube.com/vi/f-ldPgEfAHI/hqdefault.jpg" alt="Mitosis" class="w-full h-full object-cover opacity-80">
+                            <div class="absolute inset-0 flex items-center justify-center"><div class="bg-red-600 text-white p-3 rounded-full">▶</div></div>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-700" data-i18n="video1Title">有絲分裂與減數分裂比較 (CrashCourse)</p>
+                    </a>
+                    <a href="https://youtu.be/g7iAVCLZWuM" target="_blank" rel="noopener noreferrer" class="space-y-2 group block cursor-pointer">
+                        <div class="aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-lg group-hover:shadow-xl transition-all relative border border-slate-200">
+                            <img src="https://img.youtube.com/vi/g7iAVCLZWuM/hqdefault.jpg" alt="Real Cell" class="w-full h-full object-cover opacity-80">
+                            <div class="absolute inset-0 flex items-center justify-center"><div class="bg-red-600 text-white p-3 rounded-full">▶</div></div>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-700" data-i18n="video2Title">顯微鏡下的真實細胞分裂</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script>
-    /* --- SIMULATOR LOGIC --- */
-    function setTab(type) {
-        document.querySelectorAll('.sim-box').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-        if(type === 'mitosis') {
-            document.getElementById('sim-mitosis').classList.add('active');
-            document.getElementById('tab-mitosis').classList.add('active');
-        } else {
-            document.getElementById('sim-meiosis').classList.add('active');
-            document.getElementById('tab-meiosis').classList.add('active');
+    <script>
+        /**
+         * 語言文本與題目數據庫 (雙語對應)
+         */
+        const i18nData = {
+            zh: {
+                appTitle: "細胞分裂實驗室 (雙模式)",
+                progress: "進度", prevBtn: "上一步", nextBtn: "下一步",
+                autoPlay: "自動播放演示", autoPlayRunning: "暫停播放",
+                theoryBtn: "原理解說", videoBtn: "教學影片", reset: "重置模擬",
+                footer: "由生物科老師設計 | 使用 HTML5 Canvas 與 Tailwind CSS 構建",
+                quizTitle: "細胞分裂課堂檢測 (5道核心題)",
+                videoModalTitle: "精選教學影片", videoIntroTitle: "學習重點",
+                videoIntroDesc: "透過優質影片資源，比較有絲分裂與減數分裂在生物學意義上的重大差別。",
+                video1Title: "有絲分裂與減數分裂比較演示", video2Title: "顯微鏡下的真實分裂",
+                
+                mitosis: {
+                    theory: `<b>為什麼要進行有絲分裂？</b><br>主要目的是產生兩個與母細胞遺傳物質完全相同的子細胞（2n → 2n）。這對於多細胞生物的生長、組織修復至關重要。<br><br><b>核心特點：</b><br>1. DNA複製1次，細胞分裂1次。<br>2. 分裂後染色體數目不變。<br>3. 後期分離的是<b>姊妹染色單體</b>。`,
+                    stages: [
+                        { title: "間期 (Interphase)", label: "間期", desc: "細胞處於分裂準備期。染色質呈絲狀散亂分佈，DNA 和中心體在背後進行精確的複製。" },
+                        { title: "前期 (Prophase)", label: "前期", desc: "1. 染色質濃縮成清晰可見的染色體。<br>2. 核膜逐漸消失。<br>3. 中心體向兩極移動並發出紡錘絲。" },
+                        { title: "中期 (Metaphase)", label: "中期", desc: "染色體整齊排列在細胞中央的<b>赤道板</b>上，紡錘絲精確附著在每條染色體的著絲點上。這是觀察染色體的最佳時期。" },
+                        { title: "後期 (Anaphase)", label: "後期", desc: "著絲點一分為二，<b>姊妹染色單體分離</b>，在紡錘絲的強烈牽引下，均勻地移向細胞兩極。" },
+                        { title: "末期與胞質分裂 (Telophase)", label: "末期", desc: "染色體抵達兩極並重新放鬆為染色質。核膜重新形成，細胞中央向內凹陷，最終分裂為<b>2個完全相同的二倍體(2n)子細胞</b>。" }
+                    ]
+                },
+                meiosis: {
+                    theory: `<b>為什麼要進行減數分裂？</b><br>主要目的是產生用於有性生殖的配子（如精子和卵子）。透過使染色體數目減半（2n → n），確保受精後子代的染色體數目能維持恆定。<br><br><b>核心特點：</b><br>1. DNA複製1次，細胞連續分裂2次。<br>2. <b>減數第一次分裂：</b>同源染色體配對（聯會）並分離，這是數目減半的關鍵！<br>3. <b>減數第二次分裂：</b>姊妹染色單體分離，類似有絲分裂。`,
+                    stages: [
+                        { title: "減數分裂 I - 前期 & 中期", label: "減 I 中期", desc: "<b>同源染色體成對排列！</b> 來自父母雙方的同源染色體互相配對（聯會），並在赤道板兩側排成兩列。此時可能發生交叉互換，增加遺傳多樣性。" },
+                        { title: "減數分裂 I - 後期 & 末期", label: "減 I 末期", desc: "<b>同源染色體分離！</b> 注意：此時著絲點不分裂，被拉向兩極的是整條染色體（含有兩條單體）。細胞質分裂，形成2個單倍體(n)細胞，但此時每條染色體仍含有雙份DNA。" },
+                        { title: "減數分裂 II - 前中期", label: "減 II 中期", desc: "不經過DNA複製，這2個子細胞直接進入第二次分裂。染色體（此時無同源配對）再次在各個細胞的赤道板上排成一列。" },
+                        { title: "減數分裂 II - 後期", label: "減 II 後期", desc: "<b>姊妹染色單體分離！</b> 各細胞的著絲點此時才分裂，紡錘絲將單條染色單體拉向兩極。這一步驟與有絲分裂類似。" },
+                        { title: "減數分裂 II - 末期 (結果)", label: "4個子細胞", desc: "胞質再次分裂。最終產生<b>4個基因各不相同的單倍體(n)配子細胞</b>（如精子）。這完美詮釋了遺傳多樣性！" }
+                    ]
+                }
+            },
+            en: {
+                appTitle: "Cell Division Lab (Dual Mode)",
+                progress: "Progress", prevBtn: "Previous", nextBtn: "Next",
+                autoPlay: "Auto Play", autoPlayRunning: "Pause",
+                theoryBtn: "Theory", videoBtn: "Videos", reset: "Reset",
+                footer: "Designed by Science Teacher | Built with HTML5 Canvas & Tailwind CSS",
+                quizTitle: "Classroom Quiz (5 Core Questions)",
+                videoModalTitle: "Selected Video Tutorials", videoIntroTitle: "Key Objectives",
+                videoIntroDesc: "Learn the profound differences and genetic implications between Mitosis and Meiosis.",
+                video1Title: "Mitosis vs Meiosis Comparison", video2Title: "Real Cell Division",
+                
+                mitosis: {
+                    theory: `<b>Why Mitosis?</b><br>To produce two daughter cells genetically identical to the parent cell (2n → 2n). Essential for growth and tissue repair.<br><br><b>Key Features:</b><br>1. DNA replicates once, cell divides once.<br>2. Chromosome number remains unchanged.<br>3. <b>Sister chromatids</b> separate during anaphase.`,
+                    stages: [
+                        { title: "Interphase", label: "Interphase", desc: "The cell prepares for division. Chromatin is loose; DNA and centrosomes undergo precise duplication behind the scenes." },
+                        { title: "Prophase", label: "Prophase", desc: "1. Chromatin condenses into visible chromosomes.<br>2. Nuclear envelope breaks down.<br>3. Centrosomes move to poles, emitting spindle fibers." },
+                        { title: "Metaphase", label: "Metaphase", desc: "Chromosomes line up single-file along the <b>equatorial plate</b>. Spindle fibers attach securely to kinetochores. Best stage to visualize chromosomes." },
+                        { title: "Anaphase", label: "Anaphase", desc: "Centromeres split; <b>sister chromatids separate</b> and are pulled by spindle fibers toward opposite poles." },
+                        { title: "Telophase & Cytokinesis", label: "Telophase", desc: "Chromosomes uncoil back into chromatin. Nuclear membranes reform. The cleavage furrow pinches, creating <b>2 identical diploid (2n) daughter cells</b>." }
+                    ]
+                },
+                meiosis: {
+                    theory: `<b>Why Meiosis?</b><br>To produce haploid gametes (sperm/egg) for sexual reproduction. Reducing chromosomes by half (2n → n) ensures stable chromosome numbers across generations after fertilization.<br><br><b>Key Features:</b><br>1. DNA replicates once, cell divides twice.<br>2. <b>Meiosis I:</b> Homologous chromosomes pair up (synapsis) and separate. This halves the chromosome number!<br>3. <b>Meiosis II:</b> Sister chromatids separate, identical to a mitotic division.`,
+                    stages: [
+                        { title: "Meiosis I - Pro- & Metaphase", label: "Mei I Meta", desc: "<b>Homologous chromosomes pair up!</b> Maternal and paternal homologues form tetrads and align in pairs along the equator. Crossing-over occurs here to boost genetic diversity." },
+                        { title: "Meiosis I - Ana- & Telophase", label: "Mei I Telo", desc: "<b>Homologous chromosomes separate!</b> Crucially, centromeres do NOT split yet; intact chromosomes move to poles. Cytoplasm divides into 2 haploid (n) cells containing duplicated DNA." },
+                        { title: "Meiosis II - Pro- & Metaphase", label: "Mei II Meta", desc: "Without further DNA replication, both cells enter Meiosis II. Chromosomes align single-file at the equatorial plate of each respective cell." },
+                        { title: "Meiosis II - Anaphase", label: "Mei II Ana", desc: "<b>Sister chromatids separate!</b> Centromeres finally split. Spindle fibers pull individual chromatids to opposite poles, much like standard mitosis." },
+                        { title: "Meiosis II - Telophase (Result)", label: "4 Gametes", desc: "Cytoplasm divides once more, resulting in <b>4 genetically unique haploid (n) gametes</b> (e.g., sperm cells). This provides the bedrock of genetic variation!" }
+                    ]
+                }
+            }
+        };
+
+        const quizQuestions = [
+            {
+                id: 1,
+                zh: { q: "1. 減數分裂中，染色體數目在哪個階段真正減半？", a: "A. 減數第一次分裂結束後", b: "B. 減數第二次分裂結束後", c: "C. 間期 DNA 複製時" },
+                en: { q: "1. In meiosis, when does the chromosome number actually get reduced by half?", a: "A. After Meiosis I ends", b: "B. After Meiosis II ends", c: "C. During DNA replication in Interphase" },
+                correct: "A"
+            },
+            {
+                id: 2,
+                zh: { q: "2. 在有絲分裂的後期（Anaphase），被紡錘絲拉向細胞兩極的是什麼結構？", a: "A. 同源染色體", b: "B. 姊妹染色單體", c: "C. 四分體" },
+                en: { q: "2. During Anaphase of Mitosis, what structures are pulled to opposite poles by spindle fibers?", a: "A. Homologous chromosomes", b: "B. Sister chromatids", c: "C. Tetrads" },
+                correct: "B"
+            },
+            {
+                id: 3,
+                zh: { q: "3. 一個具有 46 條染色體的母細胞，經過「有絲分裂」與「減數分裂」後產生的子細胞，染色體數目分別為多少？", a: "A. 46, 46", b: "B. 23, 46", c: "C. 46, 23" },
+                en: { q: "3. A parent cell has 46 chromosomes. What are the chromosome numbers in the daughter cells after Mitosis and Meiosis respectively?", a: "A. 46, 46", b: "B. 23, 46", c: "C. 46, 23" },
+                correct: "C"
+            },
+            {
+                id: 4,
+                zh: { q: "4. 「同源染色體配對（聯會）並排成兩列」是下列哪種分裂特有的現象？", a: "A. 有絲分裂中期", b: "B. 減數第一次分裂中期", c: "C. 減數第二次分裂中期" },
+                en: { q: "4. 'Homologous chromosomes pairing up and aligning in two rows' is unique to which stage?", a: "A. Mitosis Metaphase", b: "B. Meiosis I Metaphase", c: "C. Meiosis II Metaphase" },
+                correct: "B"
+            },
+            {
+                id: 5,
+                zh: { q: "5. 有絲分裂最核心的生物學目的是什麼？", a: "A. 產生遺傳多樣性不同的配子", b: "B. 確保子細胞與母細胞擁有完全相同的遺傳物質", c: "C. 減少變異以利於有性生殖" },
+                en: { q: "5. What is the primary biological purpose of Mitosis?", a: "A. To generate genetically diverse gametes", b: "B. To ensure daughter cells are genetically identical to the parent cell", c: "C. To reduce mutations for sexual reproduction" },
+                correct: "B"
+            }
+        ];
+
+        // 全局狀態
+        let currentLang = 'zh';
+        let currentMode = 'mitosis'; // 'mitosis' 或 'meiosis'
+        let currentStep = 0;
+        let targetStep = 0;
+        let transitionProgress = 0;
+        const animationSpeed = 0.025;
+        let isAutoPlaying = false;
+        let animationId;
+
+        // Canvas 初始化
+        const canvas = document.getElementById('splitCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const parent = canvas.parentElement;
+            canvas.width = parent.clientWidth;
+            canvas.height = parent.clientHeight;
         }
-    }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-    let mStage = 0;
-    function nextMitosis() {
-        mStage++;
-        const label = document.getElementById('m-label');
-        const d1 = document.getElementById('m-dna1');
-        const d2 = document.getElementById('m-dna2');
-        const cell = document.getElementById('m-cell');
+        // 染色體預設數據 (4條)
+        const chromosomes = [
+            { color: '#4f46e5', angle: 30, size: 20, offsetX: -25, offsetY: -25 },
+            { color: '#db2777', angle: -20, size: 22, offsetX: 25, offsetY: -20 },
+            { color: '#10b981', angle: 15, size: 18, offsetX: -20, offsetY: 25 },
+            { color: '#f59e0b', angle: -40, size: 24, offsetX: 20, offsetY: 20 }
+        ];
 
-        if(mStage === 1) {
-            label.innerText = "Metaphase: Chromosomes align at equator";
-            d1.style.top = "45%"; d1.style.left = "40%"; d1.style.transform = "rotate(90deg)";
-            d2.style.top = "45%"; d2.style.left = "55%"; d2.style.transform = "rotate(90deg)";
-        } else if(mStage === 2) {
-            label.innerText = "Anaphase: Sister chromatids separate";
-            d1.style.top = "10%"; d2.style.top = "80%";
-        } else if(mStage === 3) {
-            label.innerText = "Cytokinesis: Two identical daughter cells";
-            cell.style.width = "80px"; cell.style.top = "10%";
-            let cell2 = cell.cloneNode(true); cell2.style.top = "65%";
-            document.getElementById('m-view').appendChild(cell2);
-        } else { location.reload(); }
-    }
+        // 工具函數
+        function lerp(start, end, t) { return start * (1 - t) + end * t; }
 
-    let meStage = 0;
-    function nextMeiosis() {
-        meStage++;
-        const label = document.getElementById('me-label');
-        const d1 = document.getElementById('me-dna1');
-        const d2 = document.getElementById('me-dna2');
+        /**
+         * Canvas 渲染核心：完美呈現 Mitosis 與 Meiosis 的形態差異
+         */
+        function drawSimulation() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const r = Math.min(canvas.width, canvas.height) * 0.32;
 
-        if(meStage === 1) {
-            label.innerText = "Meiosis I: Homologous chromosomes separate";
-            d1.style.top = "15%"; d2.style.top = "75%";
-        } else if(meStage === 2) {
-            label.innerText = "Meiosis II: Second division (Haploid)";
-            d1.style.left = "20%"; d2.style.left = "75%";
-        } else if(meStage === 3) {
-            alert("Meiosis Complete: 4 Unique Haploid Cells Produced.");
-            location.reload();
-        }
-    }
+            // 根據步驟與模式計算物理狀態參數
+            let cellPinch = 0; // 0=圓形, 1=極度凹陷
+            let cellCount = 1; // 畫布內的主細胞群數量
+            let drawSpindles = false;
+            let spindleProgress = 0;
+            let chromState = "loose"; // loose, single-file, double-file, separating, four-cells
 
-    /* --- QUIZ LOGIC --- */
-    const QUESTIONS = [
-        {
-            q: "In which stage of mitosis do sister chromatids move to opposite poles?",
-            opts: ["Prophase", "Metaphase", "Anaphase", "Telophase"],
-            ans: 2,
-            exp: "Anaphase is characterized by the separation of sister chromatids."
-        },
-        {
-            q: "What is the result of Meiosis I?",
-            opts: ["Two diploid cells", "Two haploid cells", "Four haploid cells", "Four diploid cells"],
-            ans: 1,
-            exp: "Meiosis I reduces the chromosome number by half, producing two haploid cells."
-        },
-        {
-            q: "Regarding DSE Biology: Why is meiosis important in the life cycle of humans?",
-            opts: ["Growth and repair", "Asexual reproduction", "Maintaining chromosome number across generations", "Increasing cell size"],
-            ans: 2,
-            exp: "Meiosis ensures that gametes have half the DNA so fertilization restores the diploid number."
-        }
-    ];
+            if (currentMode === 'mitosis') {
+                if (currentStep === 0) { chromState = "loose"; }
+                else if (currentStep === 1) { chromState = "condensing"; drawSpindles = true; spindleProgress = transitionProgress; }
+                else if (currentStep === 2) { chromState = "single-file"; drawSpindles = true; spindleProgress = 1; }
+                else if (currentStep === 3) { chromState = "separating-mitosis"; drawSpindles = true; spindleProgress = 1; cellPinch = lerp(0.1, 0.4, transitionProgress); }
+                else if (currentStep === 4) { chromState = "two-cells-mitosis"; cellPinch = 1; }
+            } else { // meiosis
+                if (currentStep === 0) { chromState = "double-file"; drawSpindles = true; }
+                else if (currentStep === 1) { chromState = "separating-meiosis I"; drawSpindles = true; cellPinch = transitionProgress * 0.5; }
+                else if (currentStep === 2) { chromState = "meiosis II-align"; cellCount = 2; drawSpindles = true; }
+                else if (currentStep === 3) { chromState = "meiosis II-separating"; cellCount = 2; cellPinch = transitionProgress * 0.6; drawSpindles = true; }
+                else if (currentStep === 4) { chromState = "four-cells"; }
+            }
 
-    let userAnswers = new Array(QUESTIONS.length).fill(null);
-    const qContainer = document.getElementById('quiz-container');
+            // 1. 繪製細胞外膜胞質
+            ctx.fillStyle = '#f0f9ff';
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 4;
 
-    function loadQuiz() {
-        QUESTIONS.forEach((item, idx) => {
-            const qDiv = document.createElement('div');
-            qDiv.className = 'question-block';
-            qDiv.innerHTML = `<span class="q-tag">Question ${idx+1}</span><p style="font-weight:700; margin-bottom:15px;">${item.q}</p>`;
-            item.opts.forEach((opt, oIdx) => {
-                const label = document.createElement('label');
-                label.className = 'option';
-                label.innerHTML = `<input type="radio" name="q${idx}" onchange="userAnswers[${idx}]=${oIdx}"> ${opt}`;
-                qDiv.appendChild(label);
+            if (chromState === "four-cells") {
+                // 減數分裂最終生成 4 個獨立小細胞
+                const positions = [{x: cx-70, y: cy-60}, {x: cx+70, y: cy-60}, {x: cx-70, y: cy+60}, {x: cx+70, y: cy+60}];
+                positions.forEach(p => {
+                    ctx.beginPath(); ctx.arc(p.x, p.y, r*0.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                    // 畫微弱核膜
+                    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+                    ctx.beginPath(); ctx.arc(p.x, p.y, r*0.3, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+                });
+            } else if (cellCount === 2) {
+                // 減數分裂 II 的雙細胞並列狀態
+                [-80, 80].forEach(offset => {
+                    ctx.save(); ctx.translate(offset, 0);
+                    if (chromState === "meiosis II-separating") {
+                        // 各自拉長凹陷
+                        ctx.beginPath(); ctx.ellipse(cx, cy, r*0.6 + (cellPinch*20), r*0.5 - (cellPinch*10), 0, 0, Math.PI*2);
+                    } else {
+                        ctx.beginPath(); ctx.arc(cx, cy, r * 0.55, 0, Math.PI*2);
+                    }
+                    ctx.fill(); ctx.stroke(); ctx.restore();
+                });
+            } else {
+                // 有絲分裂或減數第一階段：單細胞或分裂中
+                ctx.beginPath();
+                if (cellPinch > 0.6) { // 徹底切開成兩半
+                    ctx.arc(cx - r*0.7, cy, r*0.7, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx + r*0.7, cy, r*0.7, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                } else {
+                    const elongation = cellPinch * 60;
+                    ctx.ellipse(cx, cy, r + elongation, r - cellPinch*25, 0, 0, Math.PI*2);
+                    ctx.fill(); ctx.stroke();
+                }
+            }
+
+            // 2. 繪製紡錘絲與中心體
+            if (drawSpindles && chromState !== "four-cells") {
+                ctx.save(); ctx.globalAlpha = 0.3; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5;
+                if (cellCount === 1) {
+                    ctx.beginPath();
+                    for(let i=-50; i<=50; i+=15) {
+                        ctx.moveTo(cx - r, cy); ctx.quadraticCurveTo(cx, cy+i, cx + r, cy);
+                    }
+                    ctx.stroke();
+                } else {
+                    [-80, 80].forEach(offset => {
+                        ctx.beginPath();
+                        for(let i=-30; i<=30; i+=10) {
+                            ctx.moveTo(cx + offset - r*0.5, cy); ctx.quadraticCurveTo(cx+offset, cy+i, cx + offset + r*0.5, cy);
+                        }
+                        ctx.stroke();
+                    });
+                }
+                ctx.restore();
+            }
+
+            // 3. 繪製染色體動態形態
+            chromosomes.forEach((c, idx) => {
+                ctx.save();
+                ctx.fillStyle = c.color;
+
+                if (chromState === "loose") {
+                    // 亂序微弱分散狀態 (間期)
+                    ctx.globalAlpha = 0.4;
+                    ctx.beginPath(); ctx.arc(cx + c.offsetX, cy + c.offsetY, 8, 0, Math.PI*2); ctx.fill();
+                } 
+                else if (chromState === "condensing") {
+                    // 開始凝縮，朝中央移動
+                    const tx = lerp(cx + c.offsetX, cx, transitionProgress);
+                    const ty = lerp(cy + c.offsetY, cy - 40 + idx*25, transitionProgress);
+                    drawX(tx, ty, 14);
+                }
+                else if (chromState === "single-file") {
+                    // 有絲分裂：赤道板排成單列一條線
+                    drawX(cx, cy - 45 + idx * 30, 16);
+                }
+                else if (chromState === "separating-mitosis") {
+                    // 有絲分裂後期：姊妹染色單體 V 字形分離拉開
+                    const dist = cellPinch * 90;
+                    drawV(cx - dist, cy - 45 + idx*30, 12, true);
+                    drawV(cx + dist, cy - 45 + idx*30, 12, false);
+                }
+                else if (chromState === "two-cells-mitosis") {
+                    // 有絲分裂末期：兩邊各自得到 4 條單體，準備解聚
+                    drawV(cx - r*0.7 + c.offsetX*0.3, cy + c.offsetY*0.3, 10, true);
+                    drawV(cx + r*0.7 + c.offsetX*0.3, cy + c.offsetY*0.3, 10, false);
+                }
+                else if (chromState === "double-file") {
+                    // 減數分裂 I 中期：同源染色體成對排成「雙列」
+                    // 0,2 排左列；1,3 排右列
+                    const sideX = (idx % 2 === 0) ? cx - 20 : cx + 20;
+                    const rowY = cy - 30 + Math.floor(idx/2) * 45;
+                    drawX(sideX, rowY, 16);
+                }
+                else if (chromState === "separating-meiosis I") {
+                    // 減數分裂 I 後期：整條完整的 X 染色體被分離拉向兩極！
+                    const dist = cellPinch * 80;
+                    const sideX = (idx % 2 === 0) ? cx - 20 - dist : cx + 20 + dist;
+                    const rowY = cy - 30 + Math.floor(idx/2) * 45;
+                    drawX(sideX, rowY, 15);
+                }
+                else if (chromState === "meiosis II-align") {
+                    // 減數分裂 II：兩個子細胞中各有 2 條染色體單列排列
+                    const cellX = (idx % 2 === 0) ? cx - 80 : cx + 80;
+                    const rowY = cy - 20 + Math.floor(idx/2) * 40;
+                    drawX(cellX, rowY, 14);
+                }
+                else if (chromState === "meiosis II-separating") {
+                    // 減數分裂 II 後期：第二次分裂，著絲點裂開，單體分離
+                    const cellCenterX = (idx % 2 === 0) ? cx - 80 : cx + 80;
+                    const dist = cellPinch * 40;
+                    const rowY = cy - 20 + Math.floor(idx/2) * 40;
+                    drawV(cellCenterX - dist, rowY, 10, true);
+                    drawV(cellCenterX + dist, rowY, 10, false);
+                }
+                else if (chromState === "four-cells") {
+                    // 最終成果：四個各含單條單體染色體的單倍體精卵細胞
+                    const positions = [
+                        {x: cx-70, y: cy-60}, {x: cx+70, y: cy-60}, 
+                        {x: cx-70, y: cy+60}, {x: cx+70, y: cy+60}
+                    ];
+                    const p = positions[idx];
+                    drawV(p.x, p.y, 9, idx % 2 === 0);
+                }
+                ctx.restore();
             });
-            qContainer.appendChild(qDiv);
-        });
-    }
-
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-        const name = document.getElementById('stuName').value;
-        const cls = document.getElementById('stuClass').value;
-        const num = document.getElementById('stuNo').value;
-
-        if(!name || !cls || !num) return alert("Please complete student information.");
-        if(userAnswers.includes(null)) return alert("Please answer all questions.");
-
-        let score = 0;
-        let expHtml = '';
-        QUESTIONS.forEach((item, i) => {
-            const correct = userAnswers[i] === item.ans;
-            if(correct) score += Math.floor(100/QUESTIONS.length);
-            expHtml += `<div style="margin-bottom:15px; border-bottom:1px dashed #fcd34d; padding-bottom:10px;">
-                <strong>Q${i+1}: ${correct ? '✅' : '❌'}</strong><br>
-                <small>${item.exp}</small>
-            </div>`;
-        });
-
-        document.getElementById('scoreDisplay').style.display = 'block';
-        document.getElementById('scoreDisplay').innerText = `Total Score: ${score}/100`;
-        document.getElementById('explanationDisplay').style.display = 'block';
-        document.getElementById('exp-list').innerHTML = expHtml;
-
-        // Email Submission via Web3Forms
-        const report = `Student: ${name} (${cls} - ${num})\nScore: ${score}/100\nAnswers: ${userAnswers.join(', ')}`;
-        const formData = new FormData();
-        formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c');
-        formData.append('subject', `Cell Lab: ${name} - ${cls}`);
-        formData.append('message', report);
-
-        try {
-            await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
-            alert("Report sent to Mr. Ng successfully!");
-        } catch(e) {
-            alert("Error sending report. Please screenshot your score.");
         }
-    });
 
-    loadQuiz();
-</script>
+        // 輔助繪製 X 形複製染色體
+        function drawX(x, y, size) {
+            ctx.lineWidth = 3.5; ctx.lineCap = "round"; ctx.strokeStyle = ctx.fillStyle;
+            ctx.beginPath(); ctx.moveTo(x - size/2, y - size/2); ctx.lineTo(x + size/2, y + size/2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x + size/2, y - size/2); ctx.lineTo(x - size/2, y + size/2); ctx.stroke();
+            // 畫著絲點
+            ctx.fillStyle = '#fcd34d'; ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill();
+        }
 
+        // 輔助繪製 V 形單條染色單體
+        function drawV(x, y, size, toLeft) {
+            ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.strokeStyle = ctx.fillStyle;
+            ctx.beginPath();
+            if (toLeft) {
+                ctx.moveTo(x + size/2, y - size/2); ctx.lineTo(x, y); ctx.lineTo(x + size/2, y + size/2);
+            } else {
+                ctx.moveTo(x - size/2, y - size/2); ctx.lineTo(x, y); ctx.lineTo(x - size/2, y + size/2);
+            }
+            ctx.stroke();
+        }
+
+        /**
+         * 動畫主循環
+         */
+        function animate() {
+            if (currentStep !== targetStep) {
+                transitionProgress += animationSpeed;
+                if (transitionProgress >= 1) {
+                    transitionProgress = 0;
+                    currentStep = targetStep;
+                    updateUI();
+                    if (isAutoPlaying) {
+                        setTimeout(() => {
+                            if (currentStep < 4) goToStep(currentStep + 1);
+                            else { isAutoPlaying = false; syncControlButtons(); }
+                        }, 1200);
+                    }
+                }
+            }
+            drawSimulation();
+            animationId = requestAnimationFrame(animate);
+        }
+
+        /**
+         * UI 連動切換與渲染
+         */
+        const stageTitle = document.getElementById('stageTitle');
+        const stageDesc = document.getElementById('stageDescription');
+        const stageLabel = document.getElementById('stageLabel');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const autoPlayBtn = document.getElementById('autoPlayBtn');
+        const dotsContainer = document.getElementById('dotsContainer');
+
+        function initProgressDots() {
+            dotsContainer.innerHTML = '';
+            for(let i=0; i<5; i++) {
+                const dot = document.createElement('div');
+                dot.className = "w-2.5 h-2.5 rounded-full bg-slate-300 transition-all duration-300";
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function updateUI() {
+            const t = i18nData[currentLang][currentMode];
+            const info = t.stages[targetStep];
+            
+            stageTitle.textContent = info.title;
+            stageLabel.textContent = info.label;
+            stageDesc.innerHTML = info.desc;
+            
+            prevBtn.disabled = targetStep === 0;
+            nextBtn.disabled = targetStep === 4;
+
+            // 更新指示圓點
+            Array.from(dotsContainer.children).forEach((dot, idx) => {
+                if (idx <= targetStep) {
+                    dot.classList.remove('bg-slate-300');
+                    dot.classList.add('bg-indigo-600', 'scale-110');
+                } else {
+                    dot.classList.remove('bg-indigo-600', 'scale-110');
+                    dot.classList.add('bg-slate-300');
+                }
+            });
+            syncControlButtons();
+        }
+
+        function syncControlButtons() {
+            const t = i18nData[currentLang];
+            document.querySelector('#autoPlayBtn span').innerText = isAutoPlaying ? t.autoPlayRunning : t.autoPlay;
+        }
+
+        function goToStep(step) {
+            if (step < 0 || step > 4) return;
+            if (currentStep !== targetStep) { currentStep = targetStep; transitionProgress = 0; }
+            targetStep = step;
+            updateUI();
+        }
+
+        // 綁定控制按鈕
+        nextBtn.addEventListener('click', () => { isAutoPlaying = false; goToStep(targetStep + 1); });
+        prevBtn.addEventListener('click', () => { isAutoPlaying = false; targetStep = Math.max(0, targetStep - 1); currentStep = targetStep; transitionProgress = 0; updateUI(); });
+        document.getElementById('resetBtn').addEventListener('click', () => { isAutoPlaying = false; targetStep = 0; currentStep = 0; transitionProgress = 0; updateUI(); });
+        
+        autoPlayBtn.addEventListener('click', () => {
+            if (isAutoPlaying) { isAutoPlaying = false; } 
+            else {
+                if (targetStep === 4) { targetStep = 0; currentStep = 0; }
+                isAutoPlaying = true;
+                if (currentStep === targetStep && targetStep < 4) goToStep(targetStep + 1);
+            }
+            syncControlButtons();
+        });
+
+        // 模式切換邏輯
+        const mitosisModeBtn = document.getElementById('mitosisModeBtn');
+        const meiosisModeBtn = document.getElementById('meiosisModeBtn');
+
+        function switchMode(mode) {
+            currentMode = mode;
+            isAutoPlaying = false;
+            currentStep = 0; targetStep = 0; transitionProgress = 0;
+            
+            if (mode === 'mitosis') {
+                mitosisModeBtn.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm";
+                meiosisModeBtn.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all text-slate-600 hover:text-slate-900";
+            } else {
+                meiosisModeBtn.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm";
+                mitosisModeBtn.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold transition-all text-slate-600 hover:text-slate-900";
+            }
+            updateUI();
+        }
+        mitosisModeBtn.addEventListener('click', () => switchMode('mitosis'));
+        meiosisModeBtn.addEventListener('click', () => switchMode('meiosis'));
+
+        /**
+         * 5 題互動問答挑戰邏輯區
+         */
+        const quizContainer = document.getElementById('quizContainer');
+        function renderQuiz() {
+            quizContainer.innerHTML = '';
+            quizQuestions.forEach((q, idx) => {
+                const data = q[currentLang];
+                const block = document.createElement('div');
+                block.className = "p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2.5";
+                block.innerHTML = `
+                    <p class="font-bold text-slate-800 text-sm md:text-base">${data.q}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs md:text-sm">
+                        <label class="flex items-center gap-2 p-2 bg-white rounded-lg border hover:bg-slate-50 cursor-pointer transition">
+                            <input type="radio" name="question-${q.id}" value="A" class="accent-indigo-600"> <span>${data.a}</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-white rounded-lg border hover:bg-slate-50 cursor-pointer transition">
+                            <input type="radio" name="question-${q.id}" value="B" class="accent-indigo-600"> <span>${data.b}</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-white rounded-lg border hover:bg-slate-50 cursor-pointer transition">
+                            <input type="radio" name="question-${q.id}" value="C" class="accent-indigo-600"> <span>${data.c}</span>
+                        </label>
+                    </div>
+                    <div id="feedback-${q.id}" class="text-xs font-bold hidden pt-1"></div>
+                `;
+                quizContainer.appendChild(block);
+            });
+            document.getElementById('quizScore').classList.add('hidden');
+        }
+
+        document.getElementById('submitQuizBtn').addEventListener('click', () => {
+            let score = 0;
+            quizQuestions.forEach(q => {
+                const selected = document.querySelector(`input[name="question-${q.id}"]:checked`);
+                const feedback = document.getElementById(`feedback-${q.id}`);
+                feedback.classList.remove('hidden', 'text-emerald-600', 'text-red-500');
+                
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                        feedback.innerText = currentLang === 'zh' ? "✓ 正確！" : "✓ Correct!";
+                        feedback.classList.add('text-emerald-600');
+                    } else {
+                        feedback.innerText = currentLang === 'zh' ? `✗ 錯誤，正確答案是 ${q.correct}` : `✗ Wrong, correct answer is ${q.correct}`;
+                        feedback.classList.add('text-red-500');
+                    }
+                } else {
+                    feedback.innerText = currentLang === 'zh' ? `！未作答，正確答案是 ${q.correct}` : `! Unanswered, correct answer is ${q.correct}`;
+                    feedback.classList.add('text-amber-500');
+                }
+            });
+
+            const scoreDisplay = document.getElementById('quizScore');
+            scoreDisplay.classList.remove('hidden');
+            scoreDisplay.innerText = currentLang === 'zh' ? `得分：${score} / 5` : `Score: ${score} / 5`;
+        });
+
+        /**
+         * 語言切換全局靜態文本更新
+         */
+        function updateAllPageTexts() {
+            const t = i18nData[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.innerText = t[key];
+            });
+            updateUI();
+            renderQuiz();
+        }
+
+        document.getElementById('langToggleBtn').addEventListener('click', () => {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            updateAllPageTexts();
+        });
+
+        // Modal 視窗彈出控制邏輯
+        function toggleModal(id, show) {
+            const m = document.getElementById(id);
+            if (show) {
+                m.classList.remove('hidden');
+                if(id === 'theoryModal') {
+                    document.getElementById('modalTheoryTitle').innerText = i18nData[currentLang].theoryBtn;
+                    document.getElementById('theoryModalContent').innerHTML = i18nData[currentLang][currentMode].theory;
+                }
+            } else { m.classList.add('hidden'); }
+        }
+
+        document.getElementById('theoryBtn').addEventListener('click', () => toggleModal('theoryModal', true));
+        document.getElementById('closeTheoryBtn').addEventListener('click', () => toggleModal('theoryModal', false));
+        document.getElementById('moreInfoBtn').addEventListener('click', () => toggleModal('infoModal', true));
+        document.getElementById('closeModalBtn').addEventListener('click', () => toggleModal('infoModal', false));
+
+        // 頁面初始化
+        initProgressDots();
+        updateAllPageTexts();
+        animate();
+    </script>
 </body>
 </html>
