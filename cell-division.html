@@ -13,7 +13,8 @@
         
         /* Navigation & Tabs */
         .nav-header { background: #1e293b; padding: 20px 30px; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .title-area { font-size: 1.25rem; font-weight: bold; color: #34d399; }
+        .title-area { font-size: 1.25rem; font-weight: bold; color: #34d399; text-decoration: none; transition: 0.2s; }
+        .title-area:hover { color: #10b981; }
         .controls-top { display: flex; gap: 10px; align-items: center; }
         .tab-btn { padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; background: #334155; color: #cbd5e1; border: none; font-family: inherit; }
         .tab-btn.active { background: #10b981; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
@@ -78,7 +79,7 @@
 <div class="app-container">
     <!-- Header -->
     <header class="nav-header">
-        <div class="title-area">🔬 Mr. Daniel Ng Biology</div>
+        <a href="https://mrdanielng.github.io/mrdanielngbiology/" class="title-area">🔬 Mr. Daniel Ng Biology</a>
         <div class="controls-top">
             <button id="tab-mitosis" class="tab-btn active" onclick="switchMode('mitosis')">
                 <span class="lang-en">Mitosis</span><span class="lang-zh">有絲分裂</span>
@@ -228,10 +229,15 @@
     };
 
     // ==========================================
-    // 2. CANVAS SIMULATOR ENGINE (Actual Drawings)
+    // 2. CANVAS ENGINE (SMOOTH ANIMATION SYSTEM)
     // ==========================================
     let currentMode = 'mitosis';
     let currentStep = 0;
+    
+    // Animation state variables
+    let targetStepFloat = 0;
+    let currentStepFloat = 0;
+
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
 
@@ -239,13 +245,15 @@
         const container = canvas.parentElement;
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
-        drawSimulation();
+        // Immediate redraw not fully necessary as animation loop runs continuously
     }
     window.addEventListener('resize', resizeCanvas);
 
     function switchMode(mode) {
         currentMode = mode;
         currentStep = 0;
+        targetStepFloat = 0;
+        currentStepFloat = 0; // Instant snap for mode switch
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${mode}`).classList.add('active');
         updateSimulationUI();
@@ -256,11 +264,13 @@
         currentStep += dir;
         if (currentStep < 0) currentStep = 0;
         if (currentStep > maxSteps) currentStep = maxSteps;
+        targetStepFloat = currentStep;
         updateSimulationUI();
     }
 
     function goToStep(step) {
         currentStep = step;
+        targetStepFloat = step;
         updateSimulationUI();
     }
 
@@ -274,7 +284,6 @@
         document.getElementById('btn-prev').disabled = currentStep === 0;
         document.getElementById('btn-next').disabled = currentStep === maxSteps;
 
-        // Render interactive dots
         const dotsContainer = document.getElementById('ui-dots');
         dotsContainer.innerHTML = '';
         for (let i = 0; i <= maxSteps; i++) {
@@ -283,178 +292,259 @@
             dot.onclick = () => goToStep(i);
             dotsContainer.appendChild(dot);
         }
+    }
 
-        drawSimulation();
+    // --- Linear Interpolation Helper ---
+    function interp(sf, arr) {
+        let idx = Math.floor(sf);
+        if (idx >= arr.length - 1) return arr[arr.length - 1];
+        if (idx < 0) return arr[0];
+        let t = sf - idx;
+        return arr[idx] + (arr[idx+1] - arr[idx]) * t;
     }
 
     // --- Drawing Helpers ---
-    function drawCellMembrane(x, y, r, isPinching) {
-        ctx.strokeStyle = "#94a3b8"; // Cell membrane color
+    function drawCellMembrane(x, y, r, pinchAmt, alpha = 1) {
+        if (alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = "#94a3b8"; 
         ctx.lineWidth = 4;
-        ctx.fillStyle = "#1e293b"; // Cytoplasm background
+        ctx.fillStyle = "#1e293b"; 
         
         ctx.beginPath();
-        if (isPinching) {
-            // Draw a pinching cell (figure 8 shape)
-            ctx.arc(x - r/2, y, r*0.8, Math.PI/2, Math.PI*1.5);
-            ctx.arc(x + r/2, y, r*0.8, -Math.PI/2, Math.PI/2);
+        if (pinchAmt > 0) {
+            let offset = pinchAmt * (r * 0.7);
+            ctx.arc(x - offset, y, r * (1 - pinchAmt*0.2), Math.PI/2, Math.PI*1.5);
+            ctx.arc(x + offset, y, r * (1 - pinchAmt*0.2), -Math.PI/2, Math.PI/2);
             ctx.closePath();
         } else {
             ctx.arc(x, y, r, 0, Math.PI*2);
         }
         ctx.fill();
         ctx.stroke();
+        ctx.restore();
     }
 
-    function drawChromosomeX(x, y, color) {
+    function drawChromatid(x, y, color, facingLeft, alpha = 1) {
+        if (alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = alpha;
         ctx.strokeStyle = color;
         ctx.lineWidth = 6;
         ctx.lineCap = "round";
-        ctx.beginPath();
-        ctx.moveTo(x - 12, y - 20); ctx.lineTo(x + 12, y + 20);
-        ctx.moveTo(x + 12, y - 20); ctx.lineTo(x - 12, y + 20);
-        ctx.stroke();
-        // Centromere
-        ctx.fillStyle = "white";
-        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fill();
-    }
-
-    function drawChromatid(x, y, color, facingLeft) {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 6;
-        ctx.lineCap = "round";
+        
         ctx.beginPath();
         if (facingLeft) {
-            ctx.moveTo(x + 8, y - 20); ctx.lineTo(x - 8, y); ctx.lineTo(x + 8, y + 20);
+            ctx.moveTo(x + 12, y - 20); ctx.lineTo(x, y); ctx.lineTo(x + 12, y + 20);
         } else {
-            ctx.moveTo(x - 8, y - 20); ctx.lineTo(x + 8, y); ctx.lineTo(x - 8, y + 20);
+            ctx.moveTo(x - 12, y - 20); ctx.lineTo(x, y); ctx.lineTo(x - 12, y + 20);
         }
         ctx.stroke();
+        
+        ctx.fillStyle = "white";
+        ctx.beginPath(); 
+        ctx.arc(x, y, 3, 0, Math.PI*2); 
+        ctx.fill();
+        ctx.restore();
     }
 
-    function drawSpindles(cx, cy, r, numSpindles, separation) {
-        ctx.strokeStyle = "rgba(16, 185, 129, 0.4)"; // Spindle fiber color
+    function drawSpindles(cx, cy, r, numSpindles, separation, alpha = 1) {
+        if (alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = "rgba(16, 185, 129, 0.4)"; 
         ctx.lineWidth = 2;
         const pole1X = cx - r + 15;
         const pole2X = cx + r - 15;
         
         for(let i=0; i<numSpindles; i++) {
-            let yOff = cy - 30 + (i * 20);
+            let yOff = cy - 30 + (i * (60/((numSpindles-1) || 1)));
             ctx.beginPath(); ctx.moveTo(pole1X, cy); ctx.lineTo(cx - separation, yOff); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(pole2X, cy); ctx.lineTo(cx + separation, yOff); ctx.stroke();
         }
-        // Centrosomes (Poles)
+        
         ctx.fillStyle = "#f59e0b";
         ctx.fillRect(pole1X-4, cy-4, 8, 8);
         ctx.fillRect(pole2X-4, cy-4, 8, 8);
+        ctx.restore();
     }
 
-    function drawChromatin(x, y) {
+    // New curvy DNA to replace jagged straight lines
+    function drawChromatin(x, y, alpha = 1) {
+        if (alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = alpha;
         ctx.strokeStyle = "#ec4899";
         ctx.lineWidth = 2;
         ctx.beginPath();
-        for(let i=0; i<50; i++) {
-            ctx.lineTo(x + (Math.random()*60 - 30), y + (Math.random()*60 - 30));
+        
+        let curX = x, curY = y;
+        ctx.moveTo(curX, curY);
+        // Deterministic pseudo-randomness for stable animation
+        for(let i=1; i<=15; i++) {
+            let cp1x = curX + Math.sin(i*1.7)*30;
+            let cp1y = curY + Math.cos(i*2.3)*30;
+            let cp2x = x + Math.sin(i*3.7)*40;
+            let cp2y = y + Math.cos(i*5.1)*40;
+            let endX = x + Math.sin(i*7.3)*35;
+            let endY = y + Math.cos(i*8.9)*35;
+            ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
+            curX = endX; curY = endY;
         }
         ctx.stroke();
+        ctx.restore();
     }
 
-    // --- Main Rendering Logic ---
-    function drawSimulation() {
+    // --- Main Data-Driven Animation Renderer ---
+    function drawSimulation(sf) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
-
-        const blue = "#3b82f6"; // Paternal
-        const pink = "#ec4899"; // Maternal
+        const blue = "#3b82f6";
+        const pink = "#ec4899";
 
         if (currentMode === 'mitosis') {
-            if (currentStep === 0) { // Interphase
-                drawCellMembrane(cx, cy, 100, false);
-                ctx.beginPath(); ctx.arc(cx, cy, 50, 0, Math.PI*2); ctx.strokeStyle="rgba(255,255,255,0.3)"; ctx.stroke(); // Nucleus
-                drawChromatin(cx, cy);
-            } 
-            else if (currentStep === 1) { // Prophase
-                drawCellMembrane(cx, cy, 100, false);
-                // Randomly scattered chromosomes
-                drawChromosomeX(cx - 20, cy - 30, blue); drawChromosomeX(cx + 25, cy + 20, blue);
-                drawChromosomeX(cx + 30, cy - 25, pink); drawChromosomeX(cx - 15, cy + 30, pink);
+            let chrAlpha = interp(sf, [0, 1, 1, 1, 1]);
+            let chromAlpha = interp(sf, [1, 0, 0, 0, 1]);
+            let pinch = interp(sf, [0, 0, 0, 0, 0.8]);
+            let nucAlpha = interp(sf, [0.3, 0, 0, 0, 0.5]);
+
+            drawCellMembrane(cx, cy, 100, pinch, 1);
+
+            if(nucAlpha > 0) {
+                if (sf < 1) {
+                    ctx.beginPath(); ctx.arc(cx, cy, 50, 0, Math.PI*2); 
+                    ctx.strokeStyle=`rgba(255,255,255,${nucAlpha})`; ctx.stroke();
+                    drawChromatin(cx, cy, chromAlpha);
+                } else {
+                    ctx.beginPath(); ctx.arc(cx - 55, cy, 40, 0, Math.PI*2); 
+                    ctx.strokeStyle=`rgba(255,255,255,${nucAlpha})`; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx + 55, cy, 40, 0, Math.PI*2); ctx.stroke();
+                    drawChromatin(cx - 55, cy, chromAlpha);
+                    drawChromatin(cx + 55, cy, chromAlpha);
+                }
             }
-            else if (currentStep === 2) { // Metaphase
-                drawCellMembrane(cx, cy, 100, false);
-                drawSpindles(cx, cy, 100, 4, 0);
-                // Aligned at equator
-                drawChromosomeX(cx, cy - 45, blue); drawChromosomeX(cx, cy - 15, pink);
-                drawChromosomeX(cx, cy + 15, blue); drawChromosomeX(cx, cy + 45, pink);
-            }
-            else if (currentStep === 3) { // Anaphase
-                drawCellMembrane(cx, cy, 100, false);
-                drawSpindles(cx, cy, 100, 4, 30);
-                // Chromatids pulling apart
-                drawChromatid(cx - 30, cy - 45, blue, true); drawChromatid(cx + 30, cy - 45, blue, false);
-                drawChromatid(cx - 30, cy - 15, pink, true); drawChromatid(cx + 30, cy - 15, pink, false);
-                drawChromatid(cx - 30, cy + 15, blue, true); drawChromatid(cx + 30, cy + 15, blue, false);
-                drawChromatid(cx - 30, cy + 45, pink, true); drawChromatid(cx + 30, cy + 45, pink, false);
-            }
-            else if (currentStep === 4) { // Telophase
-                drawCellMembrane(cx, cy, 110, true);
-                // Nuclei forming
-                ctx.beginPath(); ctx.arc(cx - 55, cy, 40, 0, Math.PI*2); ctx.strokeStyle="rgba(255,255,255,0.5)"; ctx.stroke();
-                ctx.beginPath(); ctx.arc(cx + 55, cy, 40, 0, Math.PI*2); ctx.stroke();
-                drawChromatin(cx - 55, cy); drawChromatin(cx + 55, cy);
-            }
+
+            let spAlpha = interp(sf, [0, 0, 1, 1, 0]);
+            let spSep = interp(sf, [0, 0, 0, 30, 60]);
+            drawSpindles(cx, cy, 100, 4, spSep, spAlpha);
+
+            // C1 (Blue)
+            let c1y = interp(sf, [cy-30, cy-30, cy-45, cy-45, cy-15]);
+            let c1lx = interp(sf, [cx-20, cx-20, cx, cx-30, cx-55]);
+            let c1rx = interp(sf, [cx-20, cx-20, cx, cx+30, cx+55]);
+            drawChromatid(c1lx, c1y, blue, true, chrAlpha);
+            drawChromatid(c1rx, c1y, blue, false, chrAlpha);
+
+            // C2 (Blue)
+            let c2y = interp(sf, [cy+20, cy+20, cy+15, cy+15, cy+15]);
+            let c2lx = interp(sf, [cx+25, cx+25, cx, cx-30, cx-55]);
+            let c2rx = interp(sf, [cx+25, cx+25, cx, cx+30, cx+55]);
+            drawChromatid(c2lx, c2y, blue, true, chrAlpha);
+            drawChromatid(c2rx, c2y, blue, false, chrAlpha);
+
+            // C3 (Pink)
+            let c3y = interp(sf, [cy-25, cy-25, cy-15, cy-15, cy-15]);
+            let c3lx = interp(sf, [cx+30, cx+30, cx, cx-30, cx-55]);
+            let c3rx = interp(sf, [cx+30, cx+30, cx, cx+30, cx+55]);
+            drawChromatid(c3lx, c3y, pink, true, chrAlpha);
+            drawChromatid(c3rx, c3y, pink, false, chrAlpha);
+
+            // C4 (Pink)
+            let c4y = interp(sf, [cy+30, cy+30, cy+45, cy+45, cy+15]);
+            let c4lx = interp(sf, [cx-15, cx-15, cx, cx-30, cx-55]);
+            let c4rx = interp(sf, [cx-15, cx-15, cx, cx+30, cx+55]);
+            drawChromatid(c4lx, c4y, pink, true, chrAlpha);
+            drawChromatid(c4rx, c4y, pink, false, chrAlpha);
         } 
         else if (currentMode === 'meiosis') {
-            if (currentStep === 0) { // Interphase
-                drawCellMembrane(cx, cy, 100, false); drawChromatin(cx, cy);
+            let chrAlpha = interp(sf, [0, 1, 1, 1, 1, 1, 1, 1]);
+            let chromAlpha = interp(sf, [1, 0, 0, 0, 1, 0, 0, 1]);
+
+            let alpha1 = interp(sf, [1, 1, 1, 1, 1, 0, 0, 0]);
+            let alpha2 = interp(sf, [0, 0, 0, 0, 0, 1, 1, 0]);
+            let alpha4 = interp(sf, [0, 0, 0, 0, 0, 0, 0, 1]);
+            let pinch1 = interp(sf, [0, 0, 0, 0, 0.8, 0, 0, 0]);
+            let pinch2 = interp(sf, [0, 0, 0, 0, 0, 0, 0.8, 0]);
+
+            drawCellMembrane(cx, cy, 100, pinch1, alpha1);
+            if (alpha2 > 0) {
+                drawCellMembrane(cx - 80, cy, 70, pinch2, alpha2);
+                drawCellMembrane(cx + 80, cy, 70, pinch2, alpha2);
             }
-            else if (currentStep === 1) { // Prophase I (Synapsis)
-                drawCellMembrane(cx, cy, 100, false);
-                drawChromosomeX(cx - 10, cy - 20, blue); drawChromosomeX(cx + 10, cy - 20, pink); // Pair 1
-                drawChromosomeX(cx - 10, cy + 25, pink); drawChromosomeX(cx + 10, cy + 25, blue); // Pair 2
+            if (alpha4 > 0) {
+                drawCellMembrane(cx - 120, cy, 40, 0, alpha4);
+                drawCellMembrane(cx - 40, cy, 40, 0, alpha4);
+                drawCellMembrane(cx + 40, cy, 40, 0, alpha4);
+                drawCellMembrane(cx + 120, cy, 40, 0, alpha4);
             }
-            else if (currentStep === 2) { // Metaphase I
-                drawCellMembrane(cx, cy, 100, false); drawSpindles(cx, cy, 100, 2, 10);
-                drawChromosomeX(cx - 15, cy - 20, blue); drawChromosomeX(cx + 15, cy - 20, pink);
-                drawChromosomeX(cx - 15, cy + 20, pink); drawChromosomeX(cx + 15, cy + 20, blue);
+
+            if (chromAlpha > 0) {
+                if (sf < 1) drawChromatin(cx, cy, chromAlpha);
+                else if (sf < 5) {
+                    drawChromatin(cx - 55, cy, chromAlpha); drawChromatin(cx + 55, cy, chromAlpha);
+                } else {
+                    drawChromatin(cx - 120, cy, chromAlpha); drawChromatin(cx - 40, cy, chromAlpha);
+                    drawChromatin(cx + 40, cy, chromAlpha); drawChromatin(cx + 120, cy, chromAlpha);
+                }
             }
-            else if (currentStep === 3) { // Anaphase I
-                drawCellMembrane(cx, cy, 100, false); drawSpindles(cx, cy, 100, 2, 40);
-                drawChromosomeX(cx - 40, cy - 20, blue); drawChromosomeX(cx + 40, cy - 20, pink);
-                drawChromosomeX(cx - 40, cy + 20, pink); drawChromosomeX(cx + 40, cy + 20, blue);
+
+            let sp1Alpha = interp(sf, [0, 0, 1, 1, 0, 0, 0, 0]);
+            let sp1Sep = interp(sf, [0, 0, 10, 40, 60, 0, 0, 0]);
+            drawSpindles(cx, cy, 100, 2, sp1Sep, sp1Alpha);
+
+            let sp2Alpha = interp(sf, [0, 0, 0, 0, 0, 1, 1, 0]);
+            let sp2Sep = interp(sf, [0, 0, 0, 0, 0, 0, 25, 40]);
+            if (sp2Alpha > 0) {
+                drawSpindles(cx - 80, cy, 70, 2, sp2Sep, sp2Alpha);
+                drawSpindles(cx + 80, cy, 70, 2, sp2Sep, sp2Alpha);
             }
-            else if (currentStep === 4) { // Telophase I
-                drawCellMembrane(cx, cy, 110, true);
-                drawChromosomeX(cx - 55, cy - 15, blue); drawChromosomeX(cx - 55, cy + 15, pink);
-                drawChromosomeX(cx + 55, cy - 15, pink); drawChromosomeX(cx + 55, cy + 15, blue);
-            }
-            else if (currentStep === 5) { // Metaphase II (2 cells)
-                drawCellMembrane(cx - 80, cy, 70, false); drawCellMembrane(cx + 80, cy, 70, false);
-                drawSpindles(cx - 80, cy, 70, 2, 0); drawSpindles(cx + 80, cy, 70, 2, 0);
-                drawChromosomeX(cx - 80, cy - 20, blue); drawChromosomeX(cx - 80, cy + 20, pink);
-                drawChromosomeX(cx + 80, cy - 20, pink); drawChromosomeX(cx + 80, cy + 20, blue);
-            }
-            else if (currentStep === 6) { // Anaphase II
-                drawCellMembrane(cx - 80, cy, 70, false); drawCellMembrane(cx + 80, cy, 70, false);
-                drawSpindles(cx - 80, cy, 70, 2, 25); drawSpindles(cx + 80, cy, 70, 2, 25);
-                drawChromatid(cx - 105, cy - 20, blue, true); drawChromatid(cx - 55, cy - 20, blue, false);
-                drawChromatid(cx - 105, cy + 20, pink, true); drawChromatid(cx - 55, cy + 20, pink, false);
-                
-                drawChromatid(cx + 55, cy - 20, pink, true); drawChromatid(cx + 105, cy - 20, pink, false);
-                drawChromatid(cx + 55, cy + 20, blue, true); drawChromatid(cx + 105, cy + 20, blue, false);
-            }
-            else if (currentStep === 7) { // Telophase II (4 cells)
-                [-120, -40, 40, 120].forEach(offset => drawCellMembrane(cx + offset, cy, 35, false));
-                drawChromatid(cx - 120, cy - 10, blue, false); drawChromatid(cx - 120, cy + 10, pink, false);
-                drawChromatid(cx - 40, cy - 10, blue, true); drawChromatid(cx - 40, cy + 10, pink, true);
-                drawChromatid(cx + 40, cy - 10, pink, false); drawChromatid(cx + 40, cy + 10, blue, false);
-                drawChromatid(cx + 120, cy - 10, pink, true); drawChromatid(cx + 120, cy + 10, blue, true);
-            }
+
+            // C1 (Blue)
+            let c1y = interp(sf,  [cy-20, cy-20, cy-20, cy-20, cy-15, cy-20, cy-20, cy-10]);
+            let c1lx = interp(sf, [cx-10, cx-10, cx-15, cx-40, cx-55, cx-80, cx-105, cx-120]);
+            let c1rx = interp(sf, [cx-10, cx-10, cx-15, cx-40, cx-55, cx-80, cx-55,  cx-40]);
+            drawChromatid(c1lx, c1y, blue, true, chrAlpha);
+            drawChromatid(c1rx, c1y, blue, false, chrAlpha);
+
+            // C3 (Pink)
+            let c3y = interp(sf,  [cy-20, cy-20, cy-20, cy-20, cy-15, cy-20, cy-20, cy-10]);
+            let c3lx = interp(sf, [cx+10, cx+10, cx+15, cx+40, cx+55, cx+80, cx+55,  cx+40]);
+            let c3rx = interp(sf, [cx+10, cx+10, cx+15, cx+40, cx+55, cx+80, cx+105, cx+120]);
+            drawChromatid(c3lx, c3y, pink, true, chrAlpha);
+            drawChromatid(c3rx, c3y, pink, false, chrAlpha);
+
+            // C2 (Pink)
+            let c2y = interp(sf,  [cy+25, cy+25, cy+20, cy+20, cy+15, cy+20, cy+20, cy+10]);
+            let c2lx = interp(sf, [cx-10, cx-10, cx-15, cx-40, cx-55, cx-80, cx-105, cx-120]);
+            let c2rx = interp(sf, [cx-10, cx-10, cx-15, cx-40, cx-55, cx-80, cx-55,  cx-40]);
+            drawChromatid(c2lx, c2y, pink, true, chrAlpha);
+            drawChromatid(c2rx, c2y, pink, false, chrAlpha);
+
+            // C4 (Blue)
+            let c4y = interp(sf,  [cy+25, cy+25, cy+20, cy+20, cy+15, cy+20, cy+20, cy+10]);
+            let c4lx = interp(sf, [cx+10, cx+10, cx+15, cx+40, cx+55, cx+80, cx+55,  cx+40]);
+            let c4rx = interp(sf, [cx+10, cx+10, cx+15, cx+40, cx+55, cx+80, cx+105, cx+120]);
+            drawChromatid(c4lx, c4y, blue, true, chrAlpha);
+            drawChromatid(c4rx, c4y, blue, false, chrAlpha);
         }
+    }
+
+    // Easing Animation Loop
+    function animateLoop() {
+        // Linear ease towards the target float
+        currentStepFloat += (targetStepFloat - currentStepFloat) * 0.08;
+        if (Math.abs(targetStepFloat - currentStepFloat) < 0.005) {
+            currentStepFloat = targetStepFloat;
+        }
+        drawSimulation(currentStepFloat);
+        requestAnimationFrame(animateLoop);
     }
 
     setTimeout(resizeCanvas, 100);
     switchMode('mitosis');
+    animateLoop();
 
     // ==========================================
     // 3. QUIZ SYSTEM (5 Questions, Bilingual)
@@ -543,7 +633,7 @@
 
         QUIZ.forEach((q, i) => {
             const isCorrect = userAnswers[i] === q.correct;
-            if (isCorrect) score += 20; // 5 questions = 20 marks each
+            if (isCorrect) score += 20; 
             
             emailReport += `Q${i+1}: ${isCorrect ? 'Correct' : 'Wrong'} - Selected: ${q.en.options[userAnswers[i]]}\n`;
             
@@ -561,14 +651,12 @@
             `;
         });
 
-        // Display locally
         document.getElementById('resultsArea').style.display = 'block';
         document.getElementById('scoreDisplay').innerText = currentLang === 'en' ? `🏆 Score: ${score} / 100` : `🏆 測驗得分：${score} / 100`;
         document.getElementById('explanationDisplay').innerHTML = explanationHTML;
         document.getElementById('submitBtn').style.opacity = '0.5';
         document.getElementById('submitBtn').style.pointerEvents = 'none';
 
-        // Send Email via Web3Forms API to Mr. Daniel Ng
         const formData = new FormData();
         formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c'); 
         formData.append('subject', `[Biology Quiz] ${sClass} ${sName} - Score: ${score}`);
