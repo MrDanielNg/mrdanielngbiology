@@ -2,31 +2,407 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>細胞分裂練習 (HKDSE 生物) | Mr. Daniel Ng Biology</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>細胞分裂實驗室 (Mitosis & Meiosis) | HKDSE Biology</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 保留原有的樣式並進行細微調整 */
-        * { box-sizing: border-box; font-family: 'Segoe UI', 'Noto Sans TC', sans-serif; }
-        body { background: #0f172a; margin: 0; padding: 24px 20px; }
-        .quiz-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 32px; box-shadow: 0 20px 35px rgba(0, 0, 0, 0.2); overflow: hidden; padding: 28px 30px 40px; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #10b981; text-decoration: none; font-weight: 600; }
-        h1 { color: #0f172a; font-size: 1.8rem; margin: 0 0 0.25rem; border-left: 6px solid #10b981; padding-left: 20px; }
-        .sub { color: #475569; margin-bottom: 30px; padding-bottom: 12px; padding-left: 26px; font-weight: 500; border-bottom: 2px solid #e2e8f0; }
-        .info-card { background: #f1f5f9; border-radius: 28px; padding: 18px 24px; margin-bottom: 32px; display: flex; flex-wrap: wrap; gap: 20px; }
-        .input-group { flex: 1 1 180px; display: flex; flex-direction: column; gap: 6px; }
-        .input-group label { font-weight: 700; color: #0f172a; font-size: 0.85rem; }
-        .input-group input { padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 32px; font-size: 1rem; background: white; outline: none; }
-        .question-block { background: #fefdf7; border-radius: 28px; margin-bottom: 28px; padding: 20px 24px; border: 1px solid #e2e8f0; }
-        .q-title { font-weight: 800; font-size: 0.9rem; color: #0f172a; background: #e2e8f0; display: inline-block; padding: 4px 18px; border-radius: 40px; margin-bottom: 16px; }
-        .q-text { font-size: 1.05rem; font-weight: 600; margin: 12px 0 18px; color: #1e293b; line-height: 1.5; }
-        .options { display: flex; flex-direction: column; gap: 10px; }
-        .option { display: flex; align-items: center; gap: 12px; background: white; padding: 10px 18px; border-radius: 48px; border: 1px solid #cbd5e1; cursor: pointer; transition: 0.2s; }
-        .option:hover { background: #f8fafc; border-color: #10b981; }
-        input[type="radio"] { width: 18px; height: 18px; accent-color: #10b981; cursor: pointer; }
-        .action-buttons { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin: 30px 0; }
-        button { background: #10b981; border: none; padding: 14px 36px; border-radius: 44px; font-size: 1rem; font-weight: bold; color: white; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #059669; transform: translateY(-2px); }
-        .reset-btn { background: #64748b; }
-        .score-area { background: #d1fae5; border-radius: 32px; padding: 20px; margin: 20px 0; font-size: 1.4rem; font-weight: bold; color: #065f46; text-align: center; border-left: 6px solid #10b981; }
-        .explanation-area { background: #fef3c7; border-radius: 24px; padding: 24px; margin-top: 10px; border: 1px solid #fde68a; }
-        .explanation-title { font-weight: 800; margin-bottom: 15px; color: #b4530
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;800&family=Roboto:wght@400;700&display=swap');
+        
+        body { font-family: 'Roboto', 'Noto Sans TC', sans-serif; background-color: #0f172a; color: #1e293b; }
+        .app-container { max-width: 1100px; margin: 40px auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        
+        /* Navigation & Tabs */
+        .nav-header { background: #1e293b; padding: 20px 30px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .mode-tabs { display: flex; gap: 10px; }
+        .tab-btn { padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s; background: #334155; color: #cbd5e1; border: none; }
+        .tab-btn.active { background: #10b981; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+        
+        /* Simulation Layout */
+        .sim-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 0; border-bottom: 2px solid #e2e8f0; }
+        .canvas-container { background: #f8fafc; position: relative; border-right: 2px solid #e2e8f0; display: flex; align-items: center; justify-content: center; min-height: 450px; }
+        canvas { width: 100%; height: 100%; max-height: 500px; touch-action: none; }
+        
+        .controls-panel { padding: 30px; display: flex; flex-direction: column; background: white; }
+        .stage-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; border-left: 5px solid #10b981; padding-left: 15px; }
+        .stage-desc { font-size: 1rem; color: #475569; line-height: 1.6; flex-grow: 1; }
+        
+        .progress-dots { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+        .dot { height: 10px; width: 10px; background: #cbd5e1; border-radius: 50%; transition: 0.3s; }
+        .dot.active { background: #10b981; transform: scale(1.3); }
+        
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
+        .ctrl-btn { padding: 12px; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-prev { background: #e2e8f0; color: #475569; }
+        .btn-prev:hover:not(:disabled) { background: #cbd5e1; }
+        .btn-next { background: #3b82f6; color: white; }
+        .btn-next:hover:not(:disabled) { background: #2563eb; }
+        .ctrl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Quiz Section */
+        .quiz-section { padding: 40px; background: #fdfcf7; }
+        .quiz-header { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-bottom: 30px; text-align: center; }
+        
+        .info-card { background: #f1f5f9; border-radius: 20px; padding: 20px; display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
+        .input-group { flex: 1 1 200px; display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-weight: bold; font-size: 0.85rem; color: #334155; }
+        .input-group input { padding: 10px 15px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 1rem; }
+        
+        .q-block { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .q-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: #1e293b; }
+        .option-label { display: flex; align-items: flex-start; gap: 10px; padding: 12px 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 10px; cursor: pointer; transition: 0.2s; background: #f8fafc; }
+        .option-label:hover { border-color: #10b981; background: white; }
+        .option-label input { margin-top: 5px; accent-color: #10b981; }
+        
+        .submit-btn { background: #10b981; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: block; margin: 30px auto; transition: 0.3s; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        .submit-btn:hover { background: #059669; transform: translateY(-2px); }
+
+        @media (max-width: 768px) {
+            .sim-grid { grid-template-columns: 1fr; }
+            .canvas-container { min-height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header class="nav-header">
+        <div class="text-xl font-bold flex items-center gap-2">
+            <span class="text-emerald-400">🔬 Mr. Daniel Ng Biology</span>
+        </div>
+        <div class="mode-tabs">
+            <button id="tab-mitosis" class="tab-btn active" onclick="switchMode('mitosis')">Mitosis 有絲分裂</button>
+            <button id="tab-meiosis" class="tab-btn" onclick="switchMode('meiosis')">Meiosis 減數分裂</button>
+        </div>
+    </header>
+
+    <section class="sim-grid">
+        <div class="canvas-container">
+            <div id="stage-badge" class="absolute top-4 left-4 bg-slate-800 text-white px-3 py-1 rounded-full text-xs font-bold opacity-80 z-10">
+                Phase indicator
+            </div>
+            <canvas id="simCanvas"></canvas>
+        </div>
+        
+        <div class="controls-panel">
+            <h2 id="ui-title" class="stage-title">載入中...</h2>
+            <div id="ui-desc" class="stage-desc">請稍候。</div>
+            
+            <div id="ui-dots" class="progress-dots"></div>
+            
+            <div class="btn-group">
+                <button id="btn-prev" class="ctrl-btn btn-prev" onclick="changeStep(-1)">← 上一步</button>
+                <button id="btn-next" class="ctrl-btn btn-next" onclick="changeStep(1)">下一步 →</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="quiz-section">
+        <h2 class="quiz-header">📝 HKDSE 知識檢測 (4選項格式)</h2>
+        
+        <div class="info-card">
+            <div class="input-group">
+                <label>English Name (姓名)</label>
+                <input type="text" id="stuName" placeholder="e.g., Chan Tai Man">
+            </div>
+            <div class="input-group">
+                <label>Class (班別)</label>
+                <input type="text" id="stuClass" placeholder="e.g., 6A">
+            </div>
+            <div class="input-group">
+                <label>Class No. (學號)</label>
+                <input type="text" id="stuNo" placeholder="e.g., 23">
+            </div>
+        </div>
+
+        <div id="quiz-container"></div>
+
+        <button id="submitBtn" class="submit-btn" onclick="submitQuiz()">✅ 提交答案並發送報告至 Web3Forms</button>
+        
+        <div id="resultsArea" style="display: none; margin-top: 30px;">
+            <div id="scoreDisplay" style="background: #d1fae5; color: #065f46; padding: 20px; border-radius: 16px; text-align: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 20px;"></div>
+            <div id="explanationDisplay" style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px;"></div>
+        </div>
+    </section>
+</div>
+
+<script>
+    /* =========================================
+       1. DATA STRUCTURES (Separated Stages)
+       ========================================= */
+    const SIM_DATA = {
+        mitosis: {
+            title: "Mitosis 有絲分裂",
+            stages: [
+                { id: "M1", t: "間期 (Interphase)", d: "細胞生長並進行生理活動。最重要的是，DNA 在此階段進行複製，形成兩條完全相同的姐妹染色單體 (Sister chromatids)。" },
+                { id: "M2", t: "前期 (Prophase)", d: "染色質濃縮成清晰可見的染色體。核膜逐漸消失，中心體移向兩極並開始形成紡錘絲。" },
+                { id: "M3", t: "中期 (Metaphase)", d: "所有染色體整齊地排列在細胞中央的赤道板 (Equatorial plate) 上，紡錘絲附著於著絲點。" },
+                { id: "M4", t: "後期 (Anaphase)", d: "著絲點分裂，紡錘絲將「姐妹染色單體」拉向細胞兩極。" },
+                { id: "M5", t: "末期 (Telophase)", d: "核膜重新形成，細胞質開始分裂 (Cytokinesis)，最終產生兩個與母細胞遺傳物質完全相同的二倍體 (2n) 子細胞。" }
+            ]
+        },
+        meiosis: {
+            title: "Meiosis 減數分裂 (9 獨立階段)",
+            stages: [
+                { id: "Me1", t: "間期 (Interphase)", d: "與有絲分裂相同，DNA 在進入減數分裂前進行複製。" },
+                { id: "Me2", t: "前期 I (Prophase I)", d: "關鍵步驟：同源染色體 (Homologous chromosomes) 互相配對形成聯會 (Synapsis)，並可能發生同源染色體間的遺傳物質互換 (Crossing over)。" },
+                { id: "Me3", t: "中期 I (Metaphase I)", d: "同源染色體「成對」排列在赤道板上。" },
+                { id: "Me4", t: "後期 I (Anaphase I)", d: "關鍵步驟：紡錘絲將「同源染色體」分離並拉向兩極。注意：此時著絲點並未分裂，姐妹染色單體仍相連。" },
+                { id: "Me5", t: "末期 I (Telophase I)", d: "細胞質分裂，形成兩個單倍體 (n) 細胞。但每條染色體仍含有兩條染色單體。" },
+                { id: "Me6", t: "前期 II (Prophase II)", d: "兩個子細胞準備進行第二次分裂，核膜再次消失。此階段不再進行 DNA 複製。" },
+                { id: "Me7", t: "中期 II (Metaphase II)", d: "染色體在每個子細胞的赤道板上排成單列。" },
+                { id: "Me8", t: "後期 II (Anaphase II)", d: "著絲點終於分裂，紡錘絲將「姐妹染色單體」拉向細胞兩極。" },
+                { id: "Me9", t: "末期 II (Telophase II)", d: "細胞質再次分裂，最終產生四個遺傳組成各不相同的單倍體 (n) 配子細胞 (Gametes)。" }
+            ]
+        }
+    };
+
+    let currentMode = 'mitosis';
+    let currentStep = 0;
+
+    /* =========================================
+       2. UI & CANVAS LOGIC
+       ========================================= */
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        drawSimulation();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function switchMode(mode) {
+        currentMode = mode;
+        currentStep = 0;
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${mode}`).classList.add('active');
+        
+        updateSimulationUI();
+    }
+
+    function changeStep(dir) {
+        const maxSteps = SIM_DATA[currentMode].stages.length - 1;
+        currentStep += dir;
+        if (currentStep < 0) currentStep = 0;
+        if (currentStep > maxSteps) currentStep = maxSteps;
+        updateSimulationUI();
+    }
+
+    function updateSimulationUI() {
+        const data = SIM_DATA[currentMode];
+        const stage = data.stages[currentStep];
+        const maxSteps = data.stages.length - 1;
+
+        document.getElementById('ui-title').innerText = stage.t;
+        document.getElementById('ui-desc').innerText = stage.d;
+        document.getElementById('stage-badge').innerText = `${data.title} - Step ${currentStep + 1}/${maxSteps + 1}`;
+
+        document.getElementById('btn-prev').disabled = currentStep === 0;
+        document.getElementById('btn-next').disabled = currentStep === maxSteps;
+
+        // Render Dots
+        const dotsContainer = document.getElementById('ui-dots');
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i <= maxSteps; i++) {
+            const dot = document.createElement('div');
+            dot.className = `dot ${i === currentStep ? 'active' : ''}`;
+            dotsContainer.appendChild(dot);
+        }
+
+        drawSimulation();
+    }
+
+    function drawSimulation() {
+        // Abstract dynamic drawing based on steps to avoid extremely dense custom canvas code, 
+        // focusing on visual representation of the cell count and chromosome states.
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const stageData = SIM_DATA[currentMode].stages[currentStep];
+        
+        ctx.fillStyle = "#e2e8f0";
+        ctx.font = "16px sans-serif";
+        ctx.textAlign = "center";
+        
+        // Visual Placeholder logic mapped to stages
+        ctx.strokeStyle = "#3b82f6";
+        ctx.lineWidth = 4;
+        ctx.fillStyle = "#f0f9ff";
+
+        if (currentMode === 'mitosis') {
+            if (currentStep < 4) {
+                // Single Cell
+                ctx.beginPath(); ctx.arc(cx, cy, 100, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#1e293b";
+                ctx.fillText(`[ ${stageData.t} 視覺化 ]`, cx, cy + 140);
+                if(currentStep === 0) { ctx.fillText("DNA 複製中...", cx, cy); }
+                if(currentStep === 2) { ctx.fillText("單列排列在赤道板", cx, cy); }
+                if(currentStep === 3) { ctx.fillText("姐妹染色單體分離 ← →", cx, cy); }
+            } else {
+                // Two Cells
+                ctx.beginPath(); ctx.arc(cx - 120, cy, 90, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(cx + 120, cy, 90, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#1e293b"; ctx.fillText("2 個 2n 子細胞", cx, cy + 130);
+            }
+        } else {
+            // Meiosis Logic (9 steps)
+            if (currentStep < 4) {
+                // Meiosis I - Single Cell
+                ctx.beginPath(); ctx.arc(cx, cy, 100, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#1e293b";
+                if(currentStep === 1) ctx.fillText("同源染色體聯會 (Synapsis)", cx, cy);
+                if(currentStep === 2) ctx.fillText("同源染色體雙列排列", cx, cy);
+                if(currentStep === 3) ctx.fillText("同源染色體分離 ← →", cx, cy);
+            } else if (currentStep >= 4 && currentStep < 8) {
+                // Meiosis II - Two Cells
+                ctx.beginPath(); ctx.arc(cx - 110, cy, 80, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(cx + 110, cy, 80, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#1e293b";
+                if(currentStep === 4) ctx.fillText("2 個單倍體 (n) 細胞", cx, cy + 120);
+                if(currentStep === 6) ctx.fillText("染色體排成單列", cx, cy + 120);
+                if(currentStep === 7) ctx.fillText("姐妹染色單體分離 ← →", cx, cy + 120);
+            } else {
+                // End - Four Cells
+                [-150, -50, 50, 150].forEach(offset => {
+                    ctx.beginPath(); ctx.arc(cx + offset, cy, 45, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                });
+                ctx.fillStyle = "#1e293b"; ctx.fillText("4 個遺傳不同的單倍體配子", cx, cy + 80);
+            }
+        }
+    }
+
+    // Init App
+    setTimeout(resizeCanvas, 100);
+    switchMode('mitosis');
+
+    /* =========================================
+       3. HKDSE QUIZ & WEB3FORMS LOGIC
+       ========================================= */
+    const QUIZ_QUESTIONS = [
+        {
+            q: "在減數分裂的過程中，哪一個階段會發生「同源染色體分離」(Separation of homologous chromosomes)？",
+            options: ["A. 前期 I (Prophase I)", "B. 後期 I (Anaphase I)", "C. 後期 II (Anaphase II)", "D. 末期 II (Telophase II)"],
+            correct: 1,
+            exp: "後期 I (Anaphase I) 是同源染色體被紡錘絲拉向兩極的階段。姐妹染色單體分離則發生在後期 II。"
+        },
+        {
+            q: "下列關於有絲分裂 (Mitosis) 與減數分裂 (Meiosis) 的比較，何者正確？",
+            options: [
+                "A. 兩者均會發生同源染色體的聯會 (Synapsis)。",
+                "B. 有絲分裂產生單倍體細胞，減數分裂產生二倍體細胞。",
+                "C. 兩者在分裂前，DNA 均只複製一次。",
+                "D. 減數分裂 II 的過程中會再次進行 DNA 複製。"
+            ],
+            correct: 2,
+            exp: "無論是有絲分裂還是減數分裂，DNA 在間期 (Interphase) 都只會複製一次。減數分裂 II 前不會進行 DNA 複製。"
+        },
+        {
+            q: "人類體細胞有 46 條染色體。一個精原細胞經過完整的減數分裂後，產生的單個精子細胞中含有多少條染色體？",
+            options: ["A. 92", "B. 46", "C. 23", "D. 4"],
+            correct: 2,
+            exp: "減數分裂會使染色體數目減半 (2n -> n)。因此 46 條染色體會減半為 23 條，以確保受精後代維持 46 條。"
+        },
+        {
+            q: "在細胞分裂的哪個階段，染色體最容易被觀察，且整齊排列於赤道板上？",
+            options: ["A. 間期 (Interphase)", "B. 前期 (Prophase)", "C. 中期 (Metaphase)", "D. 後期 (Anaphase)"],
+            correct: 2,
+            exp: "中期 (Metaphase) 的特徵是染色體排列在細胞中央的赤道板，此時染色體濃縮最明顯，最適合觀察核型。"
+        }
+    ];
+
+    let userAnswers = new Array(QUIZ_QUESTIONS.length).fill(null);
+    let quizSubmitted = false;
+
+    const quizContainer = document.getElementById('quiz-container');
+
+    function renderQuiz() {
+        quizContainer.innerHTML = '';
+        QUIZ_QUESTIONS.forEach((qItem, qIdx) => {
+            const block = document.createElement('div');
+            block.className = 'q-block';
+            
+            let optionsHTML = '';
+            qItem.options.forEach((opt, oIdx) => {
+                optionsHTML += `
+                    <label class="option-label">
+                        <input type="radio" name="q${qIdx}" value="${oIdx}" onchange="userAnswers[${qIdx}] = ${oIdx}">
+                        <span>${opt}</span>
+                    </label>
+                `;
+            });
+
+            block.innerHTML = `
+                <div class="q-text">Q${qIdx + 1}. ${qItem.q}</div>
+                <div>${optionsHTML}</div>
+            `;
+            quizContainer.appendChild(block);
+        });
+    }
+
+    async function submitQuiz() {
+        if (quizSubmitted) return alert("測驗已提交！請重新整理頁面以重試。");
+        
+        const sName = document.getElementById('stuName').value.trim();
+        const sClass = document.getElementById('stuClass').value.trim();
+        const sNo = document.getElementById('stuNo').value.trim();
+
+        if (!sName || !sClass || !sNo) return alert("請填寫完整的學生資料 (姓名、班別、學號)。");
+        if (userAnswers.includes(null)) return alert("請回答所有問題後再提交。");
+
+        let score = 0;
+        let explanationHTML = `<h3 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">📝 詳細題解</h3>`;
+        let emailReport = `Student: ${sName} | Class: ${sClass} (${sNo})\n\n`;
+
+        QUIZ_QUESTIONS.forEach((q, i) => {
+            const isCorrect = userAnswers[i] === q.correct;
+            if (isCorrect) score += 25; // 4 questions = 25 marks each
+            
+            emailReport += `Q${i+1}: ${isCorrect ? 'Correct' : 'Wrong'} - Selected: ${q.options[userAnswers[i]]}\n`;
+            
+            explanationHTML += `
+                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+                    <div style="font-weight: bold; color: ${isCorrect ? '#10b981' : '#ef4444'};">
+                        Q${i+1} ${isCorrect ? '✅ 答對' : '❌ 答錯'}
+                    </div>
+                    <div style="margin-top: 5px; color: #475569; font-size: 0.95rem;">
+                        <strong>正確答案：</strong> ${q.options[q.correct]}<br>
+                        <strong>解析：</strong> ${q.exp}
+                    </div>
+                </div>
+            `;
+        });
+
+        // Display locally
+        document.getElementById('resultsArea').style.display = 'block';
+        document.getElementById('scoreDisplay').innerText = `🏆 測驗得分：${score} / 100`;
+        document.getElementById('explanationDisplay').innerHTML = explanationHTML;
+        document.getElementById('submitBtn').style.display = 'none';
+
+        // Send Email via Web3Forms API
+        const formData = new FormData();
+        formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c'); // Your Web3Forms Key
+        formData.append('subject', `[Biology Quiz] ${sClass} ${sName} - Score: ${score}`);
+        formData.append('email', 'ngtinghei0803@gmail.com');
+        formData.append('message', emailReport);
+
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
+            if (response.ok) {
+                alert(`✅ 報告已成功發送至 Web3Forms 系統。\n你的得分是：${score}/100`);
+            } else {
+                alert("⚠️ 郵件發送失敗，請檢查 Web3Forms 的額度限制。");
+            }
+        } catch (error) {
+            alert("⚠️ 網絡錯誤，無法發送郵件。請截圖保留你的分數。");
+        }
+
+        quizSubmitted = true;
+    }
+
+    renderQuiz();
+</script>
+</body>
+</html>
