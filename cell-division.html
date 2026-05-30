@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Cell Division Masterclass | Mitosis & Meiosis | Daniel Ng</title>
+    <!-- Tailwind + Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        body { background: linear-gradient(135deg, #f1f5f9 0%, #e6edf4 100%); }
+        .canvas-container {
+            background: radial-gradient(circle at 30% 20%, #fefce8, #f8fafc);
+            box-shadow: inset 0 0 0 2px rgba(255,255,240,0.8), 0 20px 35px -12px rgba(0,0,0,0.2);
+        }
+        .step-dot {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
+        }
+        .quiz-option {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .quiz-option:hover:not(.disabled-opt) {
+            background-color: #eef2ff;
+            transform: scale(0.99);
+        }
+        .disabled-opt {
+            cursor: default;
+            opacity: 0.7;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-content {
+            animation: fadeSlide 0.2s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200/80 px-5 py-3 md:px-8">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <div class="bg-emerald-600 w-8 h-8 rounded-xl flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-lg">🧬</span>
+                </div>
+                <span class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-teal-600 text-lg">MR. DANIEL NG</span>
+                <span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full hidden sm:inline-block">Biology Masterclass</span>
+            </div>
+            <div class="flex gap-3">
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Home</a>
+                <a href="transpiration.html" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">🌿 Transpiration Lab</a>
+                <a href="#" class="text-sm font-medium text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">Cell Division</a>
+                <a href="enzyme-lab.html" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">🧪 Enzyme Lab</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero & main interactive area -->
+    <main class="max-w-7xl mx-auto px-4 py-6 md:py-10 w-full flex-1">
+        <!-- Title section -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-slate-800 to-emerald-700 bg-clip-text text-transparent">Mitosis & Meiosis Explorer</h1>
+            <p class="text-slate-500 mt-2 max-w-2xl mx-auto">Compare cell division modes — visual simulations + interactive quiz with AI explanations</p>
+        </div>
+
+        <!-- Dual Canvas / Toggle Section -->
+        <div class="grid lg:grid-cols-2 gap-8 mb-12">
+            <!-- MITOSIS CARD -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 card-hover">
+                <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 px-5 py-3 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🌱</span>
+                        <h2 class="text-white font-bold text-xl">Mitosis (Asexual)</h2>
+                    </div>
+                    <span class="bg-white/20 text-white text-xs px-2 py-1 rounded-full">2 identical cells</span>
+                </div>
+                <div class="p-5">
+                    <div class="canvas-container relative rounded-xl bg-white/60 mb-4 flex justify-center">
+                        <canvas id="mitosisCanvas" width="500" height="320" style="width:100%; height:auto; max-width:500px; aspect-ratio:500/320" class="rounded-lg shadow-inner"></canvas>
+                    </div>
+                    <!-- mitosis controls -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 mt-2">
+                        <div class="flex gap-2">
+                            <button id="mitPrevBtn" class="px-3 py-1.5 bg-slate-100 rounded-lg text-sm font-medium hover:bg-slate-200 transition disabled:opacity-40">◀ Prev</button>
+                            <button id="mitNextBtn" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-40">Next ▶</button>
+                        </div>
+                        <div class="flex gap-1" id="mitosisDots">
+                            <!-- JS dots -->
+                        </div>
+                        <button id="mitAutoBtn" class="px-3 py-1.5 text-xs bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200 hover:bg-emerald-100">▶ Auto</button>
+                    </div>
+                    <p id="mitosisDesc" class="text-sm text-slate-600 mt-3 bg-slate-50 p-3 rounded-lg leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- MEIOSIS CARD (Simplified key stages: Meiosis I & II) -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 card-hover">
+                <div class="bg-gradient-to-r from-rose-500 to-pink-500 px-5 py-3 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🥚🧬</span>
+                        <h2 class="text-white font-bold text-xl">Meiosis (Sexual)</h2>
+                    </div>
+                    <span class="bg-white/20 text-white text-xs px-2 py-1 rounded-full">4 unique gametes</span>
+                </div>
+                <div class="p-5">
+                    <div class="canvas-container relative rounded-xl bg-white/60 mb-4 flex justify-center">
+                        <canvas id="meiosisCanvas" width="500" height="320" style="width:100%; height:auto; max-width:500px; aspect-ratio:500/320" class="rounded-lg shadow-inner"></canvas>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 mt-2">
+                        <div class="flex gap-2">
+                            <button id="meiPrevBtn" class="px-3 py-1.5 bg-slate-100 rounded-lg text-sm font-medium hover:bg-slate-200 transition disabled:opacity-40">◀ Prev</button>
+                            <button id="meiNextBtn" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-sm font-medium hover:bg-rose-700 transition disabled:opacity-40">Next ▶</button>
+                        </div>
+                        <div class="flex gap-1" id="meiosisDots"></div>
+                        <button id="meiAutoBtn" class="px-3 py-1.5 text-xs bg-rose-50 text-rose-700 rounded-full border border-rose-200 hover:bg-rose-100">▶ Auto</button>
+                    </div>
+                    <p id="meiosisDesc" class="text-sm text-slate-600 mt-3 bg-slate-50 p-3 rounded-lg leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ SECTION (Mitosis & Meiosis mixed) -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 border border-slate-100">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="bg-amber-100 p-2 rounded-xl"><span class="text-2xl">📝</span></div>
+                <div>
+                    <h3 class="text-2xl font-bold text-slate-800">Quick Concept Check</h3>
+                    <p class="text-slate-500 text-sm">5 MCQs — Test your understanding of mitosis & meiosis</p>
+                </div>
+            </div>
+            
+            <div id="quizContainer" class="space-y-6">
+                <!-- js inject questions -->
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center mt-6 gap-4">
+                <button id="resetQuizBtn" class="px-5 py-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 transition">⟳ Reset Quiz</button>
+                <button id="submitQuizBtn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold shadow-md transition">Submit Answers & Get AI Explanations</button>
+            </div>
+            <div id="quizFeedback" class="mt-5 p-4 bg-slate-50 rounded-xl text-slate-700 text-sm hidden transition-all"></div>
+        </div>
+
+        <!-- Info footer -->
+        <div class="text-center text-slate-400 text-xs mt-10 pb-4">🔬 Masterclass with Mr. Daniel Ng — Interactive simulations & AI-assisted learning | Verified by Google Search Console</div>
+    </main>
+
+    <script>
+        // --------------------------------------------------------------
+        // MITOSIS simulation (5 stages)
+        // --------------------------------------------------------------
+        const mitosisCanvas = document.getElementById('mitosisCanvas');
+        const ctxM = mitosisCanvas.getContext('2d');
+        
+        let mitStage = 0; // 0:Interphase,1:Prophase,2:Metaphase,3:Anaphase,4:Telophase
+        let mitTarget = 0;
+        let mitProgress = 0;
+        let mitAuto = false;
+        let mitInterval = null;
+        
+        const mitStagesData = [
+            { name: "Interphase", desc: "DNA replicates, cell grows, chromatin uncondensed. Centrosomes duplicate. The cell prepares for division." },
+            { name: "Prophase", desc: "Chromosomes condense, nuclear envelope breaks down. Spindle fibers emerge from centrosomes." },
+            { name: "Metaphase", desc: "Chromosomes align at the metaphase plate (equator). Spindle fibers attach to kinetochores." },
+            { name: "Anaphase", desc: "Sister chromatids separate and move to opposite poles. Cell elongates." },
+            { name: "Telophase & Cytokinesis", desc: "Nuclear membranes reform, chromosomes decondense. Cytoplasm divides → 2 identical daughter cells." }
+        ];
+        
+        function drawMitosis() {
+            ctxM.clearRect(0, 0, mitosisCanvas.width, mitosisCanvas.height);
+            const w = mitosisCanvas.width, h = mitosisCanvas.height;
+            const cx = w/2, cy = h/2;
+            let stage = mitTarget;
+            let t = mitProgress;
+            if (mitStage !== mitTarget) t = mitProgress;
+            else t = 1;
+            
+            // background nucleus effect
+            ctxM.fillStyle = "#fef9e3";
+            ctxM.fillRect(0,0,w,h);
+            // cell membrane
+            ctxM.beginPath();
+            ctxM.ellipse(cx, cy, w*0.38, h*0.4, 0, 0, 2*Math.PI);
+            ctxM.fillStyle = "#f0f9ff";
+            ctxM.fill();
+            ctxM.strokeStyle = "#94a3b8";
+            ctxM.lineWidth = 2;
+            ctxM.stroke();
+            
+            // chromosome drawing helper
+            function drawChromosome(x, y, condensed, splitOffset=0) {
+                if (condensed < 0.3) {
+                    ctxM.beginPath();
+                    for(let i=0;i<3;i++) {
+                        ctxM.moveTo(x-12+ i*8, y-4);
+                        ctxM.quadraticCurveTo(x-2+ i*4, y+6, x+8+ i*2, y-2);
+                    }
+                    ctxM.strokeStyle = "#334155";
+                    ctxM.lineWidth = 1.5;
+                    ctxM.stroke();
+                    return;
+                }
+                ctxM.fillStyle = "#4f46e5";
+                ctxM.shadowBlur = 0;
+                let width = 10, height = 28;
+                if(splitOffset > 0) {
+                    ctxM.fillRect(x - splitOffset - 4, y-12, 6, 24);
+                    ctxM.fillRect(x + splitOffset - 2, y-12, 6, 24);
+                    ctxM.fillStyle = "#f59e0b";
+                    ctxM.beginPath();
+                    ctxM.arc(x, y, 3, 0, 2*Math.PI);
+                    ctxM.fill();
+                } else {
+                    ctxM.fillRect(x-5, y-14, 10, 28);
+                    ctxM.fillStyle = "#f59e0b";
+                    ctxM.beginPath();
+                    ctxM.arc(x, y, 4, 0, 2*Math.PI);
+                    ctxM.fill();
+                }
+            }
+            
+            let condensedLevel = stage>=1 ? 1 : (stage===0? 0 : (mitStage===0 && mitTarget===1 ? t : 0));
+            let splitFactor = (stage===3? t : (stage>=4?1:0));
+            let alignment = stage===2? t : (stage>2?1:0);
+            
+            let chromPositions = [[cx-30, cy-20],[cx+20, cy-30],[cx-10, cy+15],[cx+35, cy+5]];
+            if(alignment>0) {
+                chromPositions = chromPositions.map((_,idx)=>[cx-20+idx*15, cy-10]);
+            }
+            
+            // nuclear envelope fading
+            if(stage<1 || (stage===1 && t<0.5)) {
+                ctxM.beginPath();
+                ctxM.arc(cx, cy, 48, 0, 2*Math.PI);
+                ctxM.fillStyle = "rgba(226,232,240,0.5)";
+                ctxM.fill();
+                ctxM.strokeStyle = "#475569";
+                ctxM.setLineDash([4,4]);
+                ctxM.stroke();
+                ctxM.setLineDash([]);
+            }
+            
+            // draw chromosomes
+            chromPositions.forEach((pos,idx) => {
+                let splitVal = (stage>=3 && splitFactor>0) ? 12 * splitFactor : 0;
+                drawChromosome(pos[0], pos[1], condensedLevel, splitVal);
+            });
+            
+            // spindle fibers during prophase-metaphase-anaphase
+            if(stage>=1 && stage<=3) {
+                ctxM.beginPath();
+                ctxM.strokeStyle = "#fbbf24cc";
+                ctxM.lineWidth = 1;
+                for(let i=-30;i<=30;i+=15){
+                    ctxM.moveTo(cx-70, cy+i);
+                    ctxM.lineTo(cx+70, cy-i*0.8);
+                    ctxM.stroke();
+                }
+            }
+            // draw centrosomes
+            if(stage>=1 && stage<4){
+                ctxM.fillStyle = "#d97706";
+                ctxM.fillRect(cx-65, cy-5, 8,8);
+                ctxM.fillRect(cx+57, cy-5, 8,8);
+            }
+            // cleavage furrow telophase
+            if(stage===4){
+                ctxM.beginPath();
+                ctxM.moveTo(cx-70, cy+8);
+                ctxM.quadraticCurveTo(cx, cy+25, cx+70, cy+8);
+                ctxM.strokeStyle = "#f97316";
+                ctxM.lineWidth = 2;
+                ctxM.stroke();
+            }
+        }
+        
+        function updateMitosisUI() {
+            let idx = mitTarget;
+            document.getElementById('mitosisDesc').innerHTML = `<span class="font-bold text-indigo-700">${mitStagesData[idx].name}</span><br>${mitStagesData[idx].desc}`;
+            const btnsPrev = document.getElementById('mitPrevBtn');
+            const btnsNext = document.getElementById('mitNextBtn');
+            btnsPrev.disabled = mitTarget === 0;
+            btnsNext.disabled = mitTarget === 4;
+            const dotsDiv = document.getElementById('mitosisDots');
+            dotsDiv.innerHTML = '';
+            for(let i=0;i<5;i++){
+                let dot = document.createElement('div');
+                dot.className = `w-2 h-2 rounded-full ${i===mitTarget ? 'bg-indigo-600' : 'bg-slate-300'} transition-all cursor-pointer`;
+                dot.onclick = ()=>setMitosisStage(i);
+                dotsDiv.appendChild(dot);
+            }
+        }
+        
+        function setMitosisStage(stage){
+            if(mitAuto) stopMitAuto();
+            mitTarget = stage;
+            mitStage = stage;
+            mitProgress = 0;
+            updateMitosisUI();
+            drawMitosis();
+        }
+        
+        function nextMitosis(){
+            if(mitTarget<4) setMitosisStage(mitTarget+1);
+        }
+        function prevMitosis(){
+            if(mitTarget>0) setMitosisStage(mitTarget-1);
+        }
+        function stopMitAuto(){
+            if(mitInterval) clearInterval(mitInterval);
+            mitAuto=false;
+            document.getElementById('mitAutoBtn').innerHTML = '▶ Auto';
+        }
+        function startMitAuto(){
+            if(mitInterval) clearInterval(mitInterval);
+            mitAuto=true;
+            document.getElementById('mitAutoBtn').innerHTML = '⏸ Pause';
+            let step=mitTarget;
+            mitInterval = setInterval(()=>{
+                if(step<4){
+                    step++;
+                    setMitosisStage(step);
+                } else {
+                    stopMitAuto();
+                }
+            }, 2200);
+        }
+        
+        document.getElementById('mitPrevBtn').onclick = prevMitosis;
+        document.getElementById('mitNextBtn').onclick = nextMitosis;
+        document.getElementById('mitAutoBtn').onclick = ()=>{
+            if(mitAuto) stopMitAuto();
+            else startMitAuto();
+        };
+        
+        // animation frame for mitosis draw
+        function animateMitosis() {
+            drawMitosis();
+            requestAnimationFrame(animateMitosis);
+        }
+        animateMitosis();
+        setMitosisStage(0);
+        
+        // --------------------------------------------------------------
+        // MEIOSIS SIMPLIFIED (5 key phases: Prophase I, Metaphase I, Anaphase I, Telophase I + Meiosis II overview)
+        // --------------------------------------------------------------
+        const meiosisCanvas = document.getElementById('meiosisCanvas');
+        const ctxMe = meiosisCanvas.getContext('2d');
+        let meiStage = 0, meiTarget = 0, meiProgress=0, meiAuto=false, meiInterval=null;
+        const meiStages = [
+            { name: "Prophase I", desc: "Homologous chromosomes pair (synapsis) & crossing over occurs. Genetic diversity increases." },
+            { name: "Metaphase I", desc: "Homologous pairs align at equator. Independent assortment." },
+            { name: "Anaphase I", desc: "Homologs separate (sister chromatids remain together)." },
+            { name: "Telophase I & Cytokinesis", desc: "Two haploid cells form. Each chromosome still consists of two chromatids." },
+            { name: "Meiosis II (Equational)", desc: "Sister chromatids separate → 4 genetically unique haploid gametes." }
+        ];
+        
+        function drawMeiosis() {
+            ctxMe.clearRect(0,0,meiosisCanvas.width,meiosisCanvas.height);
+            const w=meiosisCanvas.width, h=meiosisCanvas.height, cx=w/2, cy=h/2;
+            ctxMe.fillStyle = "#fff7ed";
+            ctxMe.fillRect(0,0,w,h);
+            ctxMe.beginPath();
+            ctxMe.ellipse(cx, cy, w*0.38, h*0.4, 0, 0, 2*Math.PI);
+            ctxMe.fillStyle = "#fef2e8";
+            ctxMe.fill();
+            ctxMe.strokeStyle = "#cbd5e1";
+            ctxMe.stroke();
+            
+            let stage = meiTarget;
+            // homologous representation
+            let separation = (stage===2 ? 0.6 : (stage===3? 1 : 0));
+            let cellSplit = stage===3;
+            let reduction = stage>=3;
+            
+            // draw chromosome pairs (homologs different colors)
+            function drawHomologPair(x1,y1,x2,y2, condensed=1, separated=false){
+                ctxMe.fillStyle = "#b91c1c";
+                ctxMe.fillRect(x1-4, y1-10, 7, 24);
+                ctxMe.fillStyle = "#2563eb";
+                ctxMe.fillRect(x2-4, y2-10, 7, 24);
+                if(!separated && !(stage>=3 && stage!==4)){
+                    ctxMe.beginPath();
+                    ctxMe.setLineDash([2,4]);
+                    ctxMe.strokeStyle = "#facc15";
+                    ctxMe.moveTo(x1+2, y1);
+                    ctxMe.lineTo(x2-2, y2);
+                    ctxMe.stroke();
+                    ctxMe.setLineDash([]);
+                }
+            }
+            if(stage===4){
+                // four cells
+                for(let i=-1;i<=1;i+=2){
+                    for(let j=-1;j<=1;j+=2){
+                        ctxMe.fillStyle = "#9ca3af";
+                        ctxMe.fillRect(cx + i*45 -4, cy + j*35 -8, 6, 18);
+                    }
+                }
+                ctxMe.fillStyle = "#f87171";
+                ctxMe.font = "bold 12px Inter";
+                ctxMe.fillText("4 haploid gametes", cx-45, cy+45);
+            } else {
+                let offset = reduction ? 0 : (stage===1? 0 : 20);
+                let pairSpacing = reduction ? 12 : 25;
+                let yBase = cy-10;
+                drawHomologPair(cx-pairSpacing, yBase, cx+pairSpacing, yBase+6, 1, separation>0.5);
+                drawHomologPair(cx-pairSpacing+15, yBase+20, cx+pairSpacing-5, yBase+28, 1, separation>0.5);
+                
+                if(cellSplit){
+                    ctxMe.beginPath();
+                    ctxMe.moveTo(cx-60, cy+10);
+                    ctxMe.quadraticCurveTo(cx, cy+28, cx+60, cy+10);
+                    ctxMe.strokeStyle = "#dc2626";
+                    ctxMe.lineWidth = 2;
+                    ctxMe.stroke();
+                }
+                // spindle
+                if(stage<=2){
+                    ctxMe.strokeStyle = "#fcd34daa";
+                    for(let i=-20;i<=20;i+=15){
+                        ctxMe.beginPath();
+                        ctxMe.moveTo(cx-70, cy+i);
+                        ctxMe.lineTo(cx+70, cy-i*0.8);
+                        ctxMe.stroke();
+                    }
+                }
+            }
+        }
+        
+        function updateMeiosisUI(){
+            let idx = meiTarget;
+            document.getElementById('meiosisDesc').innerHTML = `<span class="font-bold text-rose-700">${meiStages[idx].name}</span><br>${meiStages[idx].desc}`;
+            document.getElementById('meiPrevBtn').disabled = meiTarget===0;
+            document.getElementById('meiNextBtn').disabled = meiTarget===4;
+            const dotsDiv = document.getElementById('meiosisDots');
+            dotsDiv.innerHTML='';
+            for(let i=0;i<5;i++){
+                let d = document.createElement('div');
+                d.className = `w-2 h-2 rounded-full ${i===meiTarget ? 'bg-rose-500' : 'bg-slate-300'} cursor-pointer`;
+                d.onclick = ()=>setMeiosisStage(i);
+                dotsDiv.appendChild(d);
+            }
+        }
+        function setMeiosisStage(stage){
+            if(meiAuto) stopMeiAuto();
+            meiTarget = stage;
+            meiStage = stage;
+            meiProgress=0;
+            updateMeiosisUI();
+            drawMeiosis();
+        }
+        function nextMeiosis(){ if(meiTarget<4) setMeiosisStage(meiTarget+1);}
+        function prevMeiosis(){ if(meiTarget>0) setMeiosisStage(meiTarget-1);}
+        function stopMeiAuto(){ if(meiInterval) clearInterval(meiInterval); meiAuto=false; document.getElementById('meiAutoBtn').innerHTML='▶ Auto';}
+        function startMeiAuto(){ if(meiInterval) clearInterval(meiInterval); meiAuto=true; document.getElementById('meiAutoBtn').innerHTML='⏸ Pause'; let step=meiTarget; meiInterval = setInterval(()=>{ if(step<4){ step++; setMeiosisStage(step); } else stopMeiAuto();}, 2400);}
+        document.getElementById('meiPrevBtn').onclick = prevMeiosis;
+        document.getElementById('meiNextBtn').onclick = nextMeiosis;
+        document.getElementById('meiAutoBtn').onclick = ()=>{ if(meiAuto) stopMeiAuto(); else startMeiAuto();};
+        function animateMeiosis(){ drawMeiosis(); requestAnimationFrame(animateMeiosis);}
+        animateMeiosis();
+        setMeiosisStage(0);
+        
+        // --------------------------------------------------------------
+        // QUIZ (Mitosis vs Meiosis) 5 questions with AI-styled explanations
+        // --------------------------------------------------------------
+        const quizQuestions = [
+            { text: "Which process results in two genetically identical daughter cells?", options: ["Mitosis", "Meiosis I", "Meiosis II", "Both B and C"], correct: 0, explanation: "Mitosis produces identical diploid cells for growth/repair. Meiosis generates genetic variation." },
+            { text: "Crossing over (exchange of genetic material) occurs during:", options: ["Prophase of mitosis", "Prophase I of meiosis", "Metaphase II", "Anaphase I"], correct: 1, explanation: "Crossing over happens in Prophase I of meiosis, leading to recombination and diversity." },
+            { text: "In which stage do homologous chromosomes separate?", options: ["Anaphase of mitosis", "Anaphase I of meiosis", "Anaphase II", "Telophase I"], correct: 1, explanation: "Homologous chromosomes separate in Anaphase I; sister chromatids separate in Anaphase II & mitosis." },
+            { text: "How many daughter cells are produced at the end of meiosis?", options: ["2", "4", "1", "8"], correct: 1, explanation: "Meiosis produces 4 genetically distinct haploid cells (gametes)." },
+            { text: "Which of the following is unique to meiosis?", options: ["DNA replication", "Chromosome condensation", "Synapsis of homologs", "Spindle formation"], correct: 2, explanation: "Synapsis (pairing of homologous chromosomes) occurs only in meiosis I prophase." }
+        ];
+        
+        let userAnswers = new Array(5).fill(null);
+        let quizSubmitted = false;
+        
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            quizQuestions.forEach((q, idx) => {
+                const div = document.createElement('div');
+                div.className = 'border-b border-slate-100 pb-4 last:border-0';
+                div.innerHTML = `
+                    <p class="font-semibold text-slate-800 mb-2">${idx+1}. ${q.text}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1" id="quizOpts-${idx}">
+                        ${q.options.map((opt, optIdx) => `
+                            <div class="quiz-option p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-2 ${quizSubmitted ? 'disabled-opt' : ''}" data-qidx="${idx}" data-oidx="${optIdx}">
+                                <div class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center"><div class="w-2 h-2 rounded-full ${userAnswers[idx]===optIdx ? 'bg-emerald-500' : 'bg-transparent'}"></div></div>
+                                <span class="text-sm">${opt}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            // attach event listeners (only if not submitted)
+            if(!quizSubmitted){
+                document.querySelectorAll('.quiz-option').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        if(quizSubmitted) return;
+                        const qIdx = parseInt(el.dataset.qidx);
+                        const oIdx = parseInt(el.dataset.oidx);
+                        userAnswers[qIdx] = oIdx;
+                        renderQuiz(); // re-render to update dot indicators
+                    });
+                });
+            }
+        }
+        
+        function evaluateQuiz(){
+            quizSubmitted = true;
+            let score = 0;
+            let feedbackHtml = `<div class="font-bold text-lg mb-2">📊 Results & AI Explanations</div>`;
+            quizQuestions.forEach((q,idx)=>{
+                const isCorrect = (userAnswers[idx] === q.correct);
+                if(isCorrect) score++;
+                feedbackHtml += `
+                    <div class="mb-3 pb-2 border-b border-slate-200 last:border-0">
+                        <p class="font-medium">${idx+1}. ${q.text} <span class="${isCorrect ? 'text-green-600' : 'text-red-500'} font-bold">${isCorrect ? '✓ Correct' : '✗ Incorrect'}</span></p>
+                        <p class="text-sm text-slate-500">Your answer: ${userAnswers[idx]!==null ? q.options[userAnswers[idx]] : 'Not answered'} ${!isCorrect ? ` | Correct: ${q.options[q.correct]}` : ''}</p>
+                        <p class="text-sm bg-indigo-50 p-2 rounded mt-1">🧠 <span class="font-semibold">AI Explanation:</span> ${q.explanation}</p>
+                    </div>
+                `;
+            });
+            feedbackHtml += `<div class="mt-3 pt-2 font-bold text-emerald-700">Score: ${score}/${quizQuestions.length} ${score===5 ? '🌟 Perfect! Mastery achieved!' : 'Keep exploring the simulations above!'}</div>`;
+            document.getElementById('quizFeedback').innerHTML = feedbackHtml;
+            document.getElementById('quizFeedback').classList.remove('hidden');
+            renderQuiz(); // final re-render disables clicks
+        }
+        
+        function resetQuiz(){
+            userAnswers = new Array(5).fill(null);
+            quizSubmitted = false;
+            document.getElementById('quizFeedback').classList.add('hidden');
+            renderQuiz();
+        }
+        
+        document.getElementById('submitQuizBtn').addEventListener('click', ()=>{
+            if(quizSubmitted){
+                alert("Quiz already submitted! Press Reset Quiz to try again.");
+                return;
+            }
+            let allAnswered = userAnswers.every(a=> a!==null);
+            if(!allAnswered){
+                alert("Please answer all 5 questions before submitting.");
+                return;
+            }
+            evaluateQuiz();
+        });
+        document.getElementById('resetQuizBtn').addEventListener('click', resetQuiz);
+        
+        renderQuiz();
+        
+        // minor style for active dots
+    </script>
+</body>
+</html>
