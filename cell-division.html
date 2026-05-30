@@ -98,7 +98,9 @@
         <div class="controls-panel">
             <h2 id="ui-title" class="stage-title">Loading...</h2>
             <div id="ui-desc" class="stage-desc">Please wait.</div>
+            
             <div id="ui-dots" class="progress-dots"></div>
+            
             <div class="btn-group">
                 <button id="btn-prev" class="ctrl-btn btn-prev" onclick="changeStep(-1)">
                     <span class="lang-en">← Previous</span><span class="lang-zh">← 上一步</span>
@@ -146,6 +148,9 @@
 </div>
 
 <script>
+    // ==========================================
+    // 1. DATA STRUCTURES (BILINGUAL)
+    // ==========================================
     let currentLang = 'en';
 
     function toggleLanguage() {
@@ -156,25 +161,26 @@
     }
 
     const telophaseDescEN = "<b>Nuclear Reformation:</b> A new nuclear membrane forms around each of the two sets of separated chromosomes. Inside these new envelopes, the nucleolus reappears.<br><br><b>Decondensation:</b> The chromosomes, which were tightly coiled and highly condensed, uncoil and return to their diffuse, stringy state (chromatin).<br><br><b>Cytokinesis Begins:</b> Overlapping with the end of telophase, cytokinesis physically splits the cell's cytoplasm into two separate, fully functioning daughter cells.";
+    
     const telophaseDescZH = "<b>核膜重組：</b> 在兩組分離的染色體周圍形成新的核膜。在這些新核膜內，核仁重新出現。<br><br><b>解聚：</b> 原本緊密捲曲和高度濃縮的染色體，解開並恢復為擴散的絲狀狀態（染色質）。<br><br><b>細胞質分裂開始：</b> 與末期結束重疊，細胞質分裂在物理上將細胞質一分為二，形成兩個獨立的子細胞。";
 
     const SIM_DATA = {
         mitosis: {
             stages: [
                 {
-                    en: { t: "Interphase", d: "The cell grows and replicates its DNA. Chromosomes exist as loose chromatin." },
-                    zh: { t: "間期", d: "細胞生長並複製其 DNA。染色體以鬆散的染色質形態存在。" }
+                    en: { t: "Interphase", d: "The cell grows and replicates its DNA. Chromosomes are not yet distinctly visible; they exist as loose chromatin." },
+                    zh: { t: "間期", d: "細胞生長並複製其 DNA。此時染色體尚未清晰可見，以鬆散的染色質形態存在。" }
                 },
                 {
-                    en: { t: "Prophase", d: "Chromatin condenses into visible chromosomes. The nuclear envelope breaks down." },
-                    zh: { t: "前期", d: "染色質濃縮成可見的染色體。核膜開始消失。" }
+                    en: { t: "Prophase", d: "Chromatin condenses into visible chromosomes (sister chromatids joined at the centromere). The nuclear envelope breaks down." },
+                    zh: { t: "前期", d: "染色質濃縮成可見的染色體（由著絲點連接的姐妹染色單體）。核膜開始消失。" }
                 },
                 {
-                    en: { t: "Metaphase", d: "Chromosomes line up along the cell's equator. Spindle fibers attach to the centromeres." },
+                    en: { t: "Metaphase", d: "Chromosomes line up along the cell's equator (metaphase plate). Spindle fibers attach to the centromeres." },
                     zh: { t: "中期", d: "染色體整齊地排列在細胞赤道板上。紡錘絲附著在著絲點上。" }
                 },
                 {
-                    en: { t: "Anaphase", d: "Sister chromatids are pulled apart toward opposite poles of the cell." },
+                    en: { t: "Anaphase", d: "Sister chromatids are pulled apart toward opposite poles of the cell by the spindle fibers." },
                     zh: { t: "後期", d: "著絲點分裂，紡錘絲將姐妹染色單體拉向細胞的兩極。" }
                 },
                 {
@@ -182,8 +188,8 @@
                     zh: { t: "末期", d: telophaseDescZH }
                 },
                 {
-                    en: { t: "Results", d: "Two completely separate diploid (2n) daughter cells are formed, identical to the parent cell." },
-                    zh: { t: "結果", d: "形成兩個完全獨立的二倍體 (2n) 子細胞，遺傳物質與母細胞相同。" }
+                    en: { t: "Results", d: "Two completely separate, fully functioning diploid (2n) daughter cells are formed, identical to the parent cell." },
+                    zh: { t: "結果", d: "形成兩個完全獨立且功能完整的二倍體 (2n) 子細胞，遺傳物質與母細胞完全相同。" }
                 }
             ]
         },
@@ -194,41 +200,44 @@
                     zh: { t: "間期", d: "減數分裂開始前 DNA 進行複製，形成姐妹染色單體。" }
                 },
                 {
-                    en: { t: "Prophase I", d: "Homologous chromosomes pair up and crossing over occurs." },
-                    zh: { t: "前期 I", d: "同源染色體配對，並發生互換 (Crossing over)。" }
+                    en: { t: "Prophase I", d: "Homologous chromosomes pair up (synapsis) and crossing over occurs, exchanging genetic material." },
+                    zh: { t: "前期 I", d: "同源染色體配對（聯會），並發生互換（Crossing over），交換遺傳物質。" }
                 },
                 {
                     en: { t: "Metaphase I", d: "Pairs of homologous chromosomes line up at the equator." },
-                    zh: { t: "中期 I", d: "同源染色體成對排列在赤道板上。" }
+                    zh: { t: "中期 I", d: "同源染色體「成對」排列在赤道板上。" }
                 },
                 {
-                    en: { t: "Anaphase I", d: "Homologous chromosomes separate to opposite poles." },
-                    zh: { t: "後期 I", d: "同源染色體分離並移向兩極。" }
+                    en: { t: "Anaphase I", d: "Homologous chromosomes separate to opposite poles. Sister chromatids remain attached." },
+                    zh: { t: "後期 I", d: "同源染色體分離並移向兩極。注意：姐妹染色單體仍然相連。" }
                 },
                 {
                     en: { t: "Telophase I", d: telophaseDescEN },
                     zh: { t: "末期 I", d: telophaseDescZH }
                 },
                 {
-                    en: { t: "Metaphase II", d: "Chromosomes line up individually at the equator." },
-                    zh: { t: "中期 II", d: "染色體分別排列在赤道板上。" }
+                    en: { t: "Metaphase II", d: "In both cells, chromosomes line up individually at the equator." },
+                    zh: { t: "中期 II", d: "在兩個子細胞中，染色體分別排列在赤道板上。" }
                 },
                 {
                     en: { t: "Anaphase II", d: "Sister chromatids are finally pulled apart to opposite poles." },
-                    zh: { t: "後期 II", d: "姐妹染色單體終於分離並移向兩極。" }
+                    zh: { t: "後期 II", d: "著絲點分裂，姐妹染色單體終於分離並移向兩極。" }
                 },
                 {
                     en: { t: "Telophase II", d: telophaseDescEN.replace('two sets', 'four sets').replace('two separate', 'four separate') },
                     zh: { t: "末期 II", d: telophaseDescZH.replace('兩組', '四組').replace('兩個獨立', '四個獨立') }
                 },
                 {
-                    en: { t: "Results", d: "Four completely separate, genetically distinct haploid (n) gametes are formed." },
-                    zh: { t: "結果", d: "最終形成四個完全獨立、遺傳物質各不相同的單倍體 (n) 配子。" }
+                    en: { t: "Results", d: "Four completely separate, genetically distinct haploid (n) gametes are successfully formed." },
+                    zh: { t: "結果", d: "最終成功形成四個完全獨立、遺傳物質各不相同的單倍體 (n) 配子。" }
                 }
             ]
         }
     };
 
+    // ==========================================
+    // 2. CANVAS ENGINE (SMOOTH ANIMATION SYSTEM)
+    // ==========================================
     let currentMode = 'mitosis';
     let currentStep = 0;
     let targetStepFloat = 0;
@@ -272,10 +281,13 @@
     function updateSimulationUI() {
         const data = SIM_DATA[currentMode].stages[currentStep][currentLang];
         const maxSteps = SIM_DATA[currentMode].stages.length - 1;
+
         document.getElementById('ui-title').innerHTML = data.t;
         document.getElementById('ui-desc').innerHTML = data.d;
+
         document.getElementById('btn-prev').disabled = currentStep === 0;
         document.getElementById('btn-next').disabled = currentStep === maxSteps;
+
         const dotsContainer = document.getElementById('ui-dots');
         dotsContainer.innerHTML = '';
         for (let i = 0; i <= maxSteps; i++) {
@@ -294,6 +306,7 @@
         return arr[idx] + (arr[idx+1] - arr[idx]) * t;
     }
 
+    // --- Drawing Helpers ---
     function drawCellMembrane(x, y, r, pinchAmt, alpha = 1) {
         if (alpha <= 0) return;
         ctx.save();
@@ -301,6 +314,7 @@
         ctx.strokeStyle = "#94a3b8"; 
         ctx.lineWidth = 4;
         ctx.fillStyle = "#1e293b"; 
+        
         ctx.beginPath();
         if (pinchAmt > 0) {
             let offset = pinchAmt * (r * 0.75);
@@ -310,7 +324,9 @@
         } else {
             ctx.arc(x, y, r, 0, Math.PI*2);
         }
-        ctx.fill(); ctx.stroke(); ctx.restore();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
     }
 
     function drawChromatid(x, y, color, facingLeft, alpha = 1) {
@@ -320,6 +336,7 @@
         ctx.strokeStyle = color;
         ctx.lineWidth = 6;
         ctx.lineCap = "round";
+        
         ctx.beginPath();
         if (facingLeft) {
             ctx.moveTo(x + 10, y - 20); ctx.lineTo(x, y); ctx.lineTo(x + 10, y + 20);
@@ -327,7 +344,9 @@
             ctx.moveTo(x - 10, y - 20); ctx.lineTo(x, y); ctx.lineTo(x - 10, y + 20);
         }
         ctx.stroke();
-        ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI*2); ctx.fill();
+        
+        ctx.fillStyle = "white";
+        ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI*2); ctx.fill();
         ctx.restore();
     }
 
@@ -339,45 +358,68 @@
         ctx.lineWidth = 2;
         const pole1X = cx - r + 15;
         const pole2X = cx + r - 15;
+        
         for(let i=0; i<numSpindles; i++) {
             let yOff = cy - 35 + (i * (70/((numSpindles-1) || 1)));
             ctx.beginPath(); ctx.moveTo(pole1X, cy); ctx.lineTo(cx - separation, yOff); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(pole2X, cy); ctx.lineTo(cx + separation, yOff); ctx.stroke();
         }
-        ctx.fillStyle = "#f59e0b"; ctx.fillRect(pole1X-4, cy-4, 8, 8); ctx.fillRect(pole2X-4, cy-4, 8, 8);
+        
+        ctx.fillStyle = "#f59e0b";
+        ctx.fillRect(pole1X-4, cy-4, 8, 8);
+        ctx.fillRect(pole2X-4, cy-4, 8, 8);
         ctx.restore();
     }
 
+    // Improved neat Chromatin design (spiral waves)
     function drawChromatin(x, y, alpha = 1) {
         if (alpha <= 0) return;
         ctx.save();
         ctx.globalAlpha = alpha;
-        ctx.lineWidth = 2.5; ctx.lineCap = "round";
-        ctx.strokeStyle = "#ec4899"; ctx.beginPath();
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        // Pink Strand
+        ctx.strokeStyle = "#ec4899";
+        ctx.beginPath();
         for (let i = 0; i < Math.PI * 5; i += 0.2) {
-            let r = 25 - (i * 1.5); if (r < 3) r = 3;
-            let px = x + Math.cos(i * 2.5) * r; let py = y + Math.sin(i * 3.1) * r;
-            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            let r = 25 - (i * 1.5);
+            if (r < 3) r = 3;
+            let px = x + Math.cos(i * 2.5) * r;
+            let py = y + Math.sin(i * 3.1) * r;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         }
         ctx.stroke();
-        ctx.strokeStyle = "#3b82f6"; ctx.beginPath();
+
+        // Blue Strand
+        ctx.strokeStyle = "#3b82f6";
+        ctx.beginPath();
         for (let i = 0; i < Math.PI * 5; i += 0.2) {
-            let r = 25 - (i * 1.5); if (r < 3) r = 3;
-            let px = x + Math.cos(i * 2.5 + Math.PI) * r; let py = y + Math.sin(i * 3.1 + Math.PI) * r;
-            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            let r = 25 - (i * 1.5);
+            if (r < 3) r = 3;
+            let px = x + Math.cos(i * 2.5 + Math.PI) * r;
+            let py = y + Math.sin(i * 3.1 + Math.PI) * r;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         }
         ctx.stroke();
+        
         ctx.restore();
     }
 
+    // --- Main Data-Driven Animation Renderer ---
     function drawSimulation(sf) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
-        const blue = "#3b82f6"; const pink = "#ec4899";
+        const blue = "#3b82f6";
+        const pink = "#ec4899";
 
         if (currentMode === 'mitosis') {
-            // FIX: Index 4 (Telophase) chrAlpha is 0 to avoid overlapping
+            // Arrays for Mitosis (Length 6: Int, Pro, Met, Ana, Tel, Res)
+            // FIXED: Changed index 4 (Telophase) from 1 to 0 so chromosomes fade out while chromatin uncoils
             let chrAlpha = interp(sf, [0, 1, 1, 1, 0, 0]);
             let chromAlpha = interp(sf, [1, 0, 0, 0, 1, 1]);
             let pinch = interp(sf, [0, 0, 0, 0, 0.8, 0]);
@@ -385,11 +427,15 @@
             let mainAlpha = interp(sf, [1, 1, 1, 1, 1, 0]);
             let nucAlpha = interp(sf, [0.3, 0, 0, 0, 0.6, 0.6]);
 
+            // Draw primary cell (fades out in results)
             drawCellMembrane(cx, cy, 105, pinch, mainAlpha);
+            
+            // Draw separated cells (fades in during results)
             if (sepAlpha > 0) {
                 drawCellMembrane(cx - 65, cy, 55, 0, sepAlpha);
                 drawCellMembrane(cx + 65, cy, 55, 0, sepAlpha);
             }
+
             if(nucAlpha > 0) {
                 if (sf < 1) {
                     ctx.beginPath(); ctx.arc(cx, cy, 50, 0, Math.PI*2); 
@@ -400,42 +446,58 @@
                     ctx.beginPath(); ctx.arc(cx - nucOffset, cy, 40, 0, Math.PI*2); 
                     ctx.strokeStyle=`rgba(255,255,255,${nucAlpha})`; ctx.stroke();
                     ctx.beginPath(); ctx.arc(cx + nucOffset, cy, 40, 0, Math.PI*2); ctx.stroke();
+                    
                     drawChromatin(cx - nucOffset, cy, chromAlpha);
                     drawChromatin(cx + nucOffset, cy, chromAlpha);
                 }
             }
+
             let spAlpha = interp(sf, [0, 0, 1, 1, 0, 0]);
             let spSep = interp(sf, [0, 0, 0, 35, 70, 70]);
             drawSpindles(cx, cy, 105, 4, spSep, spAlpha);
-            
-            // Chromatids
+
+            // C1 (Blue)
             let c1y = interp(sf, [cy-30, cy-30, cy-45, cy-45, cy-15, cy-15]);
             let c1lx = interp(sf, [cx-20, cx-20, cx, cx-35, cx-60, cx-60]);
             let c1rx = interp(sf, [cx-20, cx-20, cx, cx+35, cx+60, cx+60]);
-            drawChromatid(c1lx, c1y, blue, true, chrAlpha); drawChromatid(c1rx, c1y, blue, false, chrAlpha);
+            drawChromatid(c1lx, c1y, blue, true, chrAlpha);
+            drawChromatid(c1rx, c1y, blue, false, chrAlpha);
+
+            // C2 (Blue)
             let c2y = interp(sf, [cy+20, cy+20, cy+15, cy+15, cy+15, cy+15]);
             let c2lx = interp(sf, [cx+25, cx+25, cx, cx-35, cx-60, cx-60]);
             let c2rx = interp(sf, [cx+25, cx+25, cx, cx+35, cx+60, cx+60]);
-            drawChromatid(c2lx, c2y, blue, true, chrAlpha); drawChromatid(c2rx, c2y, blue, false, chrAlpha);
+            drawChromatid(c2lx, c2y, blue, true, chrAlpha);
+            drawChromatid(c2rx, c2y, blue, false, chrAlpha);
+
+            // C3 (Pink)
             let c3y = interp(sf, [cy-25, cy-25, cy-15, cy-15, cy-15, cy-15]);
             let c3lx = interp(sf, [cx+30, cx+30, cx, cx-35, cx-60, cx-60]);
             let c3rx = interp(sf, [cx+30, cx+30, cx, cx+35, cx+60, cx+60]);
-            drawChromatid(c3lx, c3y, pink, true, chrAlpha); drawChromatid(c3rx, c3y, pink, false, chrAlpha);
+            drawChromatid(c3lx, c3y, pink, true, chrAlpha);
+            drawChromatid(c3rx, c3y, pink, false, chrAlpha);
+
+            // C4 (Pink)
             let c4y = interp(sf, [cy+30, cy+30, cy+45, cy+45, cy+15, cy+15]);
             let c4lx = interp(sf, [cx-15, cx-15, cx, cx-35, cx-60, cx-60]);
             let c4rx = interp(sf, [cx-15, cx-15, cx, cx+35, cx+60, cx+60]);
-            drawChromatid(c4lx, c4y, pink, true, chrAlpha); drawChromatid(c4rx, c4y, pink, false, chrAlpha);
+            drawChromatid(c4lx, c4y, pink, true, chrAlpha);
+            drawChromatid(c4rx, c4y, pink, false, chrAlpha);
         } 
         else if (currentMode === 'meiosis') {
-            // FIX: Index 4 (Telophase I) and Index 7 (Telophase II) chrAlpha is 0
+            // Arrays for Meiosis (Length 9: 0 to 8)
+            // FIXED: Changed index 4 (Telophase I) and index 7 (Telophase II) to 0 so chromosomes don't overlap with chromatin
             let chrAlpha = interp(sf, [0, 1, 1, 1, 0, 1, 1, 0, 0]);
             let chromAlpha = interp(sf, [1, 0, 0, 0, 1, 0, 0, 1, 1]);
+
             let alpha1 = interp(sf, [1, 1, 1, 1, 1, 0, 0, 0, 0]);
             let alpha2 = interp(sf, [0, 0, 0, 0, 0, 1, 1, 1, 0]);
             let alpha4 = interp(sf, [0, 0, 0, 0, 0, 0, 0, 0, 1]);
+            
             let pinch1 = interp(sf, [0, 0, 0, 0, 0.8, 0, 0, 0, 0]);
             let pinch2 = interp(sf, [0, 0, 0, 0, 0, 0, 0, 0.8, 0]);
 
+            // Cell Membranes
             drawCellMembrane(cx, cy, 105, pinch1, alpha1);
             if (alpha2 > 0) {
                 drawCellMembrane(cx - 75, cy, 75, pinch2, alpha2);
@@ -447,6 +509,8 @@
                 drawCellMembrane(cx + 40, cy, 42, 0, alpha4);
                 drawCellMembrane(cx + 120, cy, 42, 0, alpha4);
             }
+
+            // Chromatin
             if (chromAlpha > 0) {
                 if (sf < 1) drawChromatin(cx, cy, chromAlpha);
                 else if (sf < 5) {
@@ -457,30 +521,55 @@
                     drawChromatin(cx + 40, cy, chromAlpha); drawChromatin(cx + 120, cy, chromAlpha);
                 }
             }
+
+            // Spindles
             let sp1Alpha = interp(sf, [0, 0, 1, 1, 0, 0, 0, 0, 0]);
             let sp1Sep = interp(sf, [0, 0, 15, 45, 65, 0, 0, 0, 0]);
             drawSpindles(cx, cy, 105, 2, sp1Sep, sp1Alpha);
+
             let sp2Alpha = interp(sf, [0, 0, 0, 0, 0, 1, 1, 0, 0]);
             let sp2Sep = interp(sf, [0, 0, 0, 0, 0, 0, 30, 45, 0]);
             if (sp2Alpha > 0) {
                 drawSpindles(cx - 75, cy, 75, 2, sp2Sep, sp2Alpha);
                 drawSpindles(cx + 75, cy, 75, 2, sp2Sep, sp2Alpha);
             }
-            // Chromatids Simplified Positioning
+
+            // C1 (Blue)
             let c1y = interp(sf,  [cy-20, cy-20, cy-20, cy-20, cy-15, cy-20, cy-20, cy-10, cy-10]);
             let c1lx = interp(sf, [cx-10, cx-10, cx-15, cx-45, cx-60, cx-75, cx-105, cx-120, cx-120]);
             let c1rx = interp(sf, [cx-10, cx-10, cx-15, cx-45, cx-60, cx-75, cx-45,  cx-40, cx-40]);
-            drawChromatid(c1lx, c1y, blue, true, chrAlpha); drawChromatid(c1rx, c1y, blue, false, chrAlpha);
+            drawChromatid(c1lx, c1y, blue, true, chrAlpha);
+            drawChromatid(c1rx, c1y, blue, false, chrAlpha);
+
+            // C3 (Pink)
             let c3y = interp(sf,  [cy-20, cy-20, cy-20, cy-20, cy-15, cy-20, cy-20, cy-10, cy-10]);
             let c3lx = interp(sf, [cx+10, cx+10, cx+15, cx+45, cx+60, cx+75, cx+45,  cx+40, cx+40]);
             let c3rx = interp(sf, [cx+10, cx+10, cx+15, cx+45, cx+60, cx+75, cx+105, cx+120, cx+120]);
-            drawChromatid(c3lx, c3y, pink, true, chrAlpha); drawChromatid(c3rx, c3y, pink, false, chrAlpha);
+            drawChromatid(c3lx, c3y, pink, true, chrAlpha);
+            drawChromatid(c3rx, c3y, pink, false, chrAlpha);
+
+            // C2 (Pink)
+            let c2y = interp(sf,  [cy+25, cy+25, cy+20, cy+20, cy+15, cy+20, cy+20, cy+10, cy+10]);
+            let c2lx = interp(sf, [cx-10, cx-10, cx-15, cx-45, cx-60, cx-75, cx-105, cx-120, cx-120]);
+            let c2rx = interp(sf, [cx-10, cx-10, cx-15, cx-45, cx-60, cx-75, cx-45,  cx-40, cx-40]);
+            drawChromatid(c2lx, c2y, pink, true, chrAlpha);
+            drawChromatid(c2rx, c2y, pink, false, chrAlpha);
+
+            // C4 (Blue)
+            let c4y = interp(sf,  [cy+25, cy+25, cy+20, cy+20, cy+15, cy+20, cy+20, cy+10, cy+10]);
+            let c4lx = interp(sf, [cx+10, cx+10, cx+15, cx+45, cx+60, cx+75, cx+45,  cx+40, cx+40]);
+            let c4rx = interp(sf, [cx+10, cx+10, cx+15, cx+45, cx+60, cx+75, cx+105, cx+120, cx+120]);
+            drawChromatid(c4lx, c4y, blue, true, chrAlpha);
+            drawChromatid(c4rx, c4y, blue, false, chrAlpha);
         }
     }
 
+    // Smooth Easing Animation Loop
     function animateLoop() {
         currentStepFloat += (targetStepFloat - currentStepFloat) * 0.08;
-        if (Math.abs(targetStepFloat - currentStepFloat) < 0.005) currentStepFloat = targetStepFloat;
+        if (Math.abs(targetStepFloat - currentStepFloat) < 0.005) {
+            currentStepFloat = targetStepFloat;
+        }
         drawSimulation(currentStepFloat);
         requestAnimationFrame(animateLoop);
     }
@@ -489,30 +578,33 @@
     switchMode('mitosis');
     animateLoop();
 
+    // ==========================================
+    // 3. QUIZ SYSTEM (5 Questions, Bilingual)
+    // ==========================================
     const QUIZ = [
         {
-            en: { q: "In which stage of meiosis do homologous chromosomes separate?", options: ["Prophase I", "Anaphase I", "Anaphase II", "Telophase II"], exp: "Anaphase I separates homologous chromosomes." },
-            zh: { q: "在減數分裂的哪個階段，同源染色體會發生分離？", options: ["前期 I", "後期 I", "後期 II", "末期 II"], exp: "後期 I 會分離同源染色體。" },
+            en: { q: "In which stage of meiosis do homologous chromosomes separate?", options: ["Prophase I", "Anaphase I", "Anaphase II", "Telophase II"], exp: "Anaphase I separates homologous chromosomes, whereas Anaphase II separates sister chromatids." },
+            zh: { q: "在減數分裂的哪個階段，同源染色體會發生分離？", options: ["前期 I", "後期 I", "後期 II", "末期 II"], exp: "後期 I 會分離同源染色體，而後期 II 則是分離姐妹染色單體。" },
             correct: 1
         },
         {
-            en: { q: "During which phase does DNA replication occur?", options: ["Interphase", "Prophase", "Metaphase", "Anaphase"], exp: "DNA replication occurs during Interphase." },
-            zh: { q: "DNA 複製發生在細胞週期的哪一個階段？", options: ["間期", "前期", "中期", "後期"], exp: "DNA 複製在間期發生。" },
+            en: { q: "During which phase does DNA replication occur?", options: ["Interphase", "Prophase", "Metaphase", "Anaphase"], exp: "DNA replication always occurs during Interphase before the actual division begins." },
+            zh: { q: "DNA 複製發生在細胞週期的哪一個階段？", options: ["間期", "前期", "中期", "後期"], exp: "DNA 複製總是在細胞分裂真正開始前的間期發生。" },
             correct: 0
         },
         {
-            en: { q: "Purpose of 'crossing over' in Prophase I?", options: ["Repair DNA", "Reduce chromosomes", "Increase variation", "Dissolve envelope"], exp: "Crossing over increases genetic variation." },
-            zh: { q: "前期 I 發生的「互換」的主要目的是什麼？", options: ["修復 DNA", "減少染色體", "增加遺傳變異", "溶解核膜"], exp: "互換過程增加遺傳變異。" },
+            en: { q: "What is the primary purpose of 'crossing over' in Prophase I?", options: ["To repair damaged DNA", "To reduce the chromosome number", "To increase genetic variation", "To dissolve the nuclear envelope"], exp: "Crossing over exchanges genetic material between homologous chromosomes, creating unique genetic combinations." },
+            zh: { q: "在前期 I 發生的「互換」(Crossing over) 的主要目的是什麼？", options: ["修復受損的 DNA", "減少染色體數目", "增加遺傳變異", "溶解核膜"], exp: "互換過程在同源染色體間交換遺傳物質，從而產生獨特的遺傳組合。" },
             correct: 2
         },
         {
-            en: { q: "Human skin cell (46) mitosis result?", options: ["23", "46", "92", "4"], exp: "Mitosis maintains the diploid (46) number." },
-            zh: { q: "人類皮膚細胞 (46) 進行有絲分裂，子細胞染色體數？", options: ["23", "46", "92", "4"], exp: "有絲分裂維持二倍體 (46) 數量。" },
+            en: { q: "If a human skin cell (46 chromosomes) undergoes mitosis, how many chromosomes will each daughter cell have?", options: ["23", "46", "92", "4"], exp: "Mitosis produces identical daughter cells, maintaining the diploid (46) number." },
+            zh: { q: "如果一個人類皮膚細胞 (46 條染色體) 進行有絲分裂，每個子細胞將有多少條染色體？", options: ["23", "46", "92", "4"], exp: "有絲分裂會產生完全相同的子細胞，維持二倍體 (46) 數量不變。" },
             correct: 1
         },
         {
-            en: { q: "Defining feature of 'Metaphase'?", options: ["Align at equator", "Pulled to poles", "Reforms envelope", "Starts condensing"], exp: "Metaphase features chromosomes lining up at the equator." },
-            zh: { q: "哪項特徵定義「中期」？", options: ["排列在赤道板", "拉向兩極", "核膜重新形成", "染色質開始濃縮"], exp: "中期的特徵是染色體排列在赤道板。" },
+            en: { q: "Which feature visually defines 'Metaphase' under a microscope?", options: ["Chromosomes align at the equator", "Chromosomes are pulled to the poles", "Nuclear envelope reforms", "Chromatin starts condensing"], exp: "The hallmark of Metaphase is chromosomes lined up perfectly along the cell's equator." },
+            zh: { q: "在顯微鏡下觀察，哪項特徵最能定義「中期」(Metaphase)？", options: ["染色體排列在細胞赤道板上", "染色體被拉向兩極", "核膜重新形成", "染色質開始濃縮"], exp: "中期的標誌性特徵就是所有染色體整齊排列在細胞中部的赤道板上。" },
             correct: 0
         }
     ];
@@ -527,43 +619,96 @@
             const data = qItem[currentLang];
             const block = document.createElement('div');
             block.className = 'q-block';
+            
             let optionsHTML = '';
             data.options.forEach((opt, oIdx) => {
-                optionsHTML += `<label class="option-label"><input type="radio" name="q${qIdx}" value="${oIdx}" ${userAnswers[qIdx] === oIdx ? 'checked' : ''} onchange="userAnswers[${qIdx}] = ${oIdx}"><span>${opt}</span></label>`;
+                optionsHTML += `
+                    <label class="option-label">
+                        <input type="radio" name="q${qIdx}" value="${oIdx}" 
+                        ${userAnswers[qIdx] === oIdx ? 'checked' : ''} 
+                        onchange="userAnswers[${qIdx}] = ${oIdx}">
+                        <span>${opt}</span>
+                    </label>
+                `;
             });
-            block.innerHTML = `<div class="q-text">Q${qIdx + 1}. ${data.q}</div><div>${optionsHTML}</div>`;
+
+            block.innerHTML = `
+                <div class="q-text">Q${qIdx + 1}. ${data.q}</div>
+                <div>${optionsHTML}</div>
+            `;
             container.appendChild(block);
         });
     }
 
     async function submitQuiz() {
-        if (quizSubmitted) return;
+        if (quizSubmitted) {
+            alert(currentLang === 'en' ? "Quiz already submitted!" : "測驗已提交！");
+            return;
+        }
+        
         const sName = document.getElementById('stuName').value.trim();
         const sClass = document.getElementById('stuClass').value.trim();
         const sNo = document.getElementById('stuNo').value.trim();
-        if (!sName || !sClass || !sNo || userAnswers.includes(null)) {
-            alert(currentLang === 'en' ? "Please complete all fields and questions." : "請填寫完整資料並回答所有問題。");
+
+        if (!sName || !sClass || !sNo) {
+            alert(currentLang === 'en' ? "Please fill in Name, Class, and Class No." : "請填寫完整的學生資料 (姓名、班別、學號)。");
             return;
         }
+        if (userAnswers.includes(null)) {
+            alert(currentLang === 'en' ? "Please answer all 5 questions." : "請回答所有 5 條問題後再提交。");
+            return;
+        }
+
         let score = 0;
-        let explanationHTML = `<h3 style="font-weight: bold; margin-bottom: 15px;">${currentLang === 'en' ? '📝 Explanations' : '📝 題解'}</h3>`;
+        let explanationHTML = `<h3 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">${currentLang === 'en' ? '📝 Detailed Explanations' : '📝 詳細題解'}</h3>`;
         let emailReport = `Student: ${sName} | Class: ${sClass} (${sNo})\n\n`;
+
         QUIZ.forEach((q, i) => {
             const isCorrect = userAnswers[i] === q.correct;
-            if (isCorrect) score += 20;
-            emailReport += `Q${i+1}: ${isCorrect ? 'Correct' : 'Wrong'}\n`;
-            explanationHTML += `<div style="margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;"><div style="font-weight: bold; color: ${isCorrect ? '#10b981' : '#ef4444'};">Q${i+1} ${isCorrect ? '✅' : '❌'}</div><div style="font-size: 0.9rem;">Ans: ${q[currentLang].options[q.correct]}<br>${q[currentLang].exp}</div></div>`;
+            if (isCorrect) score += 20; 
+            
+            emailReport += `Q${i+1}: ${isCorrect ? 'Correct' : 'Wrong'} - Selected: ${q.en.options[userAnswers[i]]}\n`;
+            
+            const mark = isCorrect ? '✅' : '❌';
+            explanationHTML += `
+                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+                    <div style="font-weight: bold; color: ${isCorrect ? '#10b981' : '#ef4444'};">
+                        Q${i+1} ${mark}
+                    </div>
+                    <div style="margin-top: 5px; color: #475569; font-size: 0.95rem;">
+                        <strong>${currentLang === 'en' ? 'Correct Answer:' : '正確答案：'}</strong> ${q[currentLang].options[q.correct]}<br>
+                        <strong>${currentLang === 'en' ? 'Explanation:' : '解析：'}</strong> ${q[currentLang].exp}
+                    </div>
+                </div>
+            `;
         });
+
         document.getElementById('resultsArea').style.display = 'block';
-        document.getElementById('scoreDisplay').innerText = currentLang === 'en' ? `🏆 Score: ${score} / 100` : `🏆 得分：${score} / 100`;
+        document.getElementById('scoreDisplay').innerText = currentLang === 'en' ? `🏆 Score: ${score} / 100` : `🏆 測驗得分：${score} / 100`;
         document.getElementById('explanationDisplay').innerHTML = explanationHTML;
+        document.getElementById('submitBtn').style.opacity = '0.5';
+        document.getElementById('submitBtn').style.pointerEvents = 'none';
+
         const formData = new FormData();
         formData.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c'); 
         formData.append('subject', `[Biology Quiz] ${sClass} ${sName} - Score: ${score}`);
+        formData.append('email', 'ngtinghei0803@gmail.com');
         formData.append('message', emailReport);
-        fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
+
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
+            if (response.ok) {
+                alert(currentLang === 'en' ? `✅ Sent successfully to Mr. Daniel Ng! Score: ${score}/100` : `✅ 報告已成功發送給 Mr. Daniel Ng！你的得分是：${score}/100`);
+            } else {
+                alert(currentLang === 'en' ? "⚠️ Email limit reached. Score saved locally." : "⚠️ 郵件發送限制，分數已在本地顯示。");
+            }
+        } catch (error) {
+            alert(currentLang === 'en' ? "⚠️ Network error. Could not send." : "⚠️ 網絡錯誤，無法發送郵件。");
+        }
+
         quizSubmitted = true;
     }
+
     renderQuiz();
 </script>
 </body>
