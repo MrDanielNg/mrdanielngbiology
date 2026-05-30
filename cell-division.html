@@ -15,10 +15,9 @@
             padding: 24px 20px;
         }
         .main-container {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: 0 auto;
         }
-        /* back link */
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -43,63 +42,91 @@
             color: #94a3b8;
             margin-bottom: 30px;
         }
-        /* Two column layout */
-        .simulation-row {
+        
+        /* Mode Toggle Buttons */
+        .mode-toggle {
             display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            margin-bottom: 40px;
+            gap: 16px;
+            margin-bottom: 24px;
+            justify-content: center;
         }
+        .mode-btn {
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        .mode-mitosis {
+            background: #4f46e5;
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+        .mode-meiosis {
+            background: #db2777;
+            color: white;
+            box-shadow: 0 4px 12px rgba(219, 39, 119, 0.4);
+        }
+        .mode-btn.inactive {
+            background: #334155;
+            box-shadow: none;
+            opacity: 0.6;
+        }
+        
+        /* Simulator Card */
         .sim-card {
-            flex: 1;
-            min-width: 320px;
             background: white;
             border-radius: 32px;
             overflow: hidden;
             box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
         }
         .sim-header {
-            padding: 16px 24px;
+            padding: 18px 24px;
             font-weight: 800;
             font-size: 1.3rem;
             color: white;
         }
         .mitosis-header { background: linear-gradient(135deg, #4f46e5, #6366f1); }
         .meiosis-header { background: linear-gradient(135deg, #db2777, #ec4899); }
+        
         .canvas-wrapper {
-            background: #fefce8;
+            background: #0f172a;
             display: flex;
             justify-content: center;
-            padding: 20px;
+            padding: 30px 20px;
             border-bottom: 1px solid #e2e8f0;
         }
         canvas {
             background: #fffef7;
             border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             width: 100%;
+            max-width: 600px;
             height: auto;
             cursor: pointer;
         }
         .stage-controls {
-            padding: 20px;
+            padding: 24px;
             background: #f8fafc;
         }
         .stage-name {
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: #1e293b;
             background: #e2e8f0;
             display: inline-block;
-            padding: 4px 16px;
+            padding: 6px 20px;
             border-radius: 40px;
             margin-bottom: 12px;
         }
         .stage-desc {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #475569;
-            margin-bottom: 16px;
-            line-height: 1.4;
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
         .button-group {
             display: flex;
@@ -110,7 +137,7 @@
         .ctrl-btn {
             background: #e2e8f0;
             border: none;
-            padding: 8px 20px;
+            padding: 10px 24px;
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
@@ -124,22 +151,23 @@
         .ctrl-btn:hover { background: #cbd5e1; }
         .dot-indicator {
             display: flex;
-            gap: 8px;
-            margin: 12px 0;
+            gap: 10px;
+            margin: 16px 0;
         }
         .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 10px;
+            width: 12px;
+            height: 12px;
+            border-radius: 12px;
             background: #cbd5e1;
             transition: 0.2s;
             cursor: pointer;
         }
         .dot.active {
             background: #10b981;
-            width: 24px;
+            width: 28px;
         }
-        /* quiz section */
+        
+        /* Quiz Section */
         .quiz-section {
             background: white;
             border-radius: 32px;
@@ -177,14 +205,14 @@
         .question-block {
             background: #fefdf7;
             border-radius: 28px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             padding: 20px 24px;
             border: 1px solid #e2e8f0;
         }
         .q-text {
             font-size: 1rem;
             font-weight: 600;
-            margin: 12px 0 18px;
+            margin: 8px 0 16px;
             color: #1e293b;
         }
         .options {
@@ -200,6 +228,7 @@
             border-radius: 48px;
             border: 1px solid #cbd5e1;
             cursor: pointer;
+            transition: background 0.2s;
         }
         .option:hover { background: #f8fafc; }
         .action-buttons {
@@ -239,8 +268,8 @@
             color: #94a3b8;
             margin-top: 28px;
         }
-        @media (max-width: 900px) {
-            .simulation-row { flex-direction: column; }
+        @media (max-width: 700px) {
+            .quiz-section { padding: 20px 16px; }
         }
     </style>
 </head>
@@ -248,48 +277,18 @@
 <div class="main-container">
     <a href="index.html" class="back-link">← Back to Home</a>
     <h1>🔬 Cell Division Interactive Lab</h1>
-    <div class="sub">Enhanced visual simulations | Mitosis vs Meiosis | Chromosome separation clearly visible</div>
+    <div class="sub">Enhanced visual simulation | Clear chromosomes, spindle fibers, and separation</div>
 
-    <!-- TWO SIMULATIONS SIDE BY SIDE -->
-    <div class="simulation-row">
-        <!-- MITOSIS CARD -->
-        <div class="sim-card">
-            <div class="sim-header mitosis-header">🌱 MITOSIS · Asexual Reproduction</div>
-            <div class="canvas-wrapper">
-                <canvas id="mitosisCanvas" width="550" height="380" style="width:100%; max-width:550px; height:auto; background:#fffdf5; border-radius:20px"></canvas>
-            </div>
-            <div class="stage-controls">
-                <div class="stage-name" id="mitosisStageName">Interphase</div>
-                <div class="stage-desc" id="mitosisDesc">DNA replicates, chromosomes are loose chromatin. Centrosomes duplicate.</div>
-                <div class="dot-indicator" id="mitosisDots"></div>
-                <div class="button-group">
-                    <button class="ctrl-btn" id="mitPrevBtn">◀ Previous</button>
-                    <button class="ctrl-btn primary" id="mitNextBtn">Next ▶</button>
-                    <button class="ctrl-btn" id="mitAutoBtn">▶ Auto</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MEIOSIS CARD (with clear pairing & separation) -->
-        <div class="sim-card">
-            <div class="sim-header meiosis-header">🥚 MEIOSIS · Sexual Reproduction</div>
-            <div class="canvas-wrapper">
-                <canvas id="meiosisCanvas" width="550" height="380" style="width:100%; max-width:550px; height:auto; background:#fffdf5; border-radius:20px"></canvas>
-            </div>
-            <div class="stage-controls">
-                <div class="stage-name" id="meiosisStageName">Prophase I (Pairing)</div>
-                <div class="stage-desc" id="meiosisDesc">Homologous chromosomes pair up (synapsis). Crossing over occurs.</div>
-                <div class="dot-indicator" id="meiosisDots"></div>
-                <div class="button-group">
-                    <button class="ctrl-btn" id="meiPrevBtn">◀ Previous</button>
-                    <button class="ctrl-btn primary" id="meiNextBtn">Next ▶</button>
-                    <button class="ctrl-btn" id="meiAutoBtn">▶ Auto</button>
-                </div>
-            </div>
-        </div>
+    <!-- Mode Toggle Buttons -->
+    <div class="mode-toggle">
+        <button id="mitosisModeBtn" class="mode-btn mode-mitosis">🌱 Mitosis (Asexual)</button>
+        <button id="meiosisModeBtn" class="mode-btn mode-meiosis inactive">🥚 Meiosis (Sexual)</button>
     </div>
 
-    <!-- QUIZ SECTION (same as requested) -->
+    <!-- Simulator Container (only one active at a time) -->
+    <div id="simulatorContainer"></div>
+
+    <!-- Quiz Section -->
     <div class="quiz-section">
         <h2 style="color:#0f172a; margin-bottom:16px;">📝 Cell Division Quiz</h2>
         <div class="info-card">
@@ -312,367 +311,459 @@
 </div>
 
 <script>
-    // --------------------------------------------------------------
-    // IMPROVED MITOSIS SIMULATOR (crisp chromosomes, visible spindle)
-    // --------------------------------------------------------------
-    const mitCanvas = document.getElementById('mitosisCanvas');
-    const ctxM = mitCanvas.getContext('2d');
-    let mitStage = 0; // 0-4
-    let mitTarget = 0;
-    let mitAnim = 0;
-    let mitAuto = false;
-    let mitInterval = null;
+    // ============================================================
+    // MITOSIS SIMULATOR (CLEAR & ENHANCED)
+    // ============================================================
+    let currentMode = 'mitosis'; // 'mitosis' or 'meiosis'
+    let mitosisStep = 0, mitosisTarget = 0;
+    let meiosisStep = 0, meiosisTarget = 0;
+    let mitosisAuto = false, meiosisAuto = false;
+    let mitosisInterval = null, meiosisInterval = null;
+    let mitosisCanvas, meiosisCanvas, ctxM, ctxMe;
     
-    const mitStages = [
-        { name: "Interphase", desc: "🔬 Chromatin uncoiled (thread-like). Nucleus visible. DNA replication complete. Centrosomes duplicated." },
+    const mitosisStages = [
+        { name: "Interphase", desc: "🔬 DNA replicates. Chromosomes are loose (chromatin). Centrosomes duplicate. Nucleus visible." },
         { name: "Prophase", desc: "🎯 Chromosomes condense & become visible as thick rods. Nuclear envelope breaks down. Spindle fibers appear." },
-        { name: "Metaphase", desc: "⚡ Chromosomes align at the equatorial plate. Spindle fibers attach to centromeres." },
-        { name: "Anaphase", desc: "💥 Sister chromatids SEPARATE and move to opposite poles. Clear 'V' shape motion." },
+        { name: "Metaphase", desc: "⚡ Chromosomes align at the equatorial plate (middle). Spindle fibers attach to centromeres." },
+        { name: "Anaphase", desc: "💥 Sister chromatids SEPARATE and move to opposite poles. Clear V-shape motion!" },
         { name: "Telophase", desc: "🧬 Chromosomes arrive at poles, decondense. Nuclear membranes reform. Cytokinesis splits cytoplasm." }
     ];
     
+    const meiosisStages = [
+        { name: "Prophase I (Pairing)", desc: "🧬 Homologous chromosomes pair up (synapsis). Crossing over occurs. Each pair = bivalent." },
+        { name: "Metaphase I", desc: "📏 Homologous pairs align at equator. Independent assortment creates variation." },
+        { name: "Anaphase I", desc: "💢 Homologous chromosomes SEPARATE (sister chromatids stay together). Clear division!" },
+        { name: "Telophase I & Meiosis II", desc: "🔄 Two haploid cells form. Then Meiosis II separates sister chromatids → 4 gametes." },
+        { name: "Final Gametes", desc: "🎯 4 genetically unique haploid cells (sperm/egg). Crossing over + assortment create diversity." }
+    ];
+    
+    // Draw Mitosis with enhanced visibility
     function drawMitosis() {
-        ctxM.clearRect(0, 0, mitCanvas.width, mitCanvas.height);
-        const w = mitCanvas.width, h = mitCanvas.height;
+        if (!mitosisCanvas) return;
+        const canvas = mitosisCanvas;
+        const ctx = ctxM;
+        const w = canvas.width, h = canvas.height;
         const cx = w/2, cy = h/2;
-        const stage = mitTarget;
+        const stage = mitosisTarget;
         
-        // cell outline
-        ctxM.beginPath();
-        ctxM.ellipse(cx, cy, w*0.4, h*0.42, 0, 0, 2*Math.PI);
-        ctxM.fillStyle = "#fffaf0";
-        ctxM.fill();
-        ctxM.strokeStyle = "#cbd5e1";
-        ctxM.lineWidth = 2.5;
-        ctxM.stroke();
+        ctx.clearRect(0, 0, w, h);
         
-        // nuclear envelope (fades after prophase)
+        // Cell membrane
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, w*0.42, h*0.44, 0, 0, 2*Math.PI);
+        ctx.fillStyle = "#fffaf0";
+        ctx.fill();
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        
+        // Nuclear envelope (visible in interphase/prophase)
         if (stage <= 1) {
-            ctxM.beginPath();
-            ctxM.arc(cx, cy, 55, 0, 2*Math.PI);
-            ctxM.fillStyle = "rgba(226,232,240,0.5)";
-            ctxM.fill();
-            ctxM.strokeStyle = "#475569";
-            ctxM.setLineDash([6,8]);
-            ctxM.stroke();
-            ctxM.setLineDash([]);
+            ctx.beginPath();
+            ctx.arc(cx, cy, 55, 0, 2*Math.PI);
+            ctx.fillStyle = "rgba(226,232,240,0.4)";
+            ctx.fill();
+            ctx.strokeStyle = "#475569";
+            ctx.setLineDash([6,8]);
+            ctx.stroke();
+            ctx.setLineDash([]);
         }
         
-        // Spindle fibers (visible from prophase to anaphase)
+        // Spindle fibers (prophase to anaphase)
         if (stage >= 1 && stage <= 3) {
-            ctxM.beginPath();
-            ctxM.strokeStyle = "#f59e0b";
-            ctxM.lineWidth = 1.8;
-            for (let ang = -35; ang <= 35; ang += 18) {
-                ctxM.beginPath();
-                ctxM.moveTo(cx - 85, cy + ang*0.8);
-                ctxM.lineTo(cx + 85, cy - ang*0.6);
-                ctxM.stroke();
-                ctxM.beginPath();
-                ctxM.moveTo(cx - 85, cy - ang*0.6);
-                ctxM.lineTo(cx + 85, cy + ang*0.8);
-                ctxM.stroke();
+            ctx.beginPath();
+            ctx.strokeStyle = "#f59e0b";
+            ctx.lineWidth = 2;
+            for (let ang = -40; ang <= 40; ang += 20) {
+                ctx.beginPath();
+                ctx.moveTo(cx - 90, cy + ang*0.7);
+                ctx.lineTo(cx + 90, cy - ang*0.6);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(cx - 90, cy - ang*0.6);
+                ctx.lineTo(cx + 90, cy + ang*0.7);
+                ctx.stroke();
             }
-            // centrosomes
-            ctxM.fillStyle = "#d97706";
-            ctxM.fillRect(cx-82, cy-7, 10, 10);
-            ctxM.fillRect(cx+72, cy-7, 10, 10);
+            // Centrosomes
+            ctx.fillStyle = "#d97706";
+            ctx.fillRect(cx-88, cy-8, 12, 12);
+            ctx.fillRect(cx+76, cy-8, 12, 12);
         }
         
-        // Chromosomes: draw clearly
+        // Draw chromosomes based on stage
         const isAnaphase = (stage === 3);
         const isMetaphase = (stage === 2);
-        const isTelophase = (stage === 4);
         
-        // Chromosome pairs (4 chromosomes, each with 2 chromatids before anaphase)
-        const positions = isMetaphase ? 
-            [[cx-50, cy-8], [cx-18, cy-12], [cx+15, cy-5], [cx+48, cy-10]] :
-            [[cx-40, cy-20], [cx-15, cy+10], [cx+10, cy-15], [cx+45, cy+5]];
+        function drawChromosomePair(x, y, separated) {
+            ctx.fillStyle = "#4f46e5";
+            if (separated) {
+                ctx.fillRect(x-10, y-12, 8, 26);
+                ctx.fillRect(x+2, y-12, 8, 26);
+                ctx.fillStyle = "#fbbf24";
+                ctx.beginPath();
+                ctx.arc(x-4, y, 4, 0, 2*Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(x+4, y, 4, 0, 2*Math.PI);
+                ctx.fill();
+            } else {
+                ctx.fillRect(x-9, y-14, 8, 30);
+                ctx.fillRect(x+1, y-14, 8, 30);
+                ctx.fillStyle = "#facc15";
+                ctx.beginPath();
+                ctx.arc(x-3, y, 5, 0, 2*Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(x+3, y, 5, 0, 2*Math.PI);
+                ctx.fill();
+            }
+        }
         
         if (isAnaphase) {
-            // pull apart: left group and right group
+            // Separating to poles
             for (let i = 0; i < 4; i++) {
-                const leftX = cx - 45 - (i*8);
-                const rightX = cx + 45 + (i*8);
-                drawChromosomePair(leftX, cy-5 + (i%2)*15, true, 10);
-                drawChromosomePair(rightX, cy-5 + (i%2)*15, true, 10);
+                drawChromosomePair(cx - 50 - i*5, cy - 10 + (i%2)*20, true);
+                drawChromosomePair(cx + 40 + i*5, cy - 10 + (i%2)*20, true);
             }
-        } else if (isTelophase) {
-            // two nuclei forming
-            drawChromosomePair(cx-40, cy-15, false, 8);
-            drawChromosomePair(cx-40, cy+10, false, 8);
-            drawChromosomePair(cx+35, cy-15, false, 8);
-            drawChromosomePair(cx+35, cy+10, false, 8);
-            // cleavage furrow
-            ctxM.beginPath();
-            ctxM.moveTo(cx-75, cy+15);
-            ctxM.quadraticCurveTo(cx, cy+35, cx+75, cy+15);
-            ctxM.strokeStyle = "#f97316";
-            ctxM.lineWidth = 2.5;
-            ctxM.stroke();
+        } else if (stage === 4) {
+            // Telophase - two cells forming
+            drawChromosomePair(cx-45, cy-15, false);
+            drawChromosomePair(cx-45, cy+12, false);
+            drawChromosomePair(cx+40, cy-15, false);
+            drawChromosomePair(cx+40, cy+12, false);
+            ctx.beginPath();
+            ctx.moveTo(cx-85, cy+18);
+            ctx.quadraticCurveTo(cx, cy+40, cx+85, cy+18);
+            ctx.strokeStyle = "#f97316";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        } else if (isMetaphase) {
+            // Aligned at equator
+            const positions = [[cx-55, cy-5], [cx-25, cy-8], [cx+10, cy-5], [cx+45, cy-10]];
+            positions.forEach(pos => drawChromosomePair(pos[0], pos[1], false));
         } else {
-            // normal condensed chromosomes
-            positions.forEach((pos, idx) => {
-                const condensed = (stage >= 1) ? 1 : 0.3;
-                drawChromosomePair(pos[0], pos[1], condensed > 0.8, 9);
-            });
-        }
-        
-        function drawChromosomePair(x, y, asTwo, size=12) {
-            ctxM.fillStyle = "#4f46e5";
-            ctxM.shadowBlur = 0;
-            if (asTwo && (isAnaphase || stage>=3)) {
-                // separated chromatids
-                ctxM.fillRect(x-8, y-10, 7, 22);
-                ctxM.fillRect(x+2, y-10, 7, 22);
-                ctxM.fillStyle = "#fbbf24";
-                ctxM.beginPath();
-                ctxM.arc(x-3, y, 3, 0, 2*Math.PI);
-                ctxM.fill();
-                ctxM.beginPath();
-                ctxM.arc(x+3, y, 3, 0, 2*Math.PI);
-                ctxM.fill();
-            } else {
-                // double structure (sister chromatids)
-                ctxM.fillRect(x-9, y-12, 7, 26);
-                ctxM.fillRect(x+1, y-12, 7, 26);
-                ctxM.fillStyle = "#facc15";
-                ctxM.beginPath();
-                ctxM.arc(x-2, y, 4, 0, 2*Math.PI);
-                ctxM.fill();
-                ctxM.fillStyle = "#facc15";
-                ctxM.beginPath();
-                ctxM.arc(x+2, y, 4, 0, 2*Math.PI);
-                ctxM.fill();
-            }
+            // Interphase or prophase - scattered
+            const positions = [[cx-40, cy-25], [cx-20, cy+10], [cx+10, cy-20], [cx+45, cy+5]];
+            positions.forEach(pos => drawChromosomePair(pos[0], pos[1], false));
         }
     }
     
-    function updateMitosisUI() {
-        document.getElementById('mitosisStageName').innerHTML = mitStages[mitTarget].name;
-        document.getElementById('mitosisDesc').innerHTML = mitStages[mitTarget].desc;
-        document.getElementById('mitPrevBtn').disabled = mitTarget===0;
-        document.getElementById('mitNextBtn').disabled = mitTarget===4;
-        const dotsDiv = document.getElementById('mitosisDots');
-        dotsDiv.innerHTML = '';
-        for(let i=0;i<5;i++) {
-            let d = document.createElement('div');
-            d.className = `dot ${i===mitTarget ? 'active' : ''}`;
-            d.onclick = ()=>setMitStage(i);
-            dotsDiv.appendChild(d);
-        }
-        drawMitosis();
-    }
-    function setMitStage(stage) { if(mitAuto) stopMitAuto(); mitTarget = stage; mitStage = stage; updateMitosisUI(); }
-    function nextMit() { if(mitTarget<4) setMitStage(mitTarget+1); }
-    function prevMit() { if(mitTarget>0) setMitStage(mitTarget-1); }
-    function stopMitAuto() { if(mitInterval) clearInterval(mitInterval); mitAuto=false; document.getElementById('mitAutoBtn').innerHTML='▶ Auto'; }
-    function startMitAuto() { stopMitAuto(); mitAuto=true; document.getElementById('mitAutoBtn').innerHTML='⏸ Pause'; let step=mitTarget; mitInterval = setInterval(()=>{ if(step<4){ step++; setMitStage(step); } else stopMitAuto(); }, 2100); }
-    document.getElementById('mitPrevBtn').onclick = prevMit;
-    document.getElementById('mitNextBtn').onclick = nextMit;
-    document.getElementById('mitAutoBtn').onclick = ()=>{ if(mitAuto) stopMitAuto(); else startMitAuto(); };
-    
-    // --------------------------------------------------------------
-    // IMPROVED MEIOSIS: Clear pairing, homologous separation
-    // --------------------------------------------------------------
-    const meiCanvas = document.getElementById('meiosisCanvas');
-    const ctxMe = meiCanvas.getContext('2d');
-    let meiStage = 0, meiTarget = 0, meiAuto=false, meiInterval=null;
-    const meiStages = [
-        { name: "Prophase I (Pairing)", desc: "🧬 Homologous chromosomes pair up (synapsis). Crossing over occurs. Each pair = bivalent." },
-        { name: "Metaphase I", desc: "📏 Homologous pairs align at equator. Independent assortment." },
-        { name: "Anaphase I", desc: "💢 Homologous chromosomes SEPARATE (sister chromatids stay together). Clear division." },
-        { name: "Telophase I & Meiosis II", desc: "🔄 Two haploid cells form. Then Meiosis II separates sister chromatids → 4 gametes." },
-        { name: "Final Gametes", desc: "🎯 4 genetically unique haploid cells (sperm/egg). Crossing over + independent assortment create diversity." }
-    ];
-    
+    // Draw Meiosis with clear homologous pairing and separation
     function drawMeiosis() {
-        ctxMe.clearRect(0,0,meiCanvas.width, meiCanvas.height);
-        const w=meiCanvas.width, h=meiCanvas.height, cx=w/2, cy=h/2;
-        ctxMe.fillStyle = "#fffbf0";
-        ctxMe.fillRect(0,0,w,h);
-        ctxMe.beginPath();
-        ctxMe.ellipse(cx, cy, w*0.4, h*0.42, 0, 0, 2*Math.PI);
-        ctxMe.fillStyle = "#fff7ed";
-        ctxMe.fill();
-        ctxMe.strokeStyle = "#cbd5e1";
-        ctxMe.stroke();
+        if (!meiosisCanvas) return;
+        const ctx = ctxMe;
+        const w = meiosisCanvas.width, h = meiosisCanvas.height;
+        const cx = w/2, cy = h/2;
+        const stage = meiosisTarget;
         
-        const stage = meiTarget;
-        // spindle fibers
-        if(stage <= 2) {
-            ctxMe.strokeStyle = "#f97316aa";
-            ctxMe.lineWidth = 1.5;
-            for(let i=-30;i<=30;i+=18){
-                ctxMe.beginPath();
-                ctxMe.moveTo(cx-80, cy+i);
-                ctxMe.lineTo(cx+80, cy-i*0.7);
-                ctxMe.stroke();
-            }
-            ctxMe.fillStyle = "#ea580c";
-            ctxMe.fillRect(cx-78, cy-6, 8,8);
-            ctxMe.fillRect(cx+70, cy-6, 8,8);
-        }
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#fffbf0";
+        ctx.fillRect(0, 0, w, h);
         
-        // draw homologous pairs (different colors for each homolog)
-        if(stage === 0) { // Prophase I: paired homologs
-            drawHomologPair(cx-35, cy-15, cx-5, cy-12, "#dc2626", "#3b82f6", true);
-            drawHomologPair(cx+5, cy+5, cx+35, cy+2, "#dc2626", "#3b82f6", true);
-            drawHomologPair(cx-25, cy+25, cx+15, cy+22, "#dc2626", "#3b82f6", true);
-        } 
-        else if (stage === 1) { // Metaphase I: alignment
-            drawHomologPair(cx-40, cy-8, cx-15, cy-8, "#dc2626", "#3b82f6", true);
-            drawHomologPair(cx+5, cy-8, cx+30, cy-8, "#dc2626", "#3b82f6", true);
-            drawHomologPair(cx-18, cy+20, cx+12, cy+20, "#dc2626", "#3b82f6", true);
-        }
-        else if (stage === 2) { // Anaphase I: homologs separate to poles
-            drawHomologPair(cx-60, cy-8, cx-35, cy-10, "#dc2626", "#3b82f6", false);
-            drawHomologPair(cx+30, cy-8, cx+55, cy-10, "#dc2626", "#3b82f6", false);
-            drawHomologPair(cx-50, cy+20, cx-25, cy+18, "#dc2626", "#3b82f6", false);
-            drawHomologPair(cx+40, cy+20, cx+65, cy+18, "#dc2626", "#3b82f6", false);
-        }
-        else if (stage === 3) { // Telophase I & Meiosis II: two cells forming
-            ctxMe.fillStyle = "#fde68a66";
-            ctxMe.beginPath();
-            ctxMe.ellipse(cx-55, cy-15, 55, 50, 0, 0, 2*Math.PI);
-            ctxMe.fill();
-            ctxMe.beginPath();
-            ctxMe.ellipse(cx+55, cy-15, 55, 50, 0, 0, 2*Math.PI);
-            ctxMe.fill();
-            drawHomologPair(cx-70, cy-18, cx-45, cy-20, "#dc2626", "#3b82f6", false);
-            drawHomologPair(cx+40, cy-18, cx+65, cy-20, "#dc2626", "#3b82f6", false);
-        }
-        else if (stage === 4) { // 4 gametes
-            for(let gx of [-60, -20, 20, 60]) {
-                ctxMe.fillStyle = "#a78bfa";
-                ctxMe.fillRect(gx-5, cy-8, 6, 16);
-                ctxMe.fillStyle = "#fbbf24";
-                ctxMe.beginPath();
-                ctxMe.arc(gx-2, cy, 2.5, 0, 2*Math.PI);
-                ctxMe.fill();
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, w*0.42, h*0.44, 0, 0, 2*Math.PI);
+        ctx.fillStyle = "#fff7ed";
+        ctx.fill();
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.stroke();
+        
+        // Spindle fibers
+        if (stage <= 2) {
+            ctx.strokeStyle = "#f97316aa";
+            ctx.lineWidth = 1.8;
+            for (let i = -35; i <= 35; i += 18) {
+                ctx.beginPath();
+                ctx.moveTo(cx-85, cy+i);
+                ctx.lineTo(cx+85, cy-i*0.7);
+                ctx.stroke();
             }
-            ctxMe.fillStyle = "#78350f";
-            ctxMe.font = "bold 12px Inter";
-            ctxMe.fillText("4 unique haploid cells", cx-60, cy+45);
+            ctx.fillStyle = "#ea580c";
+            ctx.fillRect(cx-83, cy-7, 10, 10);
+            ctx.fillRect(cx+73, cy-7, 10, 10);
         }
         
-        function drawHomologPair(x1,y1,x2,y2, color1, color2, isPaired) {
-            ctxMe.fillStyle = color1;
-            ctxMe.fillRect(x1-6, y1-10, 7, 24);
-            ctxMe.fillStyle = color2;
-            ctxMe.fillRect(x2-6, y2-10, 7, 24);
-            if(isPaired) {
-                ctxMe.beginPath();
-                ctxMe.setLineDash([3,5]);
-                ctxMe.strokeStyle = "#facc15";
-                ctxMe.lineWidth = 1.8;
-                ctxMe.moveTo(x1, y1);
-                ctxMe.lineTo(x2, y2);
-                ctxMe.stroke();
-                ctxMe.setLineDash([]);
+        function drawHomolog(x1, y1, x2, y2, paired) {
+            ctx.fillStyle = "#dc2626";
+            ctx.fillRect(x1-7, y1-12, 8, 26);
+            ctx.fillStyle = "#3b82f6";
+            ctx.fillRect(x2-7, y2-12, 8, 26);
+            if (paired) {
+                ctx.beginPath();
+                ctx.setLineDash([4,6]);
+                ctx.strokeStyle = "#facc15";
+                ctx.lineWidth = 2;
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.setLineDash([]);
             }
+        }
+        
+        if (stage === 0) { // Prophase I - paired
+            drawHomolog(cx-40, cy-15, cx-10, cy-12, true);
+            drawHomolog(cx+5, cy+5, cx+35, cy+2, true);
+            drawHomolog(cx-25, cy+25, cx+15, cy+22, true);
+        } else if (stage === 1) { // Metaphase I - aligned
+            drawHomolog(cx-45, cy-8, cx-20, cy-8, true);
+            drawHomolog(cx+5, cy-8, cx+30, cy-8, true);
+            drawHomolog(cx-20, cy+22, cx+10, cy+22, true);
+        } else if (stage === 2) { // Anaphase I - separating
+            drawHomolog(cx-65, cy-10, cx-40, cy-10, false);
+            drawHomolog(cx+35, cy-10, cx+60, cy-10, false);
+            drawHomolog(cx-55, cy+20, cx-30, cy+20, false);
+            drawHomolog(cx+45, cy+20, cx+70, cy+20, false);
+        } else if (stage === 3) { // Telophase I
+            ctx.fillStyle = "#fde68a66";
+            ctx.beginPath();
+            ctx.ellipse(cx-60, cy-15, 55, 50, 0, 0, 2*Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(cx+60, cy-15, 55, 50, 0, 0, 2*Math.PI);
+            ctx.fill();
+            drawHomolog(cx-75, cy-18, cx-50, cy-18, false);
+            drawHomolog(cx+45, cy-18, cx+70, cy-18, false);
+        } else if (stage === 4) { // 4 gametes
+            for (let gx of [-65, -25, 25, 65]) {
+                ctx.fillStyle = "#a78bfa";
+                ctx.fillRect(gx-6, cy-10, 7, 22);
+                ctx.fillStyle = "#fbbf24";
+                ctx.beginPath();
+                ctx.arc(gx-2, cy, 3, 0, 2*Math.PI);
+                ctx.fill();
+            }
+            ctx.fillStyle = "#78350f";
+            ctx.font = "bold 13px 'Segoe UI'";
+            ctx.fillText("4 unique haploid cells", cx-70, cy+50);
         }
     }
     
-    function updateMeiosisUI() {
-        document.getElementById('meiosisStageName').innerHTML = meiStages[meiTarget].name;
-        document.getElementById('meiosisDesc').innerHTML = meiStages[meiTarget].desc;
-        document.getElementById('meiPrevBtn').disabled = meiTarget===0;
-        document.getElementById('meiNextBtn').disabled = meiTarget===4;
-        const dotsDiv = document.getElementById('meiosisDots');
+    // Build simulator HTML dynamically
+    function buildSimulator() {
+        const container = document.getElementById('simulatorContainer');
+        const isMitosis = (currentMode === 'mitosis');
+        const headerClass = isMitosis ? 'mitosis-header' : 'meiosis-header';
+        const headerIcon = isMitosis ? '🌱 MITOSIS · Asexual Reproduction' : '🥚 MEIOSIS · Sexual Reproduction';
+        
+        container.innerHTML = `
+            <div class="sim-card">
+                <div class="sim-header ${headerClass}">${headerIcon}</div>
+                <div class="canvas-wrapper">
+                    <canvas id="activeCanvas" width="600" height="400" style="width:100%; max-width:600px; height:auto; background:#fffdf5; border-radius:20px"></canvas>
+                </div>
+                <div class="stage-controls">
+                    <div class="stage-name" id="activeStageName">${isMitosis ? mitosisStages[0].name : meiosisStages[0].name}</div>
+                    <div class="stage-desc" id="activeStageDesc">${isMitosis ? mitosisStages[0].desc : meiosisStages[0].desc}</div>
+                    <div class="dot-indicator" id="activeDots"></div>
+                    <div class="button-group">
+                        <button class="ctrl-btn" id="prevBtn">◀ Previous</button>
+                        <button class="ctrl-btn primary" id="nextBtn">Next ▶</button>
+                        <button class="ctrl-btn" id="autoBtn">▶ Auto</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Get canvas reference
+        const canvas = document.getElementById('activeCanvas');
+        if (isMitosis) {
+            mitosisCanvas = canvas;
+            ctxM = canvas.getContext('2d');
+            drawMitosis();
+        } else {
+            meiosisCanvas = canvas;
+            ctxMe = canvas.getContext('2d');
+            drawMeiosis();
+        }
+        
+        // Attach event listeners
+        document.getElementById('prevBtn').onclick = () => { if(isMitosis) prevMitosis(); else prevMeiosis(); };
+        document.getElementById('nextBtn').onclick = () => { if(isMitosis) nextMitosis(); else nextMeiosis(); };
+        document.getElementById('autoBtn').onclick = () => { if(isMitosis) toggleMitosisAuto(); else toggleMeiosisAuto(); };
+        updateActiveUI();
+    }
+    
+    function updateActiveUI() {
+        const isMitosis = (currentMode === 'mitosis');
+        const target = isMitosis ? mitosisTarget : meiosisTarget;
+        const stages = isMitosis ? mitosisStages : meiosisStages;
+        
+        document.getElementById('activeStageName').innerHTML = stages[target].name;
+        document.getElementById('activeStageDesc').innerHTML = stages[target].desc;
+        
+        const dotsDiv = document.getElementById('activeDots');
         dotsDiv.innerHTML = '';
-        for(let i=0;i<5;i++) {
+        for (let i = 0; i < 5; i++) {
             let d = document.createElement('div');
-            d.className = `dot ${i===meiTarget ? 'active' : ''}`;
-            d.onclick = ()=>setMeiStage(i);
+            d.className = `dot ${i === target ? 'active' : ''}`;
+            d.onclick = () => { if(isMitosis) setMitosisStage(i); else setMeiosisStage(i); };
             dotsDiv.appendChild(d);
         }
-        drawMeiosis();
+        
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        prevBtn.disabled = target === 0;
+        nextBtn.disabled = target === 4;
+        
+        if (isMitosis) drawMitosis();
+        else drawMeiosis();
     }
-    function setMeiStage(stage) { if(meiAuto) stopMeiAuto(); meiTarget = stage; meiStage = stage; updateMeiosisUI(); }
-    function nextMei() { if(meiTarget<4) setMeiStage(meiTarget+1); }
-    function prevMei() { if(meiTarget>0) setMeiStage(meiTarget-1); }
-    function stopMeiAuto() { if(meiInterval) clearInterval(meiInterval); meiAuto=false; document.getElementById('meiAutoBtn').innerHTML='▶ Auto'; }
-    function startMeiAuto() { stopMeiAuto(); meiAuto=true; document.getElementById('meiAutoBtn').innerHTML='⏸ Pause'; let step=meiTarget; meiInterval = setInterval(()=>{ if(step<4){ step++; setMeiStage(step); } else stopMeiAuto(); }, 2500); }
-    document.getElementById('meiPrevBtn').onclick = prevMei;
-    document.getElementById('meiNextBtn').onclick = nextMei;
-    document.getElementById('meiAutoBtn').onclick = ()=>{ if(meiAuto) stopMeiAuto(); else startMeiAuto(); };
     
-    // animation loops
-    function animateMitosis() { drawMitosis(); requestAnimationFrame(animateMitosis); }
-    function animateMeiosis() { drawMeiosis(); requestAnimationFrame(animateMeiosis); }
-    animateMitosis(); animateMeiosis();
-    setMitStage(0);
-    setMeiStage(0);
+    // Mitosis control functions
+    function setMitosisStage(stage) {
+        if (mitosisAuto) stopMitosisAuto();
+        mitosisTarget = stage;
+        updateActiveUI();
+    }
+    function nextMitosis() { if (mitosisTarget < 4) setMitosisStage(mitosisTarget + 1); }
+    function prevMitosis() { if (mitosisTarget > 0) setMitosisStage(mitosisTarget - 1); }
+    function stopMitosisAuto() { if (mitosisInterval) clearInterval(mitosisInterval); mitosisAuto = false; if(document.getElementById('autoBtn')) document.getElementById('autoBtn').innerHTML = '▶ Auto'; }
+    function toggleMitosisAuto() {
+        if (mitosisAuto) { stopMitosisAuto(); }
+        else {
+            stopMitosisAuto();
+            mitosisAuto = true;
+            document.getElementById('autoBtn').innerHTML = '⏸ Pause';
+            let step = mitosisTarget;
+            mitosisInterval = setInterval(() => {
+                if (step < 4) { step++; setMitosisStage(step); }
+                else { stopMitosisAuto(); }
+            }, 2200);
+        }
+    }
     
-    // --------------------------------------------------------------
-    // QUIZ (full email function as requested)
-    // --------------------------------------------------------------
+    // Meiosis control functions
+    function setMeiosisStage(stage) {
+        if (meiosisAuto) stopMeiosisAuto();
+        meiosisTarget = stage;
+        updateActiveUI();
+    }
+    function nextMeiosis() { if (meiosisTarget < 4) setMeiosisStage(meiosisTarget + 1); }
+    function prevMeiosis() { if (meiosisTarget > 0) setMeiosisStage(meiosisTarget - 1); }
+    function stopMeiosisAuto() { if (meiosisInterval) clearInterval(meiosisInterval); meiosisAuto = false; if(document.getElementById('autoBtn')) document.getElementById('autoBtn').innerHTML = '▶ Auto'; }
+    function toggleMeiosisAuto() {
+        if (meiosisAuto) { stopMeiosisAuto(); }
+        else {
+            stopMeiosisAuto();
+            meiosisAuto = true;
+            document.getElementById('autoBtn').innerHTML = '⏸ Pause';
+            let step = meiosisTarget;
+            meiosisInterval = setInterval(() => {
+                if (step < 4) { step++; setMeiosisStage(step); }
+                else { stopMeiosisAuto(); }
+            }, 2500);
+        }
+    }
+    
+    // Mode switching
+    document.getElementById('mitosisModeBtn').onclick = () => {
+        if (currentMode === 'mitosis') return;
+        currentMode = 'mitosis';
+        document.getElementById('mitosisModeBtn').classList.remove('inactive');
+        document.getElementById('meiosisModeBtn').classList.add('inactive');
+        buildSimulator();
+    };
+    document.getElementById('meiosisModeBtn').onclick = () => {
+        if (currentMode === 'meiosis') return;
+        currentMode = 'meiosis';
+        document.getElementById('meiosisModeBtn').classList.remove('inactive');
+        document.getElementById('mitosisModeBtn').classList.add('inactive');
+        buildSimulator();
+    };
+    
+    // Animation loop
+    function animate() {
+        if (currentMode === 'mitosis' && mitosisCanvas && ctxM) drawMitosis();
+        if (currentMode === 'meiosis' && meiosisCanvas && ctxMe) drawMeiosis();
+        requestAnimationFrame(animate);
+    }
+    
+    // Initialize
+    buildSimulator();
+    animate();
+    
+    // ============================================================
+    // QUIZ (Updated Question 5 - homologous chromosomes)
+    // ============================================================
     const QUESTIONS = [
-        { text: "During mitosis in an animal cell, which event occurs in anaphase?", options: ["A. Chromosomes align", "B. Sister chromatids separate", "C. Nuclear envelope reforms", "D. Homologous pair"], correct: 1, explanation: "Anaphase: sister chromatids separate and move to opposite poles." },
-        { text: "Key difference between meiosis I and mitosis?", options: ["A. DNA replicates once", "B. Homologous chromosomes separate", "C. Sister chromatids separate", "D. Spindle fibers attach"], correct: 1, explanation: "Meiosis I separates homologous chromosomes, reducing ploidy." },
-        { text: "After mitosis of human liver cell, each daughter cell has:", options: ["A. 23", "B. 46", "C. 92", "D. Variable"], correct: 1, explanation: "Mitosis preserves chromosome number: 46." },
-        { text: "Root tip cell in metaphase: chromosomes are?", options: ["A. Condensed at poles", "B. Aligned at equator", "C. Replicating", "D. Separating"], correct: 1, explanation: "Metaphase: chromosomes align at the metaphase plate." },
-        { text: "Primary oocyte completes meiosis I to produce:", options: ["A. Two secondary oocytes", "B. One secondary oocyte + polar body", "C. Two eggs", "D. One egg + 3 polar bodies"], correct: 1, explanation: "Meiosis I gives one secondary oocyte and first polar body." }
+        { text: "During mitosis in an animal cell, which event occurs in anaphase?", options: ["A. Chromosomes align at equator", "B. Sister chromatids separate", "C. Nuclear envelope reforms", "D. Homologous chromosomes pair"], correct: 1, explanation: "Anaphase: sister chromatids separate and move to opposite poles." },
+        { text: "What is the key difference between meiosis I and mitosis?", options: ["A. DNA replicates once", "B. Homologous chromosomes separate", "C. Sister chromatids separate", "D. Spindle fibers form"], correct: 1, explanation: "Meiosis I separates homologous chromosomes, reducing chromosome number by half." },
+        { text: "After mitosis of a human liver cell, each daughter cell has:", options: ["A. 23 chromosomes", "B. 46 chromosomes", "C. 92 chromosomes", "D. Variable number"], correct: 1, explanation: "Mitosis preserves chromosome number: 46 in humans." },
+        { text: "During which phase of mitosis do chromosomes align at the metaphase plate?", options: ["A. Prophase", "B. Metaphase", "C. Anaphase", "D. Telophase"], correct: 1, explanation: "Metaphase: chromosomes line up at the equator for equal distribution." },
+        { text: "What happens during Anaphase I of meiosis?", options: ["A. Sister chromatids separate", "B. Homologous chromosomes separate", "C. Chromosomes align at equator", "D. Nuclear envelope forms"], correct: 1, explanation: "Anaphase I: homologous chromosomes separate and move to opposite poles. Sister chromatids stay together." }
     ];
-    let userAnswers = new Array(5).fill(null), quizSubmitted = false;
+    
+    let userAnswers = new Array(5).fill(null);
+    let quizSubmitted = false;
+    
     function renderQuiz() {
         const container = document.getElementById('questionsContainer');
         container.innerHTML = '';
-        QUESTIONS.forEach((q,idx) => {
+        QUESTIONS.forEach((q, idx) => {
             const div = document.createElement('div');
             div.className = 'question-block';
             div.innerHTML = `<div class="q-text">${idx+1}. ${q.text}</div><div class="options" id="opts-${idx}"></div>`;
             container.appendChild(div);
             const optsDiv = div.querySelector(`.options`);
-            q.options.forEach((opt,oidx) => {
+            q.options.forEach((opt, oidx) => {
                 const optDiv = document.createElement('div');
                 optDiv.className = 'option';
                 optDiv.innerHTML = `<input type="radio" name="q${idx}" value="${oidx}" id="q${idx}_${oidx}" ${userAnswers[idx]===oidx ? 'checked' : ''}><label for="q${idx}_${oidx}">${opt}</label>`;
-                optDiv.querySelector('input').addEventListener('change', ()=> { userAnswers[idx] = oidx; });
+                optDiv.querySelector('input').addEventListener('change', () => { userAnswers[idx] = oidx; });
                 optsDiv.appendChild(optDiv);
             });
         });
     }
+    
     async function sendEmail(name, cls, sid, score, details) {
-        let summ = details.map(d=>`Q${d.qNum}: ${d.studentAnswer} (correct:${d.correctAnswer}) - ${d.explanation}`).join('\n');
-        const msg = `Student: ${name}, Class: ${cls}, ID: ${sid}\nScore: ${score}/100\n\n${summ}`;
+        let summ = details.map(d => `Q${d.qNum}: ${d.studentAnswer} (correct: ${d.correctAnswer})\n${d.explanation}`).join('\n');
+        const msg = `Student: ${name}\nClass: ${cls}\nID: ${sid}\nScore: ${score}/100\n\nDetailed Answers:\n${summ}`;
         const fd = new FormData();
         fd.append('access_key', 'f8697ff5-0b11-4d52-9d70-657a0028e31c');
         fd.append('email', 'ngtinghei0803@gmail.com');
-        fd.append('subject', `Quiz: ${name} - ${cls}`);
+        fd.append('subject', `Cell Division Quiz: ${name} - ${cls}`);
         fd.append('message', msg);
-        await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
-        alert(`Report sent! Score: ${score}/100`);
+        try {
+            await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+            alert(`✅ Report sent! Score: ${score}/100`);
+        } catch(e) { alert(`⚠️ Score: ${score}/100 (email failed, but score recorded)`); }
     }
+    
     function computeScore() {
-        let score=0, details=[];
-        for(let i=0;i<QUESTIONS.length;i++){
-            const correct = (userAnswers[i]===QUESTIONS[i].correct);
-            if(correct) score+=20;
-            details.push({qNum:i+1, studentAnswer: userAnswers[i]!==null?QUESTIONS[i].options[userAnswers[i]]:'None', correctAnswer:QUESTIONS[i].options[QUESTIONS[i].correct], explanation:QUESTIONS[i].explanation});
+        let score = 0, details = [];
+        for (let i = 0; i < QUESTIONS.length; i++) {
+            const correct = (userAnswers[i] === QUESTIONS[i].correct);
+            if (correct) score += 20;
+            details.push({
+                qNum: i+1,
+                studentAnswer: userAnswers[i] !== null ? QUESTIONS[i].options[userAnswers[i]] : 'Not answered',
+                correctAnswer: QUESTIONS[i].options[QUESTIONS[i].correct],
+                explanation: QUESTIONS[i].explanation
+            });
         }
-        return {score, details};
+        return { score, details };
     }
-    document.getElementById('submitBtn').onclick = async ()=>{
-        if(quizSubmitted) { alert('Already submitted. Reset to retry.'); return; }
+    
+    document.getElementById('submitBtn').onclick = async () => {
+        if (quizSubmitted) { alert('Already submitted. Reset to retry.'); return; }
         const name = document.getElementById('studentName').value.trim();
         const cls = document.getElementById('classGroup').value.trim();
         const sid = document.getElementById('studentId').value.trim();
-        if(!name||!cls||!sid) { alert('Fill all student info'); return; }
-        if(userAnswers.includes(null)) { alert('Answer all 5 questions'); return; }
-        const {score, details} = computeScore();
-        document.getElementById('scoreDisplay').style.display='block';
-        document.getElementById('scoreDisplay').innerHTML = `📊 Score: ${score}/100`;
+        if (!name || !cls || !sid) { alert('Please fill in all student information.'); return; }
+        if (userAnswers.includes(null)) { alert('Please answer all 5 questions.'); return; }
+        const { score, details } = computeScore();
+        document.getElementById('scoreDisplay').style.display = 'block';
+        document.getElementById('scoreDisplay').innerHTML = `📊 Your Score: ${score} / 100`;
         const expDiv = document.getElementById('aiExplanations');
         const listDiv = document.getElementById('explanationsList');
-        listDiv.innerHTML = details.map(d=>`<div><strong>Q${d.qNum}</strong>: Your: ${d.studentAnswer} | Correct: ${d.correctAnswer}<br>📖 ${d.explanation}</div>`).join('');
+        listDiv.innerHTML = details.map(d => `<div><strong>Q${d.qNum}</strong>: Your: ${d.studentAnswer} | Correct: ${d.correctAnswer}<br>📖 ${d.explanation}</div>`).join('');
         expDiv.style.display = 'block';
         await sendEmail(name, cls, sid, score, details);
         quizSubmitted = true;
     };
-    document.getElementById('resetQuizBtn').onclick = ()=>{ userAnswers.fill(null); quizSubmitted=false; renderQuiz(); document.getElementById('scoreDisplay').style.display='none'; document.getElementById('aiExplanations').style.display='none'; };
-    renderQuiz();
-</script>
-</body>
-</html>
+    
+    document.getElementById('resetQuizBtn').onclick = () => {
+        userAnswers.fill(null);
+        quizSubmitted = false;
+        renderQuiz();
+        document.getElementById('scoreDisplay').style.display = 'none';
+        document.getElementById('aiExplanations').style.display =
